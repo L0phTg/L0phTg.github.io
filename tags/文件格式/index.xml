@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>文件格式 on L0phTg&#39;s Blog</title>
+    <link>/tags/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</link>
+    <description>Recent content in 文件格式 on L0phTg&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Sun, 19 Mar 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>elf文件格式和AndroidLinker加载.so的源码分析</title>
+      <link>/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sun, 19 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
+      <description>&lt;p&gt;最近在学习android应用的加壳和混淆方法, 所以遇到了一些有关.so是如何加载到android中去的问题, 看了一些视频和文章, 所以想在此总结一下.&lt;/p&gt;
+&lt;p&gt;本文主要内容:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;elf的文件格式&lt;/li&gt;
+&lt;li&gt;分析linker的源码, 主要dlopen流程.&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

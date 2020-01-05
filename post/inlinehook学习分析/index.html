@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>InlineHook学习分析</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="分析开源的inlineHook代码, 总结inlineHook的原理与实现.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="InlineHook学习分析">
+    <meta name="twitter:description" content="分析开源的inlineHook代码, 总结inlineHook的原理与实现.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="InlineHook学习分析">
+  <meta property="og:description" content="分析开源的inlineHook代码, 总结inlineHook的原理与实现.
+">
+  <meta property="og:url" content="/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">InlineHook学习分析</h1>
+      <p class="post-meta">@L0phTg · Apr 5, 2018 · 11 min read</p>
+    </header>
+    <article class="post-content"><p>分析开源的inlineHook代码, 总结inlineHook的原理与实现.</p>
+<p>本文首发于<strong>看雪论坛</strong>, 转载请注明出处.</p>
+<h2 id="heading">前言</h2>
+<p>最近在面试某大厂的安全岗位时，面试官问到了一些有关hook的知识, 在简单分析了下F8大牛的开源代码之后, 有了这篇文章.</p>
+<h2 id="heading-1">参考文章和项目代码</h2>
+<p>文章:</p>
+<pre><code>http://ele7enxxh.com/Android-Arm-Inline-Hook.html
+http://gslab.qq.com/portal.php?mod=view&amp;aid=168
+</code></pre>
+<p>项目:</p>
+<pre><code>https://github.com/ele7enxxh/Android-Inline-Hook
+https://github.com/F8LEFT/FAInHook
+</code></pre>
+<h2 id="heading-2">使用方法</h2>
+<p>MainActivity:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">loadLibrary</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;FHook&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">native</span> String <span style="color:#a6e22e">stringFromJNI</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+</code></pre></div><p>我们会将会测试Hook 这个&quot;stringFromJNI()&ldquo;函数.</p>
+<h2 id="heading-3">分析</h2>
+<h4 id="heading-4">使用</h4>
+<p>在native层, 我们的main.cpp中</p>
+<p>会在JNI_OnLoad中有一个init函数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">jstring <span style="color:#a6e22e">stringFromJNI</span><span style="color:#f92672">(</span>
+        JNIEnv <span style="color:#f92672">*</span>env<span style="color:#f92672">,</span>
+        jobject <span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+     doInHook<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">// doGotHook();
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> env<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>NewStringUTF<span style="color:#f92672">(</span>getStr<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+
+JNIEXPORT jint JNICALL <span style="color:#a6e22e">JNI_OnLoad</span><span style="color:#f92672">(</span>JavaVM<span style="color:#f92672">*</span> vm<span style="color:#f92672">,</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>reserved<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    JNIEnv<span style="color:#f92672">*</span> env <span style="color:#f92672">=</span> nullptr<span style="color:#f92672">;</span>
+    jint resultstr <span style="color:#f92672">=</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>vm<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>GetEnv<span style="color:#f92672">(</span><span style="color:#f92672">(</span><span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">)</span> <span style="color:#f92672">&amp;</span>env<span style="color:#f92672">,</span> JNI_VERSION_1_6<span style="color:#f92672">)</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> JNI_OK<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span>1<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    auto jclazz <span style="color:#f92672">=</span> env<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>FindClass<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;com/example/l0phtg/hookstudyf8/MainActivity&#34;</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    JNINativeMethod natives<span style="color:#f92672">[</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+            <span style="color:#f92672">{</span><span style="color:#e6db74">&#34;stringFromJNI&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;()Ljava/lang/String;&#34;</span><span style="color:#f92672">,</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">void</span><span style="color:#f92672">*</span><span style="color:#f92672">)</span>stringFromJNI<span style="color:#f92672">}</span><span style="color:#f92672">}</span><span style="color:#f92672">;</span>
+    env<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>RegisterNatives<span style="color:#f92672">(</span>jclazz<span style="color:#f92672">,</span> natives<span style="color:#f92672">,</span> 1<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+    env<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>DeleteLocalRef<span style="color:#f92672">(</span>jclazz<span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    init<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">return</span> JNI_VERSION_1_6<span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>在Hook.cpp我们来看一下init函数:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">init</span>() {
+    <span style="color:#66d9ef">auto</span> hook <span style="color:#f92672">=</span> FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>instance();
+    hook<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>registerHook((Elf_Addr)getStr,
+                       (Elf_Addr)inlCallback,
+                       (Elf_Addr<span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>inlCallbackSrc);
+    <span style="color:#66d9ef">auto</span> lib <span style="color:#f92672">=</span> dlopen(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">libFHook.so</span><span style="color:#e6db74">&#34;</span>, RTLD_NOW);
+    gotCallbackSrc <span style="color:#f92672">=</span> (<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> (<span style="color:#f92672">*</span>)())dlsym(lib, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">_Z6getStrv</span><span style="color:#e6db74">&#34;</span>);
+    dlclose(lib);
+
+    <span style="color:#66d9ef">return</span> false;
+}
+</code></pre></div><p>可以看到, 我们实例化了一个FAInHook对象, <code>new FAInHook()</code>.</p>
+<p>并调用了<code>registerHook</code>函数来注册对getStr的hook.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+FAInHook <span style="color:#f92672">*</span>FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>instance() {
+    <span style="color:#66d9ef">static</span> FAInHook<span style="color:#f92672">*</span> mIns <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
+    <span style="color:#66d9ef">if</span>(mIns <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>) {
+        mIns <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAInHook();
+    }
+    <span style="color:#66d9ef">return</span> mIns;
+}
+
+</code></pre></div><p>我们在使用是还会用到的<code>doInHook</code>:</p>
+<pre><code>bool doInHook() {
+    static bool isHooked = false;
+    if (isHooked) {
+        isHooked = false;
+        FAInHook::instance()-&gt;unhookAll();
+    } else {
+        isHooked = true;
+        FAInHook::instance()-&gt;hookAll();
+    }
+    return true;
+}
+</code></pre><p><strong>现在可以看到, 我们主要的任务就是分析<code>registerHook</code>和<code>doInHook</code>这两个函数的实现.</strong></p>
+<h4 id="registerhook">registerHook函数</h4>
+<p>我们现在主要分析<code>registerHook</code>函数.</p>
+<p>先来分析参数:
+在Hook之前我们首先要注册这个函数</p>
+<p>函数申明:</p>
+<pre><code>    HOOK_STATUS registerHook(Elf_Addr orginalFunAddr, Elf_Addr newFunAddr,
+                             Elf_Addr* callOrigin);
+</code></pre><p>参数(原始函数地址, 新函数地址, 调用原始函数).</p>
+<p>函数主要流程:</p>
+<ol>
+<li>
+<p>注册函数信息, 计算hook stub.</p>
+<p>首先判断<code>originFunAddr</code>和<code>newFunAddr</code>是否是函数地址.</p>
+<p>auto info = getHookInfo(originFunAddr); 得到函数信息</p>
+<p>然后判断函数是否已经被Hook.</p>
+</li>
+<li>
+<p>检查判断指令类型(thumb or arm or x86 &hellip;)</p>
+</li>
+<li>
+<p>createStub(info)     创建stub, 就是thumb下创建ldr.w pc, [pc],   addr 来执行跳转到newFuncAddr功能</p>
+</li>
+<li>
+<p>createCallOriginalStub(info) 创建originalFunAddr的stub, 主要会涉及一些对pc相关指令的处理.</p>
+</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">//  register hook
+</span><span style="color:#75715e"></span>FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HOOK_STATUS FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>registerHook(
+        Elf_Addr orginalFunAddr, Elf_Addr newFunAddr, Elf_Addr <span style="color:#f92672">*</span>callOrigin) {
+    <span style="color:#75715e">// register hook information, calc hook stub at the same time.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>isFunctionAddr((<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>) orginalFunAddr)
+       <span style="color:#f92672">|</span><span style="color:#f92672">|</span> <span style="color:#f92672">!</span>FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>isFunctionAddr((<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>) newFunAddr)) {
+        <span style="color:#66d9ef">return</span> FERROR_NOT_EXECUTABLE;
+    }
+
+    <span style="color:#66d9ef">auto</span> info <span style="color:#f92672">=</span> getHookInfo(orginalFunAddr);
+    <span style="color:#66d9ef">if</span>(<span style="color:#66d9ef">nullptr</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> info) {
+        <span style="color:#66d9ef">auto</span> hookStatus <span style="color:#f92672">=</span> info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getHookStatus();
+        <span style="color:#66d9ef">if</span>(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HOOKED <span style="color:#f92672">=</span><span style="color:#f92672">=</span> hookStatus) {
+            <span style="color:#66d9ef">return</span> FERROR_ALREADY_HOOKED;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span>(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>REGISTERED <span style="color:#f92672">=</span><span style="color:#f92672">=</span> hookStatus) {
+            delHookInfo(info);
+        }
+    }
+
+    <span style="color:#75715e">// check for FunctionType
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">auto</span> type <span style="color:#f92672">=</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getFunctionType(orginalFunAddr);
+    <span style="color:#66d9ef">if</span>(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ERRTYPE <span style="color:#f92672">=</span><span style="color:#f92672">=</span> type) {
+        <span style="color:#66d9ef">return</span> FERROR_UNKNOWN;
+    }
+
+    info <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo((<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>) orginalFunAddr, (<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>) newFunAddr);
+    info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setOriginalFunctionType(type);
+
+    FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Instruction<span style="color:#f92672">*</span> instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
+    <span style="color:#66d9ef">switch</span>(type) {
+<span style="color:#75715e">#</span><span style="color:#75715e">if defined(__arm__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ARM:
+            instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ArmInstruction();
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>THUMB:
+            instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ThumbInstruction();
+            <span style="color:#66d9ef">break</span>;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__aarch64__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ARM64:
+            instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Arm64Instruction();
+            <span style="color:#66d9ef">break</span>;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__i386__) || defined(__x86_64__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>X86:
+        <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>X64:
+            instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>IntelInstruction();
+            <span style="color:#66d9ef">break</span>;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__mips64__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MIPS64:
+            instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Mips64Instruction();
+            <span style="color:#66d9ef">break</span>;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__mips__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">case</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MIPS:
+            instruction <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MipsInstruction();
+            <span style="color:#66d9ef">break</span>;
+<span style="color:#75715e">#</span><span style="color:#75715e">endif</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+            assert(false <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">not support abi</span><span style="color:#e6db74">&#34;</span>);
+            <span style="color:#66d9ef">return</span> FERROR_UNKNOWN;
+            <span style="color:#66d9ef">break</span>;
+    }
+
+    <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>instruction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createStub(info)
+       <span style="color:#f92672">|</span><span style="color:#f92672">|</span> <span style="color:#f92672">!</span>instruction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createBackStub(info)
+       <span style="color:#f92672">|</span><span style="color:#f92672">|</span> (callOrigin <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>) <span style="color:#f92672">?</span>
+            <span style="color:#f92672">!</span>instruction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createCallOriginalStub(info) <span style="color:#f92672">:</span> false  <span style="color:#75715e">// want a callback
+</span><span style="color:#75715e"></span>       ) {
+        <span style="color:#66d9ef">delete</span> instruction;
+        <span style="color:#66d9ef">delete</span> info;
+        <span style="color:#66d9ef">return</span> FERROR_MEMORY;
+    }
+
+    addHookInfo(info);
+    info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setHookStatus(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>REGISTERED);
+
+    <span style="color:#66d9ef">if</span>(callOrigin <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>) {
+        <span style="color:#f92672">*</span>callOrigin <span style="color:#f92672">=</span> (Elf_Addr) info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getCallOriginalIns();
+    }
+
+    <span style="color:#66d9ef">delete</span> instruction;
+    <span style="color:#66d9ef">return</span> FERROR_SUCCESS;
+}
+
+</code></pre></div><h5 id="heading-5">判断该地址是否是函数地址</h5>
+<ol>
+<li>打开<code>/proc/self/maps</code>， 读取每行的信息, 用strstr根据权限做出判断.(r-x, 表示可读可执行, 即为code)()</li>
+<li>addr &gt;= startAddr &amp;&amp; addr &lt;= endAddr</li>
+</ol>
+<pre><code>bool FAHook::MemHelper::isFunctionAddr(void *addr) {
+    char buf[MAX_BUF];
+    auto fp = fopen(maps, &quot;r&quot;);
+    if(nullptr == fp) {
+        return false;
+    }
+
+    while(fgets(buf, MAX_BUF, fp)) {
+        if(strstr(buf, &quot;r-xp&quot;) != nullptr) {
+            void* startAddr = (void*)strtoul(strtok(buf, &quot;-&quot;), nullptr, 16);
+            void* endAddr = (void*)strtoul(strtok(nullptr, &quot; &quot;), nullptr, 16);
+            if(addr &gt;= startAddr &amp;&amp; addr &lt;= endAddr) {
+                fclose(fp);
+                return true;
+            }
+        }
+    }
+    fclose(fp);
+    FLOGE(this functionAddr is not a function!);
+    return false;
+}
+</code></pre><h5 id="hook-hook">得到Hook地址的信息, 是否已经Hook.</h5>
+<p>hook_map是一个std::map&lt;Elf_Addr, FAInHook::HookInfo*&gt;的map类型. find函数会返回返回一个迭代器, 可以用<code>it-&gt;first</code>和<code>it-&gt;second</code>来访问它的成员(key和value). 这个过程其实对已经注册过的hook函数的处理.</p>
+<pre><code>FAHook::HookInfo *FAInHook::getHookInfo(Elf_Addr origFunAddr) {
+    auto it = hook_map.find(origFunAddr);
+    if(it == hook_map.end()) {
+        return nullptr;
+    }
+    return it-&gt;second;
+}
+</code></pre><h5 id="originlfunaddr">得到originlFunAddr的指令类型,</h5>
+<p>auto type = FAHook::Instruction::getFunctionType(orginalFunAddr);</p>
+<p>下面是<code>getFunctionAddr</code>的实现, 可以看到. 判断指令类型的方式, 是通过自己定义宏来实现的. 当然, 在Arm指令中, 我们还要是否该指令为thumb指令.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">static</span> FunctionType <span style="color:#a6e22e">getFunctionType</span>(Elf_Addr functionAddr) {
+<span style="color:#75715e">#</span><span style="color:#75715e">if defined(__arm__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span>(<span style="color:#ae81ff">0</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> functionAddr) {
+                <span style="color:#66d9ef">return</span> ERRTYPE;
+            } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span>((functionAddr <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">3</span>) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {
+                <span style="color:#66d9ef">return</span> ARM;
+            } <span style="color:#66d9ef">else</span> {
+                <span style="color:#66d9ef">return</span> THUMB;
+            }
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__aarch64__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> ARM64;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__i386__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> X86;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__x86_64__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> X64;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__mips64__)  </span><span style="color:#75715e">/* mips64el-* toolchain defines __mips__ too */</span><span style="color:#75715e"></span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> MIPS64;
+<span style="color:#75715e">#</span><span style="color:#75715e">elif defined(__mips__)</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> MIPS;
+<span style="color:#75715e">#</span><span style="color:#75715e">endif</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>        }
+</code></pre></div><h5 id="-">接下来, 我们分析最重要的过程:</h5>
+<ol>
+<li>info = new HookInfo(originFunAddr, newFunAddr);</li>
+<li>info.setOriginalFunctionType(type);   设置指令类型为(Arm或者thumb)</li>
+<li>instruction = new FAHook::ArmInstruction();        new arm或者thumb指令. 我发现无构造函数.</li>
+<li>instruction-&gt;createStub(info);        创建stub.(stub为 jump stub来jump到newFuncAddr)</li>
+<li>instruction-&gt;createCallOriginalStub(info)    创建原函数的call back stub.</li>
+</ol>
+<p>在看<code>HookInfo.h</code>时, 我们可以看到<code>FAHook</code>是一个<code>namespace</code>, 而里面主要包含了一个<code>HookInfo</code>的类:</p>
+<p>我们先来分析它的构造函数:</p>
+<p>这里运用了c++中的构造函数初始化列表来初始化类成员.</p>
+<pre><code>        HookInfo(void* originalAddr, void* hookAddr)
+            : original_addr_(originalAddr), hook_addr_(hookAddr),
+              original_stub_back_(nullptr), back_len_(0), call_original_ins_(nullptr),
+              hook_status_(ERRSTATUS),
+              original_function_type_(ERRTYPE), hook_function_type_(ERRTYPE){}
+              
+
+</code></pre><p>分析<code>createStub(info)</code>
+我们这里分析<code>FAHook::ThumbInstrution::createStub(FAHook::HookInfo *info)</code>:</p>
+<ol>
+<li>将地址按4字节对齐.</li>
+<li>保存我们的stub指令, (方便之后path)指令为: <code>LDR.W PC, [PC]</code>. 可参考(<a href="http://ele7enxxh.com/Android-Arm-Inline-Hook.html)">http://ele7enxxh.com/Android-Arm-Inline-Hook.html)</a>.</li>
+</ol>
+<pre><code>bool FAHook::ThumbInstruction::createStub(FAHook::HookInfo *info) {
+    auto stubSize = 0;
+    uint8_t *stub = nullptr;
+
+    uint32_t addr = (uint32_t)info-&gt;getOriginalAddr();
+    auto clearBit0 = addr &amp; 0xFFFFFFFE;
+
+    if (clearBit0 % 4 != 0) {                       // need to align 4, just patch with nop
+        stub = new uint8_t[10];
+        ((uint16_t*)stub)[stubSize++] = 0xBF00;     //NOP
+    } else {
+        stub = new uint8_t[8];
+    }
+    ((uint16_t*)stub)[stubSize++] = 0xF8DF;
+    ((uint16_t*)stub)[stubSize++] = 0xF000; // LDR.W PC, [PC]
+    ((uint16_t*)stub)[stubSize++] = (uint32_t)info-&gt;getHookAddr() &amp; 0xFFFF;
+    ((uint16_t*)stub)[stubSize++] = (uint32_t)info-&gt;getHookAddr() &gt;&gt; 16;
+
+    info-&gt;setJumpStubLen(stubSize * 2);
+    info-&gt;setJumpStubBack(stub);
+    return true;
+}
+</code></pre><h5 id="-createcalloriginalstubhookinfo-info">下面分析 <code>createCallOriginalStub(HookInfo *info)</code>:</h5>
+<p>thumbInstruction.cpp的实现:</p>
+<p>基础知识:</p>
+<p>reinterpret_cast&lt;uint16_t*&gt;   为类型转换</p>
+<ol>
+<li>处理ldr.w指令.</li>
+<li>调用createExecMemory(length);              // 分配buffer空间</li>
+<li>修正pc相关指令. (ldr liternal.  b.  b.  bl.  cbz. ldrw. add)</li>
+</ol>
+<p><code>为什么要修正pc相关指令?</code></p>
+<pre><code>举例分析: b &lt;label&gt;:
+指令编码分析: [15:12] 1101 [11:8] cond [7:0] imm8
+解析时: imm32 = ZeroExtend(imm8:'0', 32); 
+        BranchWritePC(PC+imm32)
+可以看到, b指令的指令编码中, 存放的立即数为imm8, 而真实的跳转地址为(pc + imm32).
+由于我们是要inlineHook, 所以我们的hook函数执行完成之后还有继续执行我们原来的函数,那么我们就要执行被patch掉的那些指令（我们已经将这些指令保存了下来），但由于存放这些指令的内存是我们mmap出来的,所以我们 要想能够在这里成功运行pc相关指令的话, 我们需要将pc相关的指令转换为其它pc无关的指令。
+</code></pre>
+<p>inlineHook原理图, 来源于gslab.</p>
+<p><img src="http://gslab.qq.com/data/attachment/portal/201605/04/165921tz43a3sm4vi2s4s4.png" alt="inlineHook原理图 &mdash;  来源于gslab"></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">bool</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ThumbInstruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>createCallOriginalStub(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo <span style="color:#f92672">*</span>info) {
+    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">area</span>(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(getOriginalAddr(info)));    <span style="color:#75715e">// 起始地址
+</span><span style="color:#75715e"></span>
+
+    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">trail</span>(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(
+                            <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span>uintptr_t <span style="color:#f92672">&gt;</span>(area) <span style="color:#f92672">+</span> info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getJumpStubLen())); <span style="color:#75715e">// 结束地址
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">if</span>(T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>ldrw(area[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>  <span style="color:#75715e">// 第一条指令
+</span><span style="color:#75715e"></span>        area[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF000</span>   <span style="color:#75715e">// 判断第一条指令是否为 ldr pc, [pc]  
+</span><span style="color:#75715e"></span>            ) {
+        <span style="color:#66d9ef">uint32_t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">arm</span>(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(area));
+        info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setCallOriginalIns(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(arm[<span style="color:#ae81ff">1</span>]));
+        <span style="color:#66d9ef">return</span> true;
+    }
+
+    size_t <span style="color:#a6e22e">required</span>((trail <span style="color:#f92672">-</span> area) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>)); <span style="color:#75715e">// required == 需要patch多少字节
+</span><span style="color:#75715e"></span>
+    size_t <span style="color:#a6e22e">used</span>(<span style="color:#ae81ff">0</span>);
+    <span style="color:#66d9ef">while</span> (used <span style="color:#f92672">&lt;</span> required)
+        used <span style="color:#f92672">+</span><span style="color:#f92672">=</span> MSGetInstructionWidthThumb(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(area) <span style="color:#f92672">+</span> used);
+    used <span style="color:#f92672">=</span> (used <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+
+    size_t <span style="color:#a6e22e">blank</span>((used <span style="color:#f92672">-</span> required) <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>));
+
+    <span style="color:#66d9ef">uint16_t</span> backup[used <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>)];
+    memcpy(backup, area, used);
+
+
+    size_t <span style="color:#a6e22e">length</span>(used);
+    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">unsigned</span> offset(<span style="color:#ae81ff">0</span>); offset <span style="color:#f92672">!</span><span style="color:#f92672">=</span> used <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>); <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset)
+        <span style="color:#66d9ef">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>ldr(backup[offset]))
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+        <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>b(backup[offset]))
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+        <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T2<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>b(backup <span style="color:#f92672">+</span> offset)) {
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>bl(backup <span style="color:#f92672">+</span> offset)) {
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>cbz(backup[offset])) {
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>ldrw(backup[offset])) {
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>add(backup[offset]))
+            length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>);
+        <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">32</span>bit<span style="color:#960050;background-color:#1e0010">$</span>i(backup[offset]))
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+
+        <span style="color:#66d9ef">unsigned</span> <span style="color:#a6e22e">pad</span>((length <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x2</span>) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">?</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>);
+        length <span style="color:#f92672">+</span><span style="color:#f92672">=</span> (pad <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint32_t</span>);
+
+    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span>buffer <span style="color:#f92672">=</span> (<span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span>) MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>createExecMemory(length);
+    <span style="color:#66d9ef">if</span>(buffer <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>) {
+        <span style="color:#66d9ef">return</span> false;
+    }
+
+    size_t <span style="color:#a6e22e">start</span>(pad), end(length <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>));
+    <span style="color:#66d9ef">uint32_t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">trailer</span>(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(buffer <span style="color:#f92672">+</span> end));
+    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">unsigned</span> offset(<span style="color:#ae81ff">0</span>); offset <span style="color:#f92672">!</span><span style="color:#f92672">=</span> used <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>); <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset) {
+        <span style="color:#66d9ef">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>ldr(backup[offset])) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> immediate : <span style="color:#ae81ff">8</span>;
+                    <span style="color:#66d9ef">uint16_t</span> rd : <span style="color:#ae81ff">3</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">5</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>pc_im_4<span style="color:#960050;background-color:#1e0010">$</span>(bits.rd, T<span style="color:#960050;background-color:#1e0010">$</span>Label(start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>, end<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">4</span>);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>rn_im_4<span style="color:#960050;background-color:#1e0010">$</span>(bits.rd, bits.rd, <span style="color:#ae81ff">0</span>);
+
+            <span style="color:#75715e">// XXX: this code &#34;works&#34;, but is &#34;wrong&#34;: the mechanism is more complex than this
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> ((<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0x2</span>) <span style="color:#f92672">+</span> bits.immediate <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>;
+
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>b(backup[offset])) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> imm8 : <span style="color:#ae81ff">8</span>;
+                    <span style="color:#66d9ef">uint16_t</span> cond : <span style="color:#ae81ff">4</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#75715e">/*1101*/</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">4</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            intptr_t jump(bits.imm8 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>);
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            jump <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">23</span>;
+            jump <span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">23</span>;
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>b<span style="color:#960050;background-color:#1e0010">$</span>_<span style="color:#960050;background-color:#1e0010">$</span>im(bits.cond, (end<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span> <span style="color:#f92672">-</span> (start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>)) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">4</span>);
+
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> jump;
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> A<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(A<span style="color:#960050;background-color:#1e0010">$</span>pc, A<span style="color:#960050;background-color:#1e0010">$</span>pc, <span style="color:#ae81ff">4</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">8</span>);
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>nop <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span> T<span style="color:#960050;background-color:#1e0010">$</span>bx(A<span style="color:#960050;background-color:#1e0010">$</span>pc);
+
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T2<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>b(backup <span style="color:#f92672">+</span> offset)) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> imm6 : <span style="color:#ae81ff">6</span>;
+                    <span style="color:#66d9ef">uint16_t</span> cond : <span style="color:#ae81ff">4</span>;
+                    <span style="color:#66d9ef">uint16_t</span> s : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">5</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> imm11 : <span style="color:#ae81ff">11</span>;
+                    <span style="color:#66d9ef">uint16_t</span> j2 : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> a : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> j1 : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>;
+                };
+            } exts <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]};
+
+            intptr_t jump(<span style="color:#ae81ff">1</span>);
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> exts.imm11 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.imm6 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">12</span>;
+
+            <span style="color:#66d9ef">if</span> (exts.a) {
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.s <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">24</span>;
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> (<span style="color:#f92672">~</span>(bits.s <span style="color:#f92672">^</span> exts.j1) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x1</span>) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">23</span>;
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> (<span style="color:#f92672">~</span>(bits.s <span style="color:#f92672">^</span> exts.j2) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x1</span>) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">22</span>;
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.cond <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">18</span>;
+                jump <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+                jump <span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+            } <span style="color:#66d9ef">else</span> {
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.s <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">20</span>;
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> exts.j2 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">19</span>;
+                jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> exts.j1 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">18</span>;
+                jump <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">11</span>;
+                jump <span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">11</span>;
+            }
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>b<span style="color:#960050;background-color:#1e0010">$</span>_<span style="color:#960050;background-color:#1e0010">$</span>im(exts.a <span style="color:#f92672">?</span> A<span style="color:#960050;background-color:#1e0010">$</span>al : bits.cond, (end<span style="color:#f92672">-</span><span style="color:#ae81ff">6</span> <span style="color:#f92672">-</span> (start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>)) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">4</span>);
+
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> jump;
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> A<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(A<span style="color:#960050;background-color:#1e0010">$</span>pc, A<span style="color:#960050;background-color:#1e0010">$</span>pc, <span style="color:#ae81ff">4</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">8</span>);
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>nop <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span> T<span style="color:#960050;background-color:#1e0010">$</span>bx(A<span style="color:#960050;background-color:#1e0010">$</span>pc);
+
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">6</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>bl(backup <span style="color:#f92672">+</span> offset)) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> immediate : <span style="color:#ae81ff">10</span>;
+                    <span style="color:#66d9ef">uint16_t</span> s : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">5</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> immediate : <span style="color:#ae81ff">11</span>;
+                    <span style="color:#66d9ef">uint16_t</span> j2 : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> x : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> j1 : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>;
+                };
+            } exts <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]};
+
+            <span style="color:#66d9ef">int32_t</span> jump(<span style="color:#ae81ff">0</span>);
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.s <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">24</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> (<span style="color:#f92672">~</span>(bits.s <span style="color:#f92672">^</span> exts.j1) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x1</span>) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">23</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> (<span style="color:#f92672">~</span>(bits.s <span style="color:#f92672">^</span> exts.j2) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x1</span>) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">22</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.immediate <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">12</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> exts.immediate <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> exts.x;
+            jump <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+            jump <span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>push_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> A<span style="color:#960050;background-color:#1e0010">$</span>r7);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>pc_im_4<span style="color:#960050;background-color:#1e0010">$</span>(A<span style="color:#960050;background-color:#1e0010">$</span>r7, ((end<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> (start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>)) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">4</span>);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>mov_rd_rm(A<span style="color:#960050;background-color:#1e0010">$</span>lr, A<span style="color:#960050;background-color:#1e0010">$</span>r7);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>pop_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> A<span style="color:#960050;background-color:#1e0010">$</span>r7);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>blx(A<span style="color:#960050;background-color:#1e0010">$</span>lr);
+
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> jump;
+
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>cbz(backup[offset])) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> rn : <span style="color:#ae81ff">3</span>;
+                    <span style="color:#66d9ef">uint16_t</span> immediate : <span style="color:#ae81ff">5</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> i : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> op : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">4</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            intptr_t jump(<span style="color:#ae81ff">1</span>);
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.i <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">6</span>;
+            jump <span style="color:#f92672">|</span><span style="color:#f92672">=</span> bits.immediate <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span>;
+
+            <span style="color:#75715e">//jump &lt;&lt;= 24;
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">//jump &gt;&gt;= 24;
+</span><span style="color:#75715e"></span>
+            <span style="color:#66d9ef">unsigned</span> rn(bits.rn);
+            <span style="color:#66d9ef">unsigned</span> rt(rn <span style="color:#f92672">=</span><span style="color:#f92672">=</span> A<span style="color:#960050;background-color:#1e0010">$</span>r7 <span style="color:#f92672">?</span> A<span style="color:#960050;background-color:#1e0010">$</span>r6 : A<span style="color:#960050;background-color:#1e0010">$</span>r7);
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>push_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> T1<span style="color:#960050;background-color:#1e0010">$</span>mrs_rd_apsr(rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> T2<span style="color:#960050;background-color:#1e0010">$</span>mrs_rd_apsr(rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>cbz<span style="color:#960050;background-color:#1e0010">$</span>_rn_<span style="color:#960050;background-color:#1e0010">$</span>im(bits.op, rn, (end<span style="color:#f92672">-</span><span style="color:#ae81ff">10</span> <span style="color:#f92672">-</span> (start<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>)) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">4</span>);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>] <span style="color:#f92672">=</span> T1<span style="color:#960050;background-color:#1e0010">$</span>msr_apsr_nzcvqg_rn(rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>] <span style="color:#f92672">=</span> T2<span style="color:#960050;background-color:#1e0010">$</span>msr_apsr_nzcvqg_rn(rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">6</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>pop_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> rt);
+
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> jump;
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> A<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(A<span style="color:#960050;background-color:#1e0010">$</span>pc, A<span style="color:#960050;background-color:#1e0010">$</span>pc, <span style="color:#ae81ff">4</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">8</span>);
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>nop <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span> T<span style="color:#960050;background-color:#1e0010">$</span>bx(A<span style="color:#960050;background-color:#1e0010">$</span>pc);
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>nop <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span> T<span style="color:#960050;background-color:#1e0010">$</span>pop_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> rt);
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>msr_apsr_nzcvqg_rn(rt);
+
+<span style="color:#75715e">#if 0</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">            if ((start &amp; 0x1) == 0)
+</span><span style="color:#75715e"></span><span style="color:#75715e">                buffer[start++] = T$nop;
+</span><span style="color:#75715e"></span><span style="color:#75715e">            buffer[start++] = T$bx(A$pc);
+</span><span style="color:#75715e"></span><span style="color:#75715e">            buffer[start++] = T$nop;
+</span><span style="color:#75715e"></span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">            uint32_t *arm(reinterpret_cast&lt;uint32_t *&gt;(buffer + start));
+</span><span style="color:#75715e"></span><span style="color:#75715e">            arm[0] = A$add(A$lr, A$pc, 1);
+</span><span style="color:#75715e"></span><span style="color:#75715e">            arm[1] = A$ldr_rd_$rn_im$(A$pc, A$pc, (trailer - arm) * sizeof(uint32_t) - 8);
+</span><span style="color:#75715e"></span><span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>ldrw(backup[offset])) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">7</span>;
+                    <span style="color:#66d9ef">uint16_t</span> u : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">8</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> immediate : <span style="color:#ae81ff">12</span>;
+                    <span style="color:#66d9ef">uint16_t</span> rt : <span style="color:#ae81ff">4</span>;
+                };
+            } exts <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>]};
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T1<span style="color:#960050;background-color:#1e0010">$</span>ldr_rt_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(exts.rt, A<span style="color:#960050;background-color:#1e0010">$</span>pc, T<span style="color:#960050;background-color:#1e0010">$</span>Label(start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>, end<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>));
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> T2<span style="color:#960050;background-color:#1e0010">$</span>ldr_rt_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(exts.rt, A<span style="color:#960050;background-color:#1e0010">$</span>pc, T<span style="color:#960050;background-color:#1e0010">$</span>Label(start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>, end<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>));
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> T1<span style="color:#960050;background-color:#1e0010">$</span>ldr_rt_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(exts.rt, exts.rt, <span style="color:#ae81ff">0</span>);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> T2<span style="color:#960050;background-color:#1e0010">$</span>ldr_rt_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(exts.rt, exts.rt, <span style="color:#ae81ff">0</span>);
+
+            <span style="color:#75715e">// XXX: this code &#34;works&#34;, but is &#34;wrong&#34;: the mechanism is more complex than this
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> ((<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>) <span style="color:#f92672">&amp;</span> <span style="color:#f92672">~</span><span style="color:#ae81ff">0x2</span>) <span style="color:#f92672">+</span> (bits.u <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">?</span> <span style="color:#f92672">-</span>exts.immediate : exts.immediate);
+
+            <span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset;
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span>pcrel<span style="color:#960050;background-color:#1e0010">$</span>add(backup[offset])) {
+            <span style="color:#66d9ef">union</span> {
+                <span style="color:#66d9ef">uint16_t</span> value;
+
+                <span style="color:#66d9ef">struct</span> {
+                    <span style="color:#66d9ef">uint16_t</span> rd : <span style="color:#ae81ff">3</span>;
+                    <span style="color:#66d9ef">uint16_t</span> rm : <span style="color:#ae81ff">3</span>;
+                    <span style="color:#66d9ef">uint16_t</span> h2 : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> h1 : <span style="color:#ae81ff">1</span>;
+                    <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">8</span>;
+                };
+            } bits <span style="color:#f92672">=</span> {backup[offset<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>]};
+
+            <span style="color:#66d9ef">if</span> (bits.h1) {
+                <span style="color:#66d9ef">return</span> false;
+            }
+
+            <span style="color:#66d9ef">unsigned</span> rt(bits.rd <span style="color:#f92672">=</span><span style="color:#f92672">=</span> A<span style="color:#960050;background-color:#1e0010">$</span>r7 <span style="color:#f92672">?</span> A<span style="color:#960050;background-color:#1e0010">$</span>r6 : A<span style="color:#960050;background-color:#1e0010">$</span>r7);
+
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>push_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>mov_rd_rm(rt, (bits.h1 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span>) <span style="color:#f92672">|</span> bits.rd);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>pc_im_4<span style="color:#960050;background-color:#1e0010">$</span>(bits.rd, T<span style="color:#960050;background-color:#1e0010">$</span>Label(start<span style="color:#f92672">+</span><span style="color:#ae81ff">2</span>, end<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>) <span style="color:#f92672">/</span> <span style="color:#ae81ff">4</span>);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">3</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>add_rd_rm((bits.h1 <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span>) <span style="color:#f92672">|</span> bits.rd, rt);
+            buffer[start<span style="color:#f92672">+</span><span style="color:#ae81ff">4</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>pop_r(<span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> rt);
+            <span style="color:#f92672">*</span><span style="color:#f92672">-</span><span style="color:#f92672">-</span>trailer <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> offset) <span style="color:#f92672">+</span> <span style="color:#ae81ff">4</span>;
+
+            start <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>;
+            end <span style="color:#f92672">-</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (T<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">32</span>bit<span style="color:#960050;background-color:#1e0010">$</span>i(backup[offset])) {
+            buffer[start<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> backup[offset];
+            buffer[start<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> backup[<span style="color:#f92672">+</span><span style="color:#f92672">+</span>offset];
+        } <span style="color:#66d9ef">else</span> {
+            buffer[start<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> backup[offset];
+        }
+    }
+
+    buffer[start<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>bx(A<span style="color:#960050;background-color:#1e0010">$</span>pc);
+    buffer[start<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> T<span style="color:#960050;background-color:#1e0010">$</span>nop;
+
+    <span style="color:#66d9ef">uint32_t</span> <span style="color:#f92672">*</span>transfer <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(buffer <span style="color:#f92672">+</span> start);
+    transfer[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A<span style="color:#960050;background-color:#1e0010">$</span>ldr_rd_<span style="color:#960050;background-color:#1e0010">$</span>rn_im<span style="color:#960050;background-color:#1e0010">$</span>(A<span style="color:#960050;background-color:#1e0010">$</span>pc, A<span style="color:#960050;background-color:#1e0010">$</span>pc, <span style="color:#ae81ff">4</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">8</span>);
+    transfer[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">=</span> <span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint32_t</span><span style="color:#f92672">&gt;</span>(area <span style="color:#f92672">+</span> used <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">uint16_t</span>)) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+
+    info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setCallOriginalIns(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint8_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(buffer <span style="color:#f92672">+</span> pad) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>);
+
+    <span style="color:#66d9ef">return</span> true;
+}
+
+
+</code></pre></div><h5 id="msgetinstructionwiththumb">MSGetInstructionWithThumb</h5>
+<p>调用    used += MSGetInstructionWithThumb(reinterpret_cast&lt;uint8_t <em>&gt;(area) + used);
+MSGetInstructionWithThumb: 参数为(uint16_t</em>).
+返回结果: 为这条指令是多少字节的指令.(4 or 2)</p>
+<p>T$32bit$i的作用: (指令(ic) &amp; 1110 0000 0000 0000) &amp;&amp; (ic &amp; 0001 1000 0000 0000 != 0x0000);
+第一个判断为确定高位3个bit(即bit[15], bit[14], bit[13])为1. 第二个判断为确保bit[12], bit[11]有值(即至少这两位有 1 位为 1).</p>
+<p><code>其实就是判断是该thumb指令是否为thumb32指令, </code>
+<code>thumb32指令的判断依据是 b[15:11] 为 0b11101或0b11110或0b11111.</code></p>
+<p>MSGetInstructionWithThumb:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">        <span style="color:#66d9ef">static</span> size_t <span style="color:#a6e22e">MSGetInstructionWidthThumb</span>(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>start) {
+            <span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span>thumb(<span style="color:#66d9ef">reinterpret_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">uint16_t</span> <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(start));   <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span> T<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">32</span>bit<span style="color:#960050;background-color:#1e0010">$</span>i(thumb[<span style="color:#ae81ff">0</span>]) <span style="color:#f92672">?</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">:</span> <span style="color:#ae81ff">2</span>;
+        }
+</code></pre></div><p>T$32bit$i:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">        <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">inline</span> <span style="color:#66d9ef">bool</span> T<span style="color:#960050;background-color:#1e0010">$</span><span style="color:#ae81ff">32</span>bit<span style="color:#960050;background-color:#1e0010">$</span>i(<span style="color:#66d9ef">uint16_t</span> ic) {
+            <span style="color:#66d9ef">return</span> ((ic <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xe000</span>) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0xe000</span> <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> (ic <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x1800</span>) <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0000</span>);
+        }
+</code></pre></div><h4 id="memhelper">分析MemHelper类</h4>
+<p>有4个方法:</p>
+<ol>
+<li>static bool isFunctionAddr(void* addr);</li>
+<li>static bool unProtectMemory(void* addr, uint32_t size);  remove 写保护</li>
+<li>static bool protectMemory(void* addr, uint32_t size);    add    写保护</li>
+<li>static void* createExecMemory(uint32_t size);            创建一个可执行的内存</li>
+</ol>
+<p>有4个field:</p>
+<ol>
+<li>std::vector&lt;void*&gt; all_memory_page;</li>
+<li>void* current_page = nullptr;</li>
+<li>uint32_t page_ptr  = 0;</li>
+<li>static uint32_t page_size;      // 构造函数<code>page_size = sysconf(_SC_PAGESIZE).</code></li>
+</ol>
+<p>我们现在分析一下<code>createExecMemory(uint32_t size)</code>:</p>
+<ol>
+<li>可以看到, 分配内存的操作是通过<code>mmap</code>实现的.</li>
+<li>all_memory_page是一个vector, 每个单位保存一个指针, 指向mmap的内存.</li>
+</ol>
+<p>createExecMemory:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>createExecMemory(<span style="color:#66d9ef">uint32_t</span> size) {
+    <span style="color:#66d9ef">if</span>(size <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">1</span>) {
+        size <span style="color:#f92672">+</span><span style="color:#f92672">+</span>;
+    }
+    <span style="color:#66d9ef">if</span>(size <span style="color:#f92672">&gt;</span> page_size) {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+    }
+    <span style="color:#66d9ef">if</span>(gMemHelper.current_page <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span> <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> page_size <span style="color:#f92672">-</span> gMemHelper.page_ptr_ <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> size) {
+        <span style="color:#66d9ef">auto</span> funPtr <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)((size_t)gMemHelper.current_page <span style="color:#f92672">+</span> gMemHelper.page_ptr_);
+        gMemHelper.page_ptr_ <span style="color:#f92672">+</span><span style="color:#f92672">=</span> size;
+        <span style="color:#75715e">// Align 4
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">while</span>(gMemHelper.page_ptr_ <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0x3</span>) {
+            gMemHelper.page_ptr_ <span style="color:#f92672">+</span><span style="color:#f92672">+</span>;
+        }
+        <span style="color:#66d9ef">return</span> funPtr;
+    }
+    <span style="color:#75715e">// scroll to next page
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">auto</span> newPage <span style="color:#f92672">=</span> mmap(<span style="color:#66d9ef">nullptr</span>, page_size, PROT_READ <span style="color:#f92672">|</span> PROT_WRITE <span style="color:#f92672">|</span> PROT_EXEC, MAP_ANONYMOUS <span style="color:#f92672">|</span> MAP_PRIVATE, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>);
+    <span style="color:#66d9ef">if</span>(newPage <span style="color:#f92672">!</span><span style="color:#f92672">=</span> MAP_FAILED) {
+        gMemHelper.alloc_memory_page_.push_back(newPage);
+
+        gMemHelper.current_page <span style="color:#f92672">=</span> newPage;
+        gMemHelper.page_ptr_ <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">createExecMemory</span>(size);
+    }
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+}
+</code></pre></div><h4 id="doinhook">分析doInHook</h4>
+<ol>
+<li>主要操作: FAInHook::instance()-&gt;hookAll();</li>
+<li>FAInHook::instance()-&gt;unHookAll();</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">doInHook</span>() {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> isHooked <span style="color:#f92672">=</span> false;
+    <span style="color:#66d9ef">if</span> (isHooked) {
+        isHooked <span style="color:#f92672">=</span> false;
+        FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>instance()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>unhookAll();
+    } <span style="color:#66d9ef">else</span> {
+        isHooked <span style="color:#f92672">=</span> true;
+        FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>instance()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>hookAll();
+    }
+    <span style="color:#66d9ef">return</span> true;
+}
+</code></pre></div><p>hookAll():</p>
+<pre><code>void FAInHook::hookAll() {
+    for(auto it: hook_map) {
+        if(it.second-&gt;getHookStatus() == FAHook::REGISTERED) {
+            Hook(it.second);
+        }
+    }
+}
+</code></pre><p>进而转到Hook函数</p>
+<ol>
+<li>调用`enableJumpStub(info)</li>
+<li>info-&gt;setHookStatus(FAHook::HOOKED)</li>
+</ol>
+<pre><code>bool FAInHook::Hook(FAHook::HookInfo *info) {
+    if(!FAHook::Instruction::enableJumpStub(info)) {
+        return false;
+    }
+    info-&gt;setHookStatus(FAHook::HOOKED);
+    return true;
+}
+</code></pre><p>分析<code>enableJumpStub(info)</code>:</p>
+<pre><code>bool FAHook::Instruction::enableJumpStub(FAHook::HookInfo *info) {
+    auto origAddr = getOriginalAddr(info);
+    auto len = info-&gt;getJumpStubLen();
+    auto stubAddr = info-&gt;getJumpStubBack();
+    return patchMemory(origAddr, stubAddr, len);
+}
+</code></pre><p>可以看到, 在得到了<code>origAddr</code>和<code>stubAddr</code>和<code>len</code>之后,我们会进入到patch函数<code>patchMemory</code>, 根据我们前面的分析, 它会patch原函数的入口指令的前(8 or 10?)个字节.</p>
+<p>patchMemory:</p>
+<pre><code>bool FAHook::Instruction::patchMemory(void *dest, void *src, uint32_t len) {
+    if(dest == nullptr || src == nullptr || len == 0) {
+        return false;
+    }
+    if(!MemHelper::unProtectMemory(dest, len)) {
+        return false;
+    }
+
+    memcpy(dest, src, len);
+    MemHelper::protectMemory(dest, len);
+#ifdef __arm__
+    cacheflush((Elf_Addr)dest, (Elf_Addr)dest + len, 0);
+#endif
+    return true;
+}
+</code></pre><p>首先会调用<code>unProtectMemory</code>函数来将对应内存修改为(rwx), 然后调用<code>memcpy</code>来修改内存, 最后调用<code>protectMemory</code>来修改对应内存为(r-x).</p>
+<h2 id="heading-6">总结</h2>
+<p>现在我们就基本对该项目进行了简单的分析, 我这里总结一下:</p>
+<ol>
+<li>
+<p>registerHook
+主要操作其实就是:</p>
+<ul>
+<li>createStub:  创建代理(这个代理就是要执行跳转到我们的<code>newFuncAddr</code>函数)</li>
+<li>createCallOriginalStub:  call back代理(这个代理就是执行回调, 回调我们的<code>originalFunAddr</code>.) 主要涉及处理pc相关指令(原因在文中已经有介绍).</li>
+</ul>
+</li>
+<li>
+<p>doInHook</p>
+<ul>
+<li>主要就是patchMemory. patch我们originalFunAddr的函数起始处的几个指令为<code>stubInstruction</code>.之后函数涉及pc相关指令的修复, 方便继续执行原函数.</li>
+</ul>
+</li>
+<li>
+<p>unHook</p>
+<ul>
+<li>也是patchMemory.
+就是将我们原函数的原始指令进行复原.</li>
+</ul>
+</li>
+</ol></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/hook"><span class="tag">Hook</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>473</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

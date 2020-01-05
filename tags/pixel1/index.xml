@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pixel1 on L0phTg&#39;s Blog</title>
+    <link>/tags/pixel1/</link>
+    <description>Recent content in Pixel1 on L0phTg&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Tue, 02 Oct 2018 15:38:56 +0800</lastBuildDate>
+    
+	<atom:link href="/tags/pixel1/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Pixel1 源码编译</title>
+      <link>/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
+      <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
+      
+      <guid>/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
+      <description>&lt;p&gt;记录自己Pixel1刷机流程.&lt;/p&gt;
+&lt;p&gt;相关网站&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Requirements
+https://source.android.google.cn/setup/build/requirements.html#binaries
+
+https://source.android.com/setup/build/running
+
+buile numbers
+https://source.android.com/setup/start/build-numbers
+
+https://source.android.com/setup/build/downloading
+
+驱动
+https://developers.google.com/android/drivers
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

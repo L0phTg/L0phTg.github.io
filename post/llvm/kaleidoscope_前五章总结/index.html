@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kaleidoscope: 前五章总结</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="对前五章做了一个总结, 侧重Codegen部分.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Kaleidoscope: 前五章总结">
+    <meta name="twitter:description" content="对前五章做了一个总结, 侧重Codegen部分.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Kaleidoscope: 前五章总结">
+  <meta property="og:description" content="对前五章做了一个总结, 侧重Codegen部分.
+">
+  <meta property="og:url" content="/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kaleidoscope: 前五章总结</h1>
+      <p class="post-meta">@L0phTg · Apr 15, 2019 · 5 min read</p>
+    </header>
+    <article class="post-content"><p>对前五章做了一个总结, 侧重Codegen部分.</p>
+<h1 id="kaleidoscope">Kaleidoscope支持的语法</h1>
+<p><code>表达式运算</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#ae81ff">4</span><span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>;
+<span style="color:#ae81ff">5</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+<span style="color:#ae81ff">5</span><span style="color:#f92672">*</span><span style="color:#ae81ff">10</span>;
+<span style="color:#ae81ff">10</span><span style="color:#f92672">/</span><span style="color:#ae81ff">5</span>;
+</code></pre></div><p><code>函数定义</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">def <span style="color:#a6e22e">bar</span>(a) foo(a, <span style="color:#ae81ff">4.0</span>) <span style="color:#f92672">+</span> bar(<span style="color:#ae81ff">31337</span>);
+</code></pre></div><p><code>函数调用</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">cos(<span style="color:#ae81ff">1.234</span>);
+</code></pre></div><p><code>if/then/else</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>();
+<span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">bar</span>();
+def <span style="color:#a6e22e">baz</span>(x) <span style="color:#66d9ef">if</span> x then foo() <span style="color:#66d9ef">else</span> bar();
+</code></pre></div><p><code>for</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">putchard</span>(<span style="color:#66d9ef">char</span>);
+def <span style="color:#a6e22e">printstar</span>(n)
+  <span style="color:#66d9ef">for</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, i <span style="color:#f92672">&lt;</span> n, <span style="color:#ae81ff">1.0</span> in
+    putchard(<span style="color:#ae81ff">42</span>);  <span style="color:#960050;background-color:#1e0010">#</span> ascii <span style="color:#ae81ff">42</span> <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#75715e">#</span><span style="color:#75715e"> print 100 &#39;*&#39; characters</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>printstar(<span style="color:#ae81ff">100</span>);
+</code></pre></div><h1 id="heading">词法分析</h1>
+<p>词法分析很简单. 我这里简单画了下处理的流程图.</p>
+<p>![](/docs-pic/llvm/Lexer And Parser.png)</p>
+<p>具体的分析请看: <a href="https://l0phtg.github.io/post/kaleidoscope-tutorial-introduction-and-lexer/">Lexer and Parse</a></p>
+<h1 id="heading-1">抽象语法树</h1>
+<p><img src="/docs-pic/llvm/AST.png" alt=""></p>
+<h1 id="ast">生成抽象语法树(AST)</h1>
+<p>这块比较简单. 简单介绍下:</p>
+<h2 id="exprast">Expr的(AST)生成</h2>
+<p>我们对所有的表达式进行集中处理.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// expression
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= primary binoprhs
+</span><span style="color:#75715e"></span><span style="color:#75715e">///
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseExpression() {
+  <span style="color:#66d9ef">auto</span> LHS <span style="color:#f92672">=</span> ParsePrimary();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>LHS)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ParseBinOpRHS</span>(<span style="color:#ae81ff">0</span>, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(LHS));
+}
+
+<span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParsePrimary() {
+  <span style="color:#66d9ef">switch</span> (CurTok) {
+  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unknown token when expecting an expression</span><span style="color:#e6db74">&#34;</span>);
+  <span style="color:#66d9ef">case</span> tok_identifier:
+    <span style="color:#66d9ef">return</span> ParseIdentifierExpr();
+  <span style="color:#66d9ef">case</span> tok_number:
+    <span style="color:#66d9ef">return</span> ParseNumberExpr();
+  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> ParseParenExpr();
+  <span style="color:#66d9ef">case</span> tok_if:
+    <span style="color:#66d9ef">return</span> ParseIfExpr();
+  <span style="color:#66d9ef">case</span> tok_for:
+    <span style="color:#66d9ef">return</span> ParseForExpr();
+  }
+}
+</code></pre></div><p><code>ParseIdentifierExpr</code>,<code>ParseNumberExpr</code>和<code>ParseParenExpr</code>的实现请参考: <a href="https://l0phtg.github.io/post/llvm/kaleidoscope-implementing-a-parser-and-ast/"> Implementing a Parser and AST</a>.</p>
+<p><code>ParseIfExpr</code>和<code>ParseForExpr</code>的实现请参考: <a href="https://l0phtg.github.io/post/llvm/kaleidoscope-extending-the-language-control-flow/">Extending the Language Control Flow</a>.</p>
+<h2 id="ast-1">函数定义和申明的AST生成</h2>
+<p>请参考:<a href="https://l0phtg.github.io/post/llvm/kaleidoscope-implementing-a-parser-and-ast/"> Implementing a Parser and AST</a></p>
+<h1 id="codegenllvm-ir">Codegen(产生LLVM IR)</h1>
+<p><img src="/docs-pic/llvm/Codegen.png" alt=""></p>
+<h2 id="codegen">四个基本表达式的codegen</h2>
+<p>请参考: <a href="https://l0phtg.github.io/post/llvm/kaleidoscope-code-generation-to-llvm-ir/">code generation to llvm ir</a></p>
+<h2 id="ifthenelse">if/then/else</h2>
+<h3 id="kaleidoscpe-ifthenelse">Kaleidoscpe: if/then/else</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>();
+<span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">bar</span>();
+def <span style="color:#a6e22e">baz</span>(x) <span style="color:#66d9ef">if</span> x then foo() <span style="color:#66d9ef">else</span> bar();  <span style="color:#75715e">// 如果 x != 0, then foo, else bar;
+</span></code></pre></div><h3 id="llvm-ir">未经优化的LLVM IR</h3>
+<p>根据我们上面编写的Kaleidoscope的代码, 可以生成下面的LLVM IR.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @foo()
+
+<span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @bar()
+
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @baz(<span style="color:#66d9ef">double</span> %x) {
+entry:
+  %ifcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %ifcond, <span style="color:#66d9ef">label</span> %then, <span style="color:#66d9ef">label</span> %else
+
+then:       <span style="color:#75715e">; preds = %entry
+</span><span style="color:#75715e"></span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo()
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+else:       <span style="color:#75715e">; preds = %entry
+</span><span style="color:#75715e"></span>  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar()
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+ifcont:     <span style="color:#75715e">; preds = %else, %then
+</span><span style="color:#75715e"></span>  %iftmp = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ %calltmp, %then ], [ %calltmp1, %else ] <span style="color:#75715e">; 返回值
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %iftmp
+}
+</code></pre></div><h4 id="ir">IR解析</h4>
+<table>
+<thead>
+<tr>
+<th>IR指令</th>
+<th>例子</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\bold{fcmp}$</td>
+<td>$\color{red}{fcmp}$ $one$ $double$ ${x}$,   $0.0e+00$</td>
+<td>比较指令, 相等则返回 0, 不相等返回 1</td>
+</tr>
+<tr>
+<td>$\bold{call}$</td>
+<td>$\color{red}{call}$    $double$ $@ foo()$</td>
+<td>调用函数</td>
+</tr>
+<tr>
+<td>$\bold{br}$</td>
+<td>$\color{red}{br}$       ${label }$  ${%ifcont}$</td>
+<td>直接跳转</td>
+</tr>
+<tr>
+<td>$\bold{br}$</td>
+<td>$\color{red}{br}$       $i1$  $%ifcond$,  $label$  $%then$,   $label$   $%else$</td>
+<td>条件跳转</td>
+</tr>
+<tr>
+<td>$\bold{phi}$</td>
+<td>$\color{red}{phi}$     ${double [% calltmp, %then] }$, ${[%calltmp1, %else]}$</td>
+<td>调用${phi}$ 函数</td>
+</tr>
+<tr>
+<td>$\bold{ret}$</td>
+<td>$\color{red}{ret}$     $double$ $% 0$</td>
+<td>函数返回</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\bold{entry}$</td>
+<td>函数入口</td>
+</tr>
+<tr>
+<td>$\bold{then}$</td>
+<td>条件分支then</td>
+</tr>
+<tr>
+<td>$\bold{else}$</td>
+<td>条件分支else</td>
+</tr>
+<tr>
+<td>$\bold{ifcont}$</td>
+<td>结束条件分支</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ifthenelses-cfg">if/then/else's CFG</h3>
+<p>使用<code>opt -analyze -view-cfg if.bc</code>生成的CFG.</p>
+<p><img src="/docs-pic/llvm/if.png" alt=""></p>
+<h4 id="ifthenelses-dominator-phi">if/then/else's dominator (判断哪里需要插入phi函数)</h4>
+<p>这里只是对插入$\phi$函数时机的一个分析. (不想了解的壳跳过).</p>
+<p>根据我前面翻译的文章: <a href="https://l0phtg.github.io/post/dominatorgraph-theory/">Dominator</a>来分析我们<code>if/then/else</code>的控制流.</p>
+<p>我们将:  <code> entry</code> 视为节点 $\bold{1}$。    <code>then</code>视为节点 $\bold{2}$。</p>
+<p>​	      <code>else</code> 视为节点 $\bold{3}$。      <code>ifcont</code>视为节点 $\bold{4}$。</p>
+<table>
+<thead>
+<tr>
+<th>$\bold{1}$</th>
+<th>$\color{black}{dom}$</th>
+<th>$\color{Gray}{1}$</th>
+<th>$\color{Red}{2}$</th>
+<th>$\color{Red}{3}$</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\bold{2}$</td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td>$\color{Gray}{2}$</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>$\bold{3}$</td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td></td>
+<td>$\color{Gray}{3}$</td>
+<td></td>
+</tr>
+<tr>
+<td>$\bold{4}$</td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td></td>
+<td></td>
+<td>$\color{Gray}{4}$</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>支配分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\bold{1}$</td>
+<td>支配: 1, 2, 3, 4.    严格支配: 2, 3, 4.     直接支配: 2, 3.    支配边界: set().</td>
+</tr>
+<tr>
+<td>$\bold{2}$</td>
+<td>支配: 2.                 严格支配: 无.           直接支配: 无.       支配边界: set(4).</td>
+</tr>
+<tr>
+<td>$\bold{3}$</td>
+<td>支配: 3.                 严格支配: 无.           直接支配: 无.       支配边界: set(4).</td>
+</tr>
+<tr>
+<td>$\bold{4}$</td>
+<td>支配: 4.                 严格支配: 无.           直接支配: 无.       支配边界: set().</td>
+</tr>
+</tbody>
+</table>
+<p>根据<a href="https://l0phtg.github.io/post/llvm/static-single-assignment/">SSA</a>理论, 我们可以在 $\bold{4}$ 节点处插入 $\bold{\phi}$ 函数.</p>
+<h3 id="builderir">Builder创建IR指令</h3>
+<p>用Builder来产生每条指令的IR.</p>
+<p>下面是一些<code>if/then/else</code>会涉及到的<code>Builder创建指令的操作</code>。</p>
+<h4 id="cmp">创建cmp指令</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">CondV <span style="color:#f92672">=</span> Builder.CreateFCmpONE(
+      CondV, ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(TheContext, APFloat(<span style="color:#ae81ff">0.0</span>)), <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ifcond</span><span style="color:#e6db74">&#34;</span>);
+
+</code></pre></div><h4 id="br">创建条件br指令</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Builder.CreateCondBr(CondV, ThenBB, ElseBB);
+</code></pre></div><h4 id="br-1">创建直接br指令</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Builder.CreateBr(MergeBB);
+</code></pre></div><h4 id="phi">创建phi指令</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  PHINode <span style="color:#f92672">*</span>PN <span style="color:#f92672">=</span>
+    Builder.CreatePHI(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext), <span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">iftmp</span><span style="color:#e6db74">&#34;</span>);
+
+  PN<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addIncoming(ThenV, ThenBB);
+  PN<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addIncoming(ElseV, ElseBB);
+  <span style="color:#66d9ef">return</span> PN;
+</code></pre></div><h4 id="block">创建Block</h4>
+<ol>
+<li>构造block时直接在&quot;TheFunction&quot;后面添加该block.</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BasicBlock <span style="color:#f92672">*</span>ThenBB <span style="color:#f92672">=</span>
+    BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">then</span><span style="color:#e6db74">&#34;</span>, TheFunction);
+</code></pre></div><ol start="2">
+<li>
+<p>单纯创建Block, 当未添加到函数中.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BasicBlock <span style="color:#f92672">*</span>ElseBB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">else</span><span style="color:#e6db74">&#34;</span>);
+</code></pre></div></li>
+</ol>
+<h4 id="irbuilderblock">IRBuilder中插入Block</h4>
+<p>控制流的独特性之处在于,  它有自己的内部的作用域(block). 所以我们在编写codegen代码时, 会调用内部block的codegen. 而不会直接去处理它.(内部block的codegen是它自己处理的, 不归我们的 ifExpr.Codegen管)</p>
+<p>所以我们会这样做:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Builder.SetInsertPoint(ThenBB);          <span style="color:#75715e">// 将builder此时的插入点设置为ThenBB.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>ThenV <span style="color:#f92672">=</span> Then<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();          <span style="color:#75715e">// 调用 then block的codegen
+</span></code></pre></div><h4 id="block-1">将未添加的Block添加到函数中</h4>
+<p>在&quot;TheFunction&quot;后面添加&quot;merge block&rdquo;, 因为在我们创建时, 只是单纯的创建的block, 还未添加到函数中.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getBasicBlockList().push_back(MergeBB); <span style="color:#75715e">// TheFunction中添加Block
+</span><span style="color:#75715e"></span>  Builder.SetInsertPoint(MergeBB); <span style="color:#75715e">// IRBuilder中插入BB
+</span></code></pre></div><h3 id="builder">Builder流程图</h3>
+<p>生成if/then/else 的IR可以分为四个部分生成:</p>
+<ul>
+<li>cond
+<ol>
+<li>创建cmp IR. 目的是根据条件判断返回bool值.</li>
+<li>创建<strong>条件</strong>跳转IR. 目的是根据返回的bool值做分支跳转.</li>
+</ol>
+</li>
+<li>then
+<ol>
+<li>then.codegen(). 目的是进行then block的codegen.</li>
+<li>创建<strong>直接</strong>跳转IR.目的是跳转到ifcond处.</li>
+</ol>
+</li>
+<li>else
+<ol>
+<li>else.codegen(). 目的是进行else block的codegen.</li>
+<li>创建<strong>直接跳转</strong>IR,目的是跳转到ifcond处.</li>
+</ol>
+</li>
+<li>ifcond(分支合并后):
+<ol>
+<li>创建phi函数调用IR. 目的是判断我们是从哪个分支跳转来的.</li>
+</ol>
+</li>
+</ul>
+<p><strong>注意</strong>, 这里不会涉及<code>ret</code>指令的<strong>codegen</strong> ,我们在<code>ifExprAST</code>中最后做的仅仅是将$\bold{\phi}$函数的返回值返回.  <code>ret</code>指令的<strong>codegen</strong>应该在<code>函数</code>的<strong>codegen</strong>时做.</p>
+<p>(在上文例子中, <code>ret</code>指令的<strong>codegen</strong> 是<strong>baz</strong>函数生成的)</p>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TD
+  Start("If Codegen")
+	builderCreateCmp["Builder.CreateCmpOne"]
+	builderCreateCond["Builder.CreateCondBr"]
+  Start --> builderCreateCmp
+	builderCreateCmp --> builderCreateCond
+
+  subgraph Then
+    builderSetInsertThenBB["Builder.SetInsertPoint(ThenBB);"]
+    ThenCodegen["Then->codegen();"]
+    builderCreateBr1["Builder.CreateBr"]
+    builderSetInsertThenBB --> ThenCodegen
+    ThenCodegen --> builderCreateBr1
+  end
+
+  builderCreateCond --> builderSetInsertThenBB
+
+  subgraph Else
+    builderSetInsertElseBB["Builder.SetInsertPoint(ElseBB);"]
+    ElseCodegen["Else->codegen();"]
+    builderCreateBr2["Builder.CreateBr"]
+    builderSetInsertElseBB --> ElseCodegen
+    ElseCodegen --> builderCreateBr2
+  end
+
+  builderCreateBr1 --> builderSetInsertElseBB
+  
+  subgraph Merge
+    builderSetInsertIfContBB["builder.SetInsertPoint(MergeBB);"]
+    builderCreatePHI["Builder.CreatePHI"]
+    builderSetInsertIfContBB --> builderCreatePHI
+  end
+
+  builderCreateBr2 --> builderSetInsertIfContBB
+
+  builderCreatePHI --> End("End Codegen")
+
+  style builderSetInsertThenBB fill:#ffcc66
+	style builderSetInsertElseBB fill:#ffcc66
+	style builderSetInsertIfContBB fill:#ffcc66
+	
+	style ThenCodegen fill:#ff66cc
+	style ElseCodegen fill:#ff66cc
+	
+	style Start fill:#ff9966
+	style End fill:#ff9966
+
+</div>
+<h2 id="loop">Loop</h2>
+<h3 id="kaleidoscope-for">Kaleidoscope: for</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">putchard</span>(<span style="color:#66d9ef">char</span>);
+def <span style="color:#a6e22e">printstar</span>(n)
+  <span style="color:#66d9ef">for</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, i <span style="color:#f92672">&lt;</span> n, <span style="color:#ae81ff">1.0</span> in
+    putchard(<span style="color:#ae81ff">42</span>);  <span style="color:#960050;background-color:#1e0010">#</span> ascii <span style="color:#ae81ff">42</span> <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#75715e">#</span><span style="color:#75715e"> print 100 &#39;*&#39; characters</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>printstar(<span style="color:#ae81ff">100</span>);
+</code></pre></div><h3 id="llvm-ir-1">未经优化的LLVM IR</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @putchard(<span style="color:#66d9ef">double</span>)
+
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @printstar(<span style="color:#66d9ef">double</span> %n) {
+entry:
+  <span style="color:#75715e">; initial value = 1.0 (inlined into phi)
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %loop
+
+loop:       <span style="color:#75715e">; preds = %loop, %entry
+</span><span style="color:#75715e"></span>  %i = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ <span style="color:#ae81ff">1.000000e+00</span>, %entry ], [ %nextvar, %loop ]
+  <span style="color:#75715e">; body
+</span><span style="color:#75715e"></span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @putchard(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.200000e+01</span>)
+  <span style="color:#75715e">; increment
+</span><span style="color:#75715e"></span>  %nextvar = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %i, <span style="color:#ae81ff">1.000000e+00</span>
+
+  <span style="color:#75715e">; termination test
+</span><span style="color:#75715e"></span>  %cmptmp = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ult</span> <span style="color:#66d9ef">double</span> %i, %n
+  %booltmp = <span style="color:#66d9ef">uitofp</span> <span style="color:#66d9ef">i1</span> %cmptmp <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">double</span>
+  %loopcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %booltmp, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %loopcond, <span style="color:#66d9ef">label</span> %loop, <span style="color:#66d9ef">label</span> %afterloop
+
+afterloop:      <span style="color:#75715e">; preds = %loop
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">; loop always returns 0.0
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">0.000000e+00</span>
+}
+</code></pre></div><p>有三个<code>Label</code>, 意味者三个<code>BasicBlock</code>: <strong>entry</strong>,  <strong>loop</strong>,  <strong>afterloop</strong>.</p>
+<p>有四个主要的<code>Expression</code>: <strong>Start</strong>, <strong>Cond</strong>, <strong>Body</strong>, <strong>Increment</strong> .  当然还有<strong>afterloop</strong>, 它总是<code>ret 0.0</code>.</p>
+<h4 id="ir-1">IR解析</h4>
+<p>与<code>if/then/else</code>的<strong>IR</strong>指令相比较, 发现多了一条$\bold{uitofp}$指令.</p>
+<table>
+<thead>
+<tr>
+<th>IR指令</th>
+<th>例子</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\bold{fcmp}$</td>
+<td>$\color{red}{fcmp}$ $one$ $double$ ${%booltmp}$,   $0.0e+00$</td>
+<td>比较指令, 相等则返回 0, 不相等返回 1</td>
+</tr>
+<tr>
+<td>$\bold{call}$</td>
+<td>$\color{red}{call}$    $double$ $@ putchard(double$   $ 4.2000e+01)$</td>
+<td>调用函数</td>
+</tr>
+<tr>
+<td>$\bold{br}$</td>
+<td>$\color{red}{br}$       ${label }$  ${%loop}$</td>
+<td>直接跳转</td>
+</tr>
+<tr>
+<td>$\bold{br}$</td>
+<td>$\color{red}{br}$       $i1$  $%loopcond$  $label$  $%loop$,  $label$  $%afterloop$</td>
+<td>条件跳转</td>
+</tr>
+<tr>
+<td>$\bold{phi}$</td>
+<td>$\color{red}{phi}$     ${double [1.0e+0, %entry] }$, ${[%nextvar, %loop]}$</td>
+<td>调用${phi}$ 函数</td>
+</tr>
+<tr>
+<td>$\bold{uitofp}$</td>
+<td>$\color{red}{uitofp}$ $i1$    $%cmptmp$   $to$   $double$</td>
+<td>将bool(1/0)转换为double(1.0/0.0)</td>
+</tr>
+<tr>
+<td>$\bold{ret}$</td>
+<td>$\color{red}{ret}$     $double$ $% 0$</td>
+<td>函数返回</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$\bold{entry}$</td>
+<td>函数入口</td>
+</tr>
+<tr>
+<td>$\bold{loop}$</td>
+<td>loop循环入口</td>
+</tr>
+<tr>
+<td>$\bold{afterloop}$</td>
+<td>loop循环结束</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fors-cfg">for's CFG</h3>
+<p>使用<code>opt -analyze -view-cfg loop.bc</code>生成的CFG.</p>
+<p><img src="/docs-pic/llvm/loop.png" alt="loop"></p>
+<h3 id="builder-1">Builder流程图</h3>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TB
+	Start("Loop Codegen") --> StartCodegen["Start->codegen();"]
+	StartCodegen --> builderCreateBr["Builder.CreateBr"]
+
+  subgraph Loop
+    builderSetInsertLoopBB["Builder.SetInsertPoint(LoopBB)"] 	
+    builderCreatePHI["Builder.CreatePHI"]
+    BodyCodegen["Body->codegen();"]
+
+    builderSetInsertLoopBB --> builderCreatePHI
+    builderCreatePHI --> BodyCodegen
+    BodyCodegen --> ifStep{"Step != NULL"}
+    ifStep --Y--> StepCodegen["Step->codegen();"]
+    ifStep --N--> SetStep["Set Step to 1.0"]
+    StepCodegen --> builderCreateFAdd["Builder.CreateFAdd"]
+    SetStep --> builderCreateFAdd
+
+    builderCreateFAdd --> EndCodegen["End->codegen();"]	
+    EndCodegen --> builderCreateFCmp["Builder.CreateFCmpOne"] 
+    builderCreateFCmp --> builderCreateCondBr["Builder.CreateCondBr"]
+  end
+
+  builderCreateBr --> builderSetInsertLoopBB
+
+  subgraph afterloop
+    builderSetInsertAfterBB["Builder.SetInsertPoint(AfterBB)"]
+  end
+
+  builderCreateCondBr --> builderSetInsertAfterBB
+  builderSetInsertAfterBB --> End["End Codegen"]
+
+
+	style builderSetInsertLoopBB fill:#ffcc66
+	style builderSetInsertAfterBB fill:#ffcc66
+
+	
+	style StartCodegen fill:#ff66cc
+	style BodyCodegen fill:#ff66cc
+	style StepCodegen fill:#ff66cc
+	style EndCodegen fill:#ff66cc
+	
+	style Start fill:#ff9966
+	style End fill:#ff9966
+
+</div>
+<h1 id="jit">JIT和优化</h1>
+<p>参考: <a href="https://l0phtg.github.io/post/llvm/kaleidoscope-adding-jit-and-optimizer-support/">Adding JIT and Optimizer Support</a></p>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TB
+  subgraph call
+    funcall("foo(1);")
+  end
+
+  subgraph expr
+    nodeExpr("1+2;")
+  end
+
+  jitAddModule["JIT中 添加此Module"]
+	jitRemoveModule["JIT中 删除此Module"]
+	
+  anoCodegen["执行 匿名函数Codegen"]
+  AnonymousCall["匿名函数包装"]
+  optimizeFunc["执行 Pass优化"]
+  nodeExpr --> AnonymousCall
+  funcall --> AnonymousCall
+  AnonymousCall --> anoCodegen
+  anoCodegen --> jitAddModule
+  jitAddModule --> optimizeFunc
+  optimizeFunc --> exec["jit运行此表达式, 并计算值"]
+  exec --> jitRemoveModule
+
+  subgraph func definition 		
+    nodeFoo("def foo(x) x+1;")
+    funcCodegen["执行 函数定义Codegen"]
+    nodeFoo --> funcCodegen
+  end
+
+  funcCodegen --> jitAddFuncModule["jit中 添加此Module"]
+	jitAddFuncModule --> initPassManager["执行 pass优化"]
+
+  subgraph extern
+    nodeExtern("extern sin(x);")
+    protoCodegen["执行 函数申明Codegen"]
+    nodeExtern --> protoCodegen
+  end
+
+  style jitAddModule fill:#f9f
+	style jitRemoveModule fill:#f9f
+	style jitAddFuncModule fill:#f9f
+	
+	style optimizeFunc fill:#ccff66
+	style initPassManager fill:#ccff66
+	
+	style exec fill:#ff3300
+
+
+</div>
+<h1 id="driver">Driver</h1>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// top ::= definition | external | expression | &#39;;&#39;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">MainLoop</span>() {
+  <span style="color:#66d9ef">while</span> (true) {
+    fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ready&gt; </span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#66d9ef">switch</span> (CurTok) {
+    <span style="color:#66d9ef">case</span> tok_eof:
+      <span style="color:#66d9ef">return</span>;
+    <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">;</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span> <span style="color:#75715e">// ignore top-level semicolons.
+</span><span style="color:#75715e"></span>      getNextToken();
+      <span style="color:#66d9ef">break</span>;
+    <span style="color:#66d9ef">case</span> tok_def:
+      HandleDefinition();
+      <span style="color:#66d9ef">break</span>;
+    <span style="color:#66d9ef">case</span> tok_extern:
+      HandleExtern();
+      <span style="color:#66d9ef">break</span>;
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+      HandleTopLevelExpression();
+      <span style="color:#66d9ef">break</span>;
+    }
+  }
+}
+</code></pre></div></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/llvm"><span class="tag">Llvm</span></a></li>
+        
+          <li><a href="/tags/kaleidoscope"><span class="tag">Kaleidoscope</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>264</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

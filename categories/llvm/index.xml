@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>llvm on L0phTg&#39;s Blog</title>
+    <link>/categories/llvm/</link>
+    <description>Recent content in llvm on L0phTg&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Wed, 26 Jun 2019 16:04:38 +0800</lastBuildDate>
+    
+	<atom:link href="/categories/llvm/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</title>
+      <link>/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</link>
+      <pubDate>Wed, 26 Jun 2019 16:04:38 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl10.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl10.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文是LLVM教程（Kaleidoscope）的最后一章：介绍教程结论和一些有用的LLVM技巧。&lt;/p&gt;
+&lt;p&gt;另：按照原本的计划，&amp;lt;&amp;lt;LLVM系列 * 上半年&amp;raquo;应该还有一篇Kaleidoscope教程的总结、和&amp;lt;&amp;lt;Pass基础知识介绍&amp;raquo;一篇文章，和三篇编写Pass的文章。但是预计近三个月刚入职，事情会比较多，所以这个系列文章的更新时间会推迟&amp;ndash;鸽（好饭不怕晚，哈哈哈&amp;mdash;自卖自夸）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Warnning&lt;/strong&gt;: 上午尽量少玩手机，伤眼。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope：Adding Debug Information</title>
+      <link>/post/llvm/kaleidoscopeadding-debug-information/</link>
+      <pubDate>Mon, 24 Jun 2019 19:56:26 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscopeadding-debug-information/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl09.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl09.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;唔，最后两个章节有点难产。&lt;/p&gt;
+&lt;p&gt;本章主要介绍：为Kaleidoscope添加调试信息支持。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope：Compile to Object Code</title>
+      <link>/post/llvm/kaleidoscopecompile-to-object-code/</link>
+      <pubDate>Sun, 16 Jun 2019 18:42:08 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscopecompile-to-object-code/</guid>
+      <description>&lt;p&gt;translate from:http://llvm.org/docs/tutorial/LangImpl08.html&lt;/p&gt;
+&lt;p&gt;本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。&lt;/p&gt;
+&lt;p&gt;本章内容比较简单。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope：Extending the Language：Mutable Variables</title>
+      <link>/post/llvm/kaleidoscopeextending-the-languagemutable-variables/</link>
+      <pubDate>Wed, 12 Jun 2019 19:43:42 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscopeextending-the-languagemutable-variables/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl07.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl07.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对&lt;strong&gt;改变变量&lt;/strong&gt;功能的支持。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;改变已经存在的变量：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;函数参数。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;迭代变量。&lt;/p&gt;
+&lt;p&gt;在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。&lt;/p&gt;
+&lt;p&gt;具体到Kaleidoscope语法层面，我们通过&#39;=&#39;运算符达到对已经定义变量的改变。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;新定义一个变量：
+通过关键字var/in实现。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope：Extending the Language：User Defined Operators</title>
+      <link>/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/</link>
+      <pubDate>Tue, 11 Jun 2019 21:53:54 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl06.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl06.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。&lt;/p&gt;
+&lt;p&gt;扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;为了实现用户自定义运算符，我们采用了&lt;strong&gt;扩展函数申明和扩展函数定义&lt;/strong&gt;的实现方式。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为了实现对用户自定义运算符的表达式支持：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如+、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可；&lt;/li&gt;
+&lt;li&gt;针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&#34;mermaid&#34; align=&#34; 
+                            center
+                        &#34;&gt; 
+
+graph TB
+
+  subgraph 二元运算符
+    binaryParser[1. 添加词法分析支持] 
+    subgraph 2. 实现用户自定义二元运算符函数
+    funcProtoExtend[扩展函数申明AST] --&gt; funcProtoParser[扩展ParsePrototype函数]
+    end 
+    binaryParser --&gt; funcProtoExtend
+    funcProtoParser --&gt; binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符]
+  end
+
+    subgraph 一元运算符
+    unaryParser[&#34;1. 添加词法分析支持&#34;] 
+        subgraph 2. 实现用户自定义的一元运算符函数
+            unaryFuncProtoExtend[扩展函数申明AST] --&gt; unaryFuncProtoParser[扩展ParsePrototype函数]
+    end
+        unaryParser --&gt; unaryFuncProtoExtend
+    subgraph 3. 实现一元运算符表达式的解析 
+            createUnaryAST[创建UnaryExprAST节点] --&gt; parseUnary[添加解析一元运算符表达式的函数]
+            parseUnary --&gt; parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑]
+    end
+        unaryFuncProtoParser --&gt; createUnaryAST
+    end
+
+    style funcProtoExtend fill:#f9f
+  style funcProtoParser fill:#f9f
+  style unaryFuncProtoExtend fill:#f9f
+  style unaryFuncProtoParser fill:#f9f
+  
+  style binaryCodegen fill:#ccff66
+  style createUnaryAST fill:#ccff66
+  style parseUnary fill:#ccff66
+  style parsePrimary fill:#ccff66
+
+&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: 前五章总结</title>
+      <link>/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
+      <description>&lt;p&gt;对前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Extending the Language Control Flow</title>
+      <link>/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
+      <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl05.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl05.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
+&lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
+&lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Adding JIT and Optimizer Support</title>
+      <link>/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</link>
+      <pubDate>Sat, 13 Apr 2019 15:02:51 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl04.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl04.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.&lt;/p&gt;
+
+&lt;div class=&#34;mermaid&#34; align=&#34; 
+                            center
+                        &#34;&gt; 
+
+graph TB
+  subgraph call
+    funcall(&#34;foo(1);&#34;)
+  end
+  subgraph expr
+    nodeExpr(&#34;1+2;&#34;)
+  end
+
+  jitAddModule[&#34;JIT中 添加此Module&#34;]
+  jitRemoveModule[&#34;JIT中 删除此Module&#34;]
+  anoCodegen[&#34;执行 匿名函数Codegen&#34;]
+  AnonymousCall[&#34;匿名函数包装&#34;]
+  optimizeFunc[&#34;执行 Pass优化&#34;]
+  nodeExpr --&gt; AnonymousCall
+  funcall --&gt; AnonymousCall
+  AnonymousCall --&gt; anoCodegen
+  anoCodegen --&gt; jitAddModule
+  jitAddModule --&gt; optimizeFunc
+  optimizeFunc --&gt; exec[&#34;JIT 运行此表达式, 并计算值&#34;]
+  exec --&gt; jitRemoveModule
+
+  subgraph func definition
+    nodeFoo(&#34;def foo(x) x+1;&#34;)
+    funcCodegen[&#34;执行 函数定义Codegen&#34;]
+    nodeFoo --&gt; funcCodegen
+  end
+
+  funcCodegen --&gt; jitAddFuncModule[&#34;JIT中 添加此Module&#34;]
+  jitAddFuncModule --&gt; initPassManager[&#34;执行 Pass优化&#34;]
+
+  subgraph extern
+    nodeExtern(&#34;extern sin(x);&#34;)
+    protoCodegen[&#34;执行 函数申明Codegen&#34;]
+    nodeExtern --&gt; protoCodegen
+  end
+
+  style jitAddModule fill:#f9f
+	style jitRemoveModule fill:#f9f
+	style jitAddFuncModule fill:#f9f
+	
+	style optimizeFunc fill:#ccff66
+	style initPassManager fill:#ccff66
+	
+	style exec fill:#ff3300
+
+&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Code Generation to LLVM IR</title>
+      <link>/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</link>
+      <pubDate>Fri, 12 Apr 2019 16:55:05 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Implementing a Parser and AST</title>
+      <link>/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</link>
+      <pubDate>Thu, 11 Apr 2019 15:41:17 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl02.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl02.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/docs-pic/dots/uml/ExprAst-1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;介绍AST(抽象语法树)和Parser.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Tutorial Introduction and Lexer</title>
+      <link>/post/kaleidoscope_tutorial-introduction-and-lexer/</link>
+      <pubDate>Wed, 10 Apr 2019 10:17:08 +0800</pubDate>
+      
+      <guid>/post/kaleidoscope_tutorial-introduction-and-lexer/</guid>
+      <description>&lt;p&gt;translate from &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl01.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl01.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本tutorial将会介绍一个简单语言的实现.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Static Single Assignment</title>
+      <link>/post/llvm/static-single-assignment/</link>
+      <pubDate>Tue, 09 Apr 2019 21:54:49 +0800</pubDate>
+      
+      <guid>/post/llvm/static-single-assignment/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;https://en.wikipedia.org/wiki/Static_single_assignment_form&#34;&gt;https://en.wikipedia.org/wiki/Static_single_assignment_form&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;单一变量赋值
+&lt;img src=&#34;/llvm/SSA_example1.2.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

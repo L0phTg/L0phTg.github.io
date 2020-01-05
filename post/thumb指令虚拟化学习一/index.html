@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>thumb指令虚拟化学习(一)</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  <meta name="description" content="上半年接触过一些 app加固 的知识, 对 vm 这块一直空有兴趣而没有了解过; 最近, 阅读了几篇文章, 有所启发, 所以决定学习一下 vm 这块的一些操作.
+主要内容分为:
+ 环境搭建 提取指令 capstone处理 ">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="thumb指令虚拟化学习(一)">
+    <meta name="twitter:description" content="上半年接触过一些 app加固 的知识, 对 vm 这块一直空有兴趣而没有了解过; 最近, 阅读了几篇文章, 有所启发, 所以决定学习一下 vm 这块的一些操作.
+主要内容分为:
+ 环境搭建 提取指令 capstone处理 ">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="thumb指令虚拟化学习(一)">
+  <meta property="og:description" content="上半年接触过一些 app加固 的知识, 对 vm 这块一直空有兴趣而没有了解过; 最近, 阅读了几篇文章, 有所启发, 所以决定学习一下 vm 这块的一些操作.
+主要内容分为:
+ 环境搭建 提取指令 capstone处理 ">
+  <meta property="og:url" content="/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">thumb指令虚拟化学习(一)</h1>
+      <p class="post-meta">@Ritchie Zhu · Oct 24, 2017 · 7 min read</p>
+    </header>
+    <article class="post-content"><p><img src="/thumb-vmp/thumb16.png" alt=""></p>
+<p>上半年接触过一些 <strong>app加固</strong> 的知识, 对 <strong>vm</strong> 这块一直空有兴趣而没有了解过;  最近, 阅读了几篇文章, <code>有所启发</code>, 所以决定学习一下 <strong>vm</strong> 这块的一些操作.</p>
+<p>主要内容分为:</p>
+<ul>
+<li>环境搭建</li>
+<li>提取指令</li>
+<li>capstone处理</li>
+</ul>
+<h2 id="heading">阅读资料</h2>
+<p><a href="https://github.com/knownsec/KCon/blob/master/2017/%5BKCon%202017%5D0827_3_%E9%99%88%E6%84%89%E9%91%AB_%E7%AC%AC%E4%BA%94%E4%BB%A3%E5%8A%A0%E5%9B%BA%E6%8A%80%E6%9C%AFARM%20VMP%E5%8E%9F%E7%90%86%E5%AE%9E%E7%8E%B0%E4%B8%8E%E5%BA%94%E7%94%A8.pdf">Kcon2017 第五代加固技术ARM VMP原理与应用</a></p>
+<p><a href="http://www.cnblogs.com/2014asm/p/6534897.html">ARM平台指令虚拟化探索</a></p>
+<h2 id="heading-1">环境搭建:</h2>
+<ul>
+<li>需要安装python的capstone模块, 可以直接使用pip安装. (另外: <strong>强烈建议下载capstone源码, 以便随时阅读</strong>.)</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">
+    sudo apt install libcapstone3
+    sudo apt install libcapstone-dev
+    pip install capstone
+
+</code></pre></div><ul>
+<li>
+<p>ida/radare2 <code>在本节中, 提取指令的时候会用到</code>.</p>
+</li>
+<li>
+<p>arm官方文档(<a href="https://yurichev.com/mirrors/ARMv8-A_Architecture_Reference_Manual_(Issue_A.a).pdf">https://yurichev.com/mirrors/ARMv8-A_Architecture_Reference_Manual_(Issue_A.a).pdf</a>)</p>
+</li>
+</ul>
+<h2 id="heading-2">本篇文章大致分为如下几个部分:</h2>
+<ol>
+<li>
+<p>手动提取编译好的可执行文件中的 <strong>你想要加密的函数</strong>, 并转换为 <strong>16进制的格式</strong>.</p>
+</li>
+<li>
+<p>初步了解 <strong>capstone</strong> 中的 <strong>对Arm指令进行处理的操作函数</strong>.</p>
+</li>
+<li>
+<p>了解 <strong>thumb指令编码</strong> , <code>此处研究thumb的原因是: 在提出函数的bytes时, 发现自定义的函数, 都被转换成了thumb指令的格式, 所以笔者先研究thumb;  当然, 要知道, thumb并不是独立于arm存在的, thumb的存在是为了提高效率</code>.</p>
+</li>
+<li>
+<p>设计自己的一套 <strong>指令集</strong> , <code>很简单的一套指令集, 能模拟常见的thumb指令, 例如 push, pop, str, ldr, add, sub, mov, cmp, blx ...</code>.</p>
+</li>
+<li>
+<p>写代码, <code>此处参考了capstone源码中的/bindings/python/capstone/* 中的有关代码, 初学py, 代码写的差, 有什么建议还请多多交流)</code>.</p>
+</li>
+</ol>
+<h3 id="heading-3">提取指令.</h3>
+<p>我们提取的是下面程序中的 <strong>judge</strong> 函数.</p>
+<h4 id="ida">用ida提取:</h4>
+<p>我们将会在这篇文章中用到的程序:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">char</span> key[<span style="color:#ae81ff">16</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">q</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">c</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">o</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">g</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">s</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">k</span><span style="color:#e6db74">&#39;</span>};
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">judge</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>s)
+{
+    <span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+    <span style="color:#66d9ef">char</span> c[<span style="color:#ae81ff">16</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">c</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">d</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">1</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">3</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">4</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">q</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">s</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">e</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">h</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">n</span><span style="color:#e6db74">&#39;</span>};
+    <span style="color:#66d9ef">int</span> i;
+    <span style="color:#66d9ef">for</span> (i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span>; i<span style="color:#f92672">+</span><span style="color:#f92672">+</span>)
+    {
+        <span style="color:#66d9ef">switch</span>(i <span style="color:#f92672">%</span> <span style="color:#ae81ff">4</span>)   
+        {
+        <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">:</span> 
+            <span style="color:#66d9ef">if</span> (s[i]  <span style="color:#f92672">=</span><span style="color:#f92672">=</span> c[i])
+                <span style="color:#66d9ef">continue</span>;
+            <span style="color:#66d9ef">break</span>;  
+        <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>
+            <span style="color:#66d9ef">if</span> (s[i] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> c[i])
+                <span style="color:#66d9ef">continue</span>;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">:</span>
+            <span style="color:#66d9ef">if</span> (s[i] <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> c[i])
+                <span style="color:#66d9ef">continue</span>;
+            <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">:</span>
+            <span style="color:#66d9ef">if</span> (s[i] <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">=</span><span style="color:#f92672">=</span> c[i])
+                <span style="color:#66d9ef">continue</span>; 
+            <span style="color:#66d9ef">break</span>;
+        } 
+        ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; 
+    }
+    <span style="color:#66d9ef">return</span> ret;
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>argv[])
+{
+    printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">hello World</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#66d9ef">char</span> a[<span style="color:#ae81ff">16</span>];
+    scanf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span>, a);
+
+    <span style="color:#66d9ef">if</span> (judge(a) <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>)
+        printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ok</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#66d9ef">else</span>
+        printf(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">error</span><span style="color:#e6db74">&#34;</span>);
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>用ndk-build编译成armv7a可执行程序后, 放入ida中, 用idc脚本提::</p>
+<p>idc脚本, start为judge函数的起始地址, end为judge函数的结束地址.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;idc.idc&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">static</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">auto</span> start, end, fd, i, inst;
+	fd <span style="color:#f92672">=</span> fopen(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">D:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">idaResult</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">armOpcodeByte.txt</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">wt+</span><span style="color:#e6db74">&#34;</span>);
+	start <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x863c</span>;
+	end <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x86BA</span>;
+	
+	<span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> start; i <span style="color:#f92672">&lt;</span> end; i<span style="color:#f92672">+</span><span style="color:#f92672">+</span>) {
+		inst <span style="color:#f92672">=</span> Byte(i);
+		fprintf(fd, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">x%02x</span><span style="color:#e6db74">&#34;</span>, inst);
+	}
+	fclose(fd);
+}
+</code></pre></div><p>提取出来后的结果:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">\x1f\x49\xf0\xb5\x79\x44\x09\x68\x87\xb0\x07\x46\x0b\x68\x01\xaa\x0d\x46\x16\x46\x05\x93\x1b\x4b\x7b\x44\x03\xf1\x10\x0e\x18\x68\x08\x33\x53\xf8\x04\x1c\x73\x45\x14\x46\x03\xc4\x22\x46\xf6\xd1\x3a\x46\x00\x23\x01\x20\x03\xf0\x03\x01\x02\x29\x09\xd0\x03\x29\x0a\xd0\x01\x29\x02\xd0\x14\x78\xf1\x5c\x08\xe0\x11\x78\x01\x31\x04\xe0\x11\x78\x02\x31\x01\xe0\x11\x78\x03\x31\xf4\x5c\x01\x33\xa1\x42\x18\xbf\x00\x20\x10\x2b\x02\xf1\x01\x02\xe3\xd1\x05\x9a\x2b\x68\x9a\x42\x01\xd0\xff\xf7\x0a\xef\x07\xb0\xf0\xbd
+</code></pre></div><h4 id="radare2">用radare2提取</h4>
+<p>(才发现原来radare2 v2.0都已经发布了)</p>
+<p><code>对r2语法不做讲解了, 网上也有了一些文章, 大家可以去看</code>.  笔者本身也不是很熟悉~</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">username-l0phtg@L0phTg:armeabi-v7a$ r2 test
+ -- Interpret radare2 scripts with <span style="color:#e6db74">&#39;. &lt;path-to-script&gt;&#39;</span>. Similar to the bash source alias command.
+<span style="color:#f92672">[</span>0x000085a0<span style="color:#f92672">]</span>&gt; aa
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Analyze all flags starting with sym. and entry0 <span style="color:#f92672">(</span>aa<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>0x000085a0<span style="color:#f92672">]</span>&gt; afl~judge
+0x0000863c   <span style="color:#ae81ff">17</span> <span style="color:#ae81ff">126</span>          sym.judge
+<span style="color:#f92672">[</span>0x000085a0<span style="color:#f92672">]</span>&gt; 0x863c
+<span style="color:#f92672">[</span>0x0000863c<span style="color:#f92672">]</span>&gt; pcp 126
+import struct
+buf <span style="color:#f92672">=</span> struct.pack <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;126B&#34;</span>, *<span style="color:#f92672">[</span>
+0x1f,0x49,0xf0,0xb5,0x79,0x44,0x09,0x68,0x87,0xb0,0x07,
+0x46,0x0b,0x68,0x01,0xaa,0x0d,0x46,0x16,0x46,0x05,0x93,
+0x1b,0x4b,0x7b,0x44,0x03,0xf1,0x10,0x0e,0x18,0x68,0x08,
+0x33,0x53,0xf8,0x04,0x1c,0x73,0x45,0x14,0x46,0x03,0xc4,
+0x22,0x46,0xf6,0xd1,0x3a,0x46,0x00,0x23,0x01,0x20,0x03,
+0xf0,0x03,0x01,0x02,0x29,0x09,0xd0,0x03,0x29,0x0a,0xd0,
+0x01,0x29,0x02,0xd0,0x14,0x78,0xf1,0x5c,0x08,0xe0,0x11,
+0x78,0x01,0x31,0x04,0xe0,0x11,0x78,0x02,0x31,0x01,0xe0,
+0x11,0x78,0x03,0x31,0xf4,0x5c,0x01,0x33,0xa1,0x42,0x18,
+0xbf,0x00,0x20,0x10,0x2b,0x02,0xf1,0x01,0x02,0xe3,0xd1,
+0x05,0x9a,0x2b,0x68,0x9a,0x42,0x01,0xd0,0xff,0xf7,0x0a,
+0xef,0x07,0xb0,0xf0,0xbd<span style="color:#f92672">]</span><span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>0x0000863c<span style="color:#f92672">]</span>&gt;
+</code></pre></div><h3 id="capstonearm-">了解capstone中对arm指令进行操作的函数 <code>接口</code></h3>
+<h4 id="example-capstone">从源代码中提供的<code>example</code>, 来初步了解capstone提供给我们的可用的<code>接口</code>的使用</h4>
+<p>我们参考的主要是 <code>/bindings/python/test_arm.py</code> 和 <code>/bindings/python/test_detail.py</code>这两个文件:</p>
+<ol>
+<li>test_arm.py   <code>源代码过多, 这里就不全部都放上来了</code></li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
+
+<span style="color:#75715e"># Capstone Python bindings, by Nguyen Anh Quynnh &lt;aquynh@gmail.com&gt;</span>
+
+<span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> print_function
+<span style="color:#f92672">from</span> capstone <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">from</span> capstone.arm <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">from</span> xprint <span style="color:#f92672">import</span> to_hex, to_x, to_x_32
+
+ARM_CODE <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xED</span><span style="color:#ae81ff">\xFF</span><span style="color:#ae81ff">\xFF</span><span style="color:#ae81ff">\xEB</span><span style="color:#ae81ff">\x04</span><span style="color:#ae81ff">\xe0</span><span style="color:#ae81ff">\x2d</span><span style="color:#ae81ff">\xe5</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\xe0</span><span style="color:#ae81ff">\x83</span><span style="color:#ae81ff">\x22</span><span style="color:#ae81ff">\xe5</span><span style="color:#ae81ff">\xf1</span><span style="color:#ae81ff">\x02</span><span style="color:#ae81ff">\x03</span><span style="color:#ae81ff">\x0e</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\xa0</span><span style="color:#ae81ff">\xe3</span><span style="color:#ae81ff">\x02</span><span style="color:#ae81ff">\x30</span><span style="color:#ae81ff">\xc1</span><span style="color:#ae81ff">\xe7</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x53</span><span style="color:#ae81ff">\xe3</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x02</span><span style="color:#ae81ff">\x01</span><span style="color:#ae81ff">\xf1</span><span style="color:#ae81ff">\x05</span><span style="color:#ae81ff">\x40</span><span style="color:#ae81ff">\xd0</span><span style="color:#ae81ff">\xe8</span><span style="color:#ae81ff">\xf4</span><span style="color:#ae81ff">\x80</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#34;</span>
+THUMB_CODE <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x70</span><span style="color:#ae81ff">\x47</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\xf0</span><span style="color:#ae81ff">\x10</span><span style="color:#ae81ff">\xe8</span><span style="color:#ae81ff">\xeb</span><span style="color:#ae81ff">\x46</span><span style="color:#ae81ff">\x83</span><span style="color:#ae81ff">\xb0</span><span style="color:#ae81ff">\xc9</span><span style="color:#ae81ff">\x68</span><span style="color:#ae81ff">\x1f</span><span style="color:#ae81ff">\xb1</span><span style="color:#ae81ff">\x30</span><span style="color:#ae81ff">\xbf</span><span style="color:#ae81ff">\xaf</span><span style="color:#ae81ff">\xf3</span><span style="color:#ae81ff">\x20</span><span style="color:#ae81ff">\x84</span><span style="color:#e6db74">&#34;</span>
+
+all_tests <span style="color:#f92672">=</span> (
+        (CS_ARCH_ARM, CS_MODE_ARM, ARM_CODE, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ARM</span><span style="color:#e6db74">&#34;</span>, None),
+        (CS_ARCH_ARM, CS_MODE_THUMB, THUMB_CODE, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Thumb</span><span style="color:#e6db74">&#34;</span>, None),
+        )
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_insn_detail</span>(insn):
+    <span style="color:#75715e"># print address, mnemonic and operands</span>
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">:</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (insn<span style="color:#f92672">.</span>address, insn<span style="color:#f92672">.</span>mnemonic, insn<span style="color:#f92672">.</span>op_str))
+
+    <span style="color:#75715e"># &#34;data&#34; instruction generated by SKIPDATA option has no detail</span>
+    <span style="color:#66d9ef">if</span> insn<span style="color:#f92672">.</span>id <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">return</span>
+
+    <span style="color:#66d9ef">if</span> len(insn<span style="color:#f92672">.</span>operands) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">op_count: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> len(insn<span style="color:#f92672">.</span>operands))
+        c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> insn<span style="color:#f92672">.</span>operands:
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_REG:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: REG = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, insn<span style="color:#f92672">.</span>reg_name(i<span style="color:#f92672">.</span>reg)))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_IMM:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: IMM = 0x</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, to_x_32(i<span style="color:#f92672">.</span>imm)))
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_MEM:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: MEM</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> c)
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>base <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.base: REG = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, insn<span style="color:#f92672">.</span>reg_name(i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>base)))
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>index <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.index: REG = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, insn<span style="color:#f92672">.</span>reg_name(i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>index)))
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>scale <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.scale: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>scale))
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>disp <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.disp: 0x</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, to_x_32(i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>disp)))
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+            c <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+    <span style="color:#66d9ef">if</span> insn<span style="color:#f92672">.</span>update_flags:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Update-flags: True</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">if</span> insn<span style="color:#f92672">.</span>writeback:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Write-back: True</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> insn<span style="color:#f92672">.</span>cc <span style="color:#f92672">in</span> [ARM_CC_AL, ARM_CC_INVALID]:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Code condition: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> insn<span style="color:#f92672">.</span>cc)
+<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+<span style="color:#75715e">### Test class Cs</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_class</span>():
+
+    <span style="color:#66d9ef">for</span> (arch, mode, code, comment, syntax) <span style="color:#f92672">in</span> all_tests:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">16</span>)
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Platform: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> comment)
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Code: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> to_hex(code))
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Disasm:</span><span style="color:#e6db74">&#34;</span>)
+
+        <span style="color:#66d9ef">try</span>:
+            md <span style="color:#f92672">=</span> Cs(arch, mode)
+            <span style="color:#66d9ef">if</span> syntax:
+                md<span style="color:#f92672">.</span>syntax <span style="color:#f92672">=</span> syntax
+            md<span style="color:#f92672">.</span>detail <span style="color:#f92672">=</span> True
+            <span style="color:#66d9ef">for</span> insn <span style="color:#f92672">in</span> md<span style="color:#f92672">.</span>disasm(code, <span style="color:#ae81ff">0x80001000</span>):
+                print_insn_detail(insn)
+                <span style="color:#66d9ef">print</span> ()
+            <span style="color:#66d9ef">print</span> (<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">:</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (insn<span style="color:#f92672">.</span>address <span style="color:#f92672">+</span> insn<span style="color:#f92672">.</span>size))
+        <span style="color:#66d9ef">except</span> CsError <span style="color:#66d9ef">as</span> e:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ERROR: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> e)
+
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    test_class()
+</code></pre></div><p>观察<code>test_arm.py</code>, 我们可以看到的重要的一些操作有:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">md <span style="color:#f92672">=</span> Cs(arch, mode)
+<span style="color:#66d9ef">for</span> insn <span style="color:#f92672">in</span> md<span style="color:#f92672">.</span>disasm(code, <span style="color:#ae81ff">0x80001000</span>):
+    print_insn_detail(insn)
+</code></pre></div><p>首先通过<code>md = Cs(arch, mode)</code>来选择我们的架构, 然后调用<code>md.disasm</code>返回 指令(insn) (这里Cs.disasm就是一个生成器, 参看py语法)
+然后打印<code>insn</code>的细节(助记符, 操作数, 以及每个操作数的类型等)</p>
+<p>打印的时候(这里我只列举了部分操作):</p>
+<ul>
+<li>我们可以发现 <strong>针对指令</strong> 调用了 <strong>insn.address</strong>, <strong>insn.mnemonic</strong>,  <strong>insn.op_str</strong>, <strong>insn.operands</strong>, <strong>insn.update_flags</strong>, <strong>insn.cc</strong>&hellip;..</li>
+<li>针对 <strong>操作数</strong> 调用了 <strong>i.type</strong>, <strong>i.reg</strong>, <strong>i.mem</strong>&hellip;.</li>
+</ul>
+<ol start="2">
+<li>test_detail.py (省略了一些和上面test_arm.py相似的代码)</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_detail</span>(insn):
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">:</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">  // insn-ID: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">, insn-mnem: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+        <span style="color:#f92672">%</span> (insn<span style="color:#f92672">.</span>address, insn<span style="color:#f92672">.</span>mnemonic, insn<span style="color:#f92672">.</span>op_str, insn<span style="color:#f92672">.</span>id, \
+        insn<span style="color:#f92672">.</span>insn_name()))
+
+    <span style="color:#75715e"># &#34;data&#34; instruction generated by SKIPDATA option has no detail</span>
+    <span style="color:#66d9ef">if</span> insn<span style="color:#f92672">.</span>id <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">return</span>
+
+    <span style="color:#66d9ef">if</span> len(insn<span style="color:#f92672">.</span>regs_read) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Implicit registers read: </span><span style="color:#e6db74">&#34;</span>, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>),
+        <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> insn<span style="color:#f92672">.</span>regs_read:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> insn<span style="color:#f92672">.</span>reg_name(m), end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>),
+        <span style="color:#66d9ef">print</span>()
+
+    <span style="color:#66d9ef">if</span> len(insn<span style="color:#f92672">.</span>regs_write) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Implicit registers modified: </span><span style="color:#e6db74">&#34;</span>, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>),
+        <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> insn<span style="color:#f92672">.</span>regs_write:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> insn<span style="color:#f92672">.</span>reg_name(m), end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>),
+        <span style="color:#66d9ef">print</span>()
+
+    <span style="color:#66d9ef">if</span> len(insn<span style="color:#f92672">.</span>groups) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">This instruction belongs to groups: </span><span style="color:#e6db74">&#34;</span>, end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>),
+        <span style="color:#66d9ef">for</span> m <span style="color:#f92672">in</span> insn<span style="color:#f92672">.</span>groups:
+            <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> insn<span style="color:#f92672">.</span>group_name(m), end<span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&#39;</span>),
+        <span style="color:#66d9ef">print</span>()<span style="color:#e6db74">``</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+
+</code></pre></div><p>操作很明显:
+<strong>insn.regs_read</strong>, <strong>insn.regs_write</strong>, <strong>insn.groups</strong>.</p>
+<h4 id="bindingspythoncapstone--init--pycs--csinsn-">观察源代码中的<code>/bindings/python/capstone/__init__.py</code>来了解<strong>CS</strong> 和 <strong>CsInsn</strong> 的实现:</h4>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Cs</span>(object):
+    <span style="color:#66d9ef">def</span> __init__(self, arch, mode):
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>
+        <span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#960050;background-color:#1e0010">省</span><span style="color:#960050;background-color:#1e0010">略</span>
+
+
+    <span style="color:#75715e"># Disassemble binary &amp; return disassembled instructions in CsInsn objects	反汇编二进制代码&amp;&amp; 返回反汇编的指令in CsInsn对象中</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">disasm</span>(self, code, offset, count<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>):
+        all_insn <span style="color:#f92672">=</span> ctypes<span style="color:#f92672">.</span>POINTER(_cs_insn)()
+        <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;&#39;&#39;</span><span style="color:#e6db74">if not _python2:</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">            print(code)</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">            code = code.encode()</span><span style="color:#e6db74">
+</span><span style="color:#e6db74"></span><span style="color:#e6db74">            print(code)</span><span style="color:#e6db74">&#39;&#39;&#39;</span>
+        <span style="color:#75715e"># Hack, unicorn&#39;s memory accessors give you back bytearrays, but they</span>
+        <span style="color:#75715e"># cause TypeErrors when you hand them into Capstone.</span>
+        <span style="color:#66d9ef">if</span> isinstance(code, bytearray):
+            code <span style="color:#f92672">=</span> bytes(code)
+        res <span style="color:#f92672">=</span> _cs<span style="color:#f92672">.</span>cs_disasm(self<span style="color:#f92672">.</span>csh, code, len(code), offset, count, ctypes<span style="color:#f92672">.</span>byref(all_insn))<span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span>
+        <span style="color:#66d9ef">if</span> res <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">try</span>:
+                <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(res):
+                    <span style="color:#66d9ef">yield</span> CsInsn(self, all_insn[i])			<span style="color:#75715e">## all_info*********************************** 重点操作</span>
+            <span style="color:#66d9ef">finally</span>:
+                _cs<span style="color:#f92672">.</span>cs_free(all_insn, res)
+        <span style="color:#66d9ef">else</span>:
+            status <span style="color:#f92672">=</span> _cs<span style="color:#f92672">.</span>cs_errno(self<span style="color:#f92672">.</span>csh)
+            <span style="color:#66d9ef">if</span> status <span style="color:#f92672">!=</span> CS_ERR_OK:
+                <span style="color:#66d9ef">raise</span> CsError(status)
+            <span style="color:#66d9ef">return</span>
+            <span style="color:#66d9ef">yield</span>
+</code></pre></div><p>通过观察<strong>Cs</strong>这个类的实现, 我们发现了它是一个生成器, 一直返回<strong>CsInsn</strong> 这个类的对象, 现在我们来看一下CsInsn 这个类的实现(从名字可以就可以看出来, 它保存了我们每条指令的性质)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">▼</span> CsInsn : <span style="color:#66d9ef">class</span>
+   <span style="color:#960050;background-color:#1e0010">+</span><span style="color:#a6e22e">__init__</span> : function
+   <span style="color:#f92672">+</span>id : function           <span style="color:#a6e22e">@property</span>
+   <span style="color:#f92672">+</span>address : function      <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">指</span><span style="color:#960050;background-color:#1e0010">令</span><span style="color:#960050;background-color:#1e0010">的</span><span style="color:#960050;background-color:#1e0010">地</span><span style="color:#960050;background-color:#1e0010">址</span>
+   <span style="color:#f92672">+</span>size : function         <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">大</span><span style="color:#960050;background-color:#1e0010">小</span>
+   <span style="color:#f92672">+</span>bytes : function        <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">字</span><span style="color:#960050;background-color:#1e0010">节</span><span style="color:#960050;background-color:#1e0010">码</span> []
+   <span style="color:#f92672">+</span>mnemonic : function     <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">指</span><span style="color:#960050;background-color:#1e0010">令</span><span style="color:#960050;background-color:#1e0010">名</span><span style="color:#960050;background-color:#1e0010">称</span>(<span style="color:#960050;background-color:#1e0010">助</span><span style="color:#960050;background-color:#1e0010">记</span><span style="color:#960050;background-color:#1e0010">符</span>)
+   <span style="color:#f92672">+</span>op_str : function       <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">操</span><span style="color:#960050;background-color:#1e0010">作</span>string
+   <span style="color:#f92672">+</span>regs_read : function    <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">会</span><span style="color:#960050;background-color:#1e0010">被</span><span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">隐</span><span style="color:#960050;background-color:#1e0010">式</span><span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">读</span><span style="color:#960050;background-color:#1e0010">的</span><span style="color:#960050;background-color:#1e0010">寄</span><span style="color:#960050;background-color:#1e0010">存</span><span style="color:#960050;background-color:#1e0010">器</span>[]
+   <span style="color:#f92672">+</span>regs_write : function   <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span> <span style="color:#960050;background-color:#1e0010">会</span><span style="color:#960050;background-color:#1e0010">被</span><span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">隐</span><span style="color:#960050;background-color:#1e0010">式</span><span style="color:#f92672">*</span><span style="color:#960050;background-color:#1e0010">写</span><span style="color:#960050;background-color:#1e0010">的</span><span style="color:#960050;background-color:#1e0010">寄</span><span style="color:#960050;background-color:#1e0010">存</span><span style="color:#960050;background-color:#1e0010">器</span>[]
+   <span style="color:#f92672">+</span>groups : function       <span style="color:#a6e22e">@property</span> <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">指</span><span style="color:#960050;background-color:#1e0010">令</span><span style="color:#960050;background-color:#1e0010">的</span>group
+   <span style="color:#f92672">-</span>__gen_detail : function
+   <span style="color:#f92672">-</span>__getattr__ : function
+   <span style="color:#f92672">+</span>errno : function
+   <span style="color:#f92672">+</span>reg_name : function   (self, reg_id)  <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span><span style="color:#960050;background-color:#1e0010">寄</span><span style="color:#960050;background-color:#1e0010">存</span><span style="color:#960050;background-color:#1e0010">器</span><span style="color:#960050;background-color:#1e0010">的</span><span style="color:#960050;background-color:#1e0010">名</span><span style="color:#960050;background-color:#1e0010">称</span>
+   <span style="color:#f92672">+</span>insn_name : function                  <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">返</span><span style="color:#960050;background-color:#1e0010">回</span><span style="color:#960050;background-color:#1e0010">指</span><span style="color:#960050;background-color:#1e0010">令</span><span style="color:#960050;background-color:#1e0010">名</span><span style="color:#960050;background-color:#1e0010">称</span>, <span style="color:#960050;background-color:#1e0010">不</span><span style="color:#960050;background-color:#1e0010">同</span><span style="color:#960050;background-color:#1e0010">于</span>mnemonic
+   <span style="color:#f92672">+</span>group_name : function
+   <span style="color:#f92672">+</span>group : function
+   <span style="color:#f92672">+</span>reg_read : function   (self, reg_id)  <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">识</span><span style="color:#960050;background-color:#1e0010">别</span><span style="color:#960050;background-color:#1e0010">该</span><span style="color:#960050;background-color:#1e0010">寄</span><span style="color:#960050;background-color:#1e0010">存</span><span style="color:#960050;background-color:#1e0010">器</span><span style="color:#960050;background-color:#1e0010">会</span><span style="color:#960050;background-color:#1e0010">被</span><span style="color:#960050;background-color:#1e0010">隐</span><span style="color:#960050;background-color:#1e0010">式</span>read
+   <span style="color:#f92672">+</span>reg_write : function  (self, reg_id)  <span style="color:#f92672">/</span><span style="color:#f92672">/</span> <span style="color:#960050;background-color:#1e0010">识</span><span style="color:#960050;background-color:#1e0010">别</span><span style="color:#960050;background-color:#1e0010">该</span><span style="color:#960050;background-color:#1e0010">寄</span><span style="color:#960050;background-color:#1e0010">存</span><span style="color:#960050;background-color:#1e0010">器</span><span style="color:#960050;background-color:#1e0010">是</span><span style="color:#960050;background-color:#1e0010">否</span><span style="color:#960050;background-color:#1e0010">会</span><span style="color:#960050;background-color:#1e0010">被</span><span style="color:#960050;background-color:#1e0010">隐</span><span style="color:#960050;background-color:#1e0010">式</span> write
+   <span style="color:#f92672">+</span>op_count : function
+   <span style="color:#f92672">+</span>op_find : function
+</code></pre></div><p>这里我罗列了一下它的所有操作,  我们下面写代码的时候会用到.</p>
+<h4 id="py-">这里我们先简单写一个.py, 来对上面的部分函数进行应用</h4>
+<p>我们可以先看一下输出结果:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">l0phtg<span style="color:#a6e22e">@l0phtg</span><span style="color:#f92672">-</span>PC:<span style="color:#f92672">~</span><span style="color:#f92672">/</span>blogTest<span style="color:#960050;background-color:#1e0010">$</span> python test<span style="color:#f92672">.</span>py 
+<span style="color:#ae81ff">0x1000</span>:	push	{r4, r6, r7, lr}
+id:<span style="color:#ae81ff">426</span>	groups:[<span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">151</span>]	size:<span style="color:#ae81ff">2</span>	
+bytes:	<span style="color:#ae81ff">0xd0</span> <span style="color:#ae81ff">0xb5</span> 
+	op_count: <span style="color:#ae81ff">4</span>
+		operands[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r4
+		operands[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r6
+		operands[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r7
+		operands[<span style="color:#ae81ff">3</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> lr
+
+<span style="color:#ae81ff">0x1002</span>:	pop	{r4, r6, r7, pc}
+id:<span style="color:#ae81ff">425</span>	groups:[<span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">151</span>]	size:<span style="color:#ae81ff">2</span>	
+bytes:	<span style="color:#ae81ff">0xd0</span> <span style="color:#ae81ff">0xbd</span> 
+	op_count: <span style="color:#ae81ff">4</span>
+		operands[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r4
+		operands[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r6
+		operands[<span style="color:#ae81ff">2</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r7
+		operands[<span style="color:#ae81ff">3</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> pc
+
+<span style="color:#ae81ff">0x1004</span>:	beq	<span style="color:#75715e">#0x100e</span>
+id:<span style="color:#ae81ff">17</span>	groups:[<span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">151</span>, <span style="color:#ae81ff">1</span>]	size:<span style="color:#ae81ff">2</span>	
+bytes:	<span style="color:#ae81ff">0x3</span> <span style="color:#ae81ff">0xd0</span> 
+	op_count: <span style="color:#ae81ff">1</span>
+		operands[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>type: IMM <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x100e</span>
+
+<span style="color:#ae81ff">0x1006</span>:	movs	r0, <span style="color:#75715e">#0</span>
+id:<span style="color:#ae81ff">80</span>	groups:[<span style="color:#ae81ff">150</span>, <span style="color:#ae81ff">151</span>]	size:<span style="color:#ae81ff">2</span>	
+bytes:	<span style="color:#ae81ff">0x0</span> <span style="color:#ae81ff">0x20</span> 
+	op_count: <span style="color:#ae81ff">2</span>
+		operands[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>type: REG <span style="color:#f92672">=</span> r0
+		operands[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>type: IMM <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x0</span>
+	Update<span style="color:#f92672">-</span>flags: True
+</code></pre></div><p>每条指令的指令名称, 指令操作数, 操作数类型, 该指令是否更新flag都显示了出来.</p>
+<p>下面的代码(参考test_arm.py的实现)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python2</span>
+<span style="color:#75715e">#-*- coding:utf-8 -*-</span>
+
+<span style="color:#f92672">import</span> sys
+<span style="color:#f92672">from</span> capstone <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">from</span> capstone.arm <span style="color:#f92672">import</span> <span style="color:#f92672">*</span>
+<span style="color:#f92672">from</span> xprint <span style="color:#f92672">import</span> to_hex, to_x, to_x_32
+
+my_thumb_code <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xd0</span><span style="color:#ae81ff">\xb5</span><span style="color:#ae81ff">\xd0</span><span style="color:#ae81ff">\xbd</span><span style="color:#ae81ff">\x03</span><span style="color:#ae81ff">\xd0</span><span style="color:#ae81ff">\x00</span><span style="color:#ae81ff">\x20</span><span style="color:#e6db74">&#34;</span>
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">print_insn_detail</span>(insn):
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">0x</span><span style="color:#e6db74">%x</span><span style="color:#e6db74">:</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (insn<span style="color:#f92672">.</span>address, insn<span style="color:#f92672">.</span>mnemonic, insn<span style="color:#f92672">.</span>op_str))
+    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">id:</span><span style="color:#e6db74">%d</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">groups:</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">size:</span><span style="color:#e6db74">%x</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (insn<span style="color:#f92672">.</span>id, insn<span style="color:#f92672">.</span>groups, insn<span style="color:#f92672">.</span>size))
+    sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">bytes:</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> insn<span style="color:#f92672">.</span>bytes:
+        sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> hex(i))
+    sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+    <span style="color:#66d9ef">if</span> len(insn<span style="color:#f92672">.</span>operands) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">op_count: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> len(insn<span style="color:#f92672">.</span>operands))
+        c <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+        <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> insn<span style="color:#f92672">.</span>operands:
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_REG:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: REG = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, insn<span style="color:#f92672">.</span>reg_name(i<span style="color:#f92672">.</span>reg)))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_IMM:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: IMM = 0x</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, to_x_32(i<span style="color:#f92672">.</span>imm)))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_PIMM:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: P-IMM = </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, i<span style="color:#f92672">.</span>imm))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_CIMM:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: C-IMM = </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, i<span style="color:#f92672">.</span>imm))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_FP:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: FP = </span><span style="color:#e6db74">%f</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, i<span style="color:#f92672">.</span>fp))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_SYSREG:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: SYSREG = </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> (c, i<span style="color:#f92672">.</span>reg))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_SETEND:
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>setend <span style="color:#f92672">==</span> ARM_SETEND_BE:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: SETEND = be</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> c)
+                <span style="color:#66d9ef">else</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: SETEND = le</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> c)
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> ARM_OP_MEM:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].type: MEM</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span> c)
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>base <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.base: REG = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, insn<span style="color:#f92672">.</span>reg_name(i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>base)))
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>index <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.index: REG = </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, insn<span style="color:#f92672">.</span>reg_name(i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>index)))
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>scale <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.scale: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>scale))
+                <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>disp <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].mem.disp: 0x</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span> \
+                        <span style="color:#f92672">%</span> (c, to_x_32(i<span style="color:#f92672">.</span>mem<span style="color:#f92672">.</span>disp)))
+
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>shift<span style="color:#f92672">.</span>type <span style="color:#f92672">!=</span> ARM_SFT_INVALID <span style="color:#f92672">and</span> i<span style="color:#f92672">.</span>shift<span style="color:#f92672">.</span>value:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Shift: </span><span style="color:#e6db74">%u</span><span style="color:#e6db74"> = </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> \
+                    <span style="color:#f92672">%</span> (i<span style="color:#f92672">.</span>shift<span style="color:#f92672">.</span>type, i<span style="color:#f92672">.</span>shift<span style="color:#f92672">.</span>value))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>vector_index <span style="color:#f92672">!=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].vector_index = </span><span style="color:#e6db74">%u</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span>(c, i<span style="color:#f92672">.</span>vector_index))
+            <span style="color:#66d9ef">if</span> i<span style="color:#f92672">.</span>subtracted:
+                <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">operands[</span><span style="color:#e6db74">%u</span><span style="color:#e6db74">].subtracted = True</span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">%</span>c)
+
+            c <span style="color:#f92672">+</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+    <span style="color:#66d9ef">if</span> insn<span style="color:#f92672">.</span>update_flags:
+        <span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">Update-flags: True</span><span style="color:#e6db74">&#34;</span>)
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_class</span>():
+
+    md <span style="color:#f92672">=</span> Cs(CS_ARCH_ARM, CS_MODE_THUMB)
+    md<span style="color:#f92672">.</span>detail<span style="color:#f92672">=</span>True
+    <span style="color:#66d9ef">for</span> insn <span style="color:#f92672">in</span> md<span style="color:#f92672">.</span>disasm(my_thumb_code, <span style="color:#ae81ff">0x1000</span>):
+        print_insn_detail(insn)
+        sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>write(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#39;</span>:
+    test_class()
+</code></pre></div><h3 id="-thumb-">了解 thumb 的指令编码:</h3>
+<p>在前面环境搭建的时候, 我向大家推荐了arm的一个文档, 本节主要针对该文档进行分析.</p>
+<p>首先定位到第<code>F3</code>章节, 观看目录:</p>
+<pre><code>Chapter F3
+T32 Base Instruction Set Encoding
+
+This chapter introduces the T32 instruction set and describes how it uses the ARM programmers’ model. It contains
+the following sections:
+
+• T32 instruction set encoding on page F3-2432.
+• 16-bit T32 instruction encoding on page F3-2435.
+• 32-bit T32 instruction encoding on page F3-2442.
+
+</code></pre><p>我们在此分析的是<strong>16-bit T32 instruction</strong>, 再次定位到<code>F3-2435</code>.</p>
+<p><img src="/thumb-vmp/thumb16.png" alt=""></p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/%E5%8A%A0%E5%9B%BA"><span class="tag">加固</span></a></li>
+        
+          <li><a href="/tags/capstone"><span class="tag">Capstone</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>802</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

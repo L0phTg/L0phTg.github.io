@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Hugo搭建博客</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.
+以前使用hexo搭的, 最近发现了好多人在用hugo, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Hugo搭建博客">
+    <meta name="twitter:description" content="博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.
+以前使用hexo搭的, 最近发现了好多人在用hugo, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Hugo搭建博客">
+  <meta property="og:description" content="博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.
+以前使用hexo搭的, 最近发现了好多人在用hugo, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.
+">
+  <meta property="og:url" content="/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Hugo搭建博客</h1>
+      <p class="post-meta">@L0phTg · Sep 19, 2018 · 3 min read</p>
+    </header>
+    <article class="post-content"><p>博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.</p>
+<p>以前使用hexo搭的, 最近发现了好多人在用<code>hugo</code>, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.</p>
+<p><a href="https://gohugo.io/getting-started/quick-start/">https://gohugo.io/getting-started/quick-start/</a></p>
+<p>hugo 搭建</p>
+<h2 id="linuxhugo">linux平台安装hugo</h2>
+<ol>
+<li>源码安装</li>
+</ol>
+<p>安装go:</p>
+<p><a href="https://golang.org/doc/install?download=go1.11.linux-amd64.tar.gz">https://golang.org/doc/install?download=go1.11.linux-amd64.tar.gz</a></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$tar -C /usr/local -xzf go1.11.linux-amd64.tar.gz
+$ vim /etc/profile
+export PATH<span style="color:#f92672">=</span>$PATH:/usr/local/go/bin
+</code></pre></div><p>下载源码安装hugo:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir $HOME/src
+cd $HOME/src
+git clone https://github.com/gohugoio/hugo.git
+cd hugo
+go install
+</code></pre></div><ol start="2">
+<li>apt安装</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$sudo apt install hugo
+</code></pre></div><h2 id="heading">使用</h2>
+<h3 id="new-site">创建New site</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$hugo new site quickstart
+</code></pre></div><h3 id="md">创建md</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$hugo new posts/my-first-post.md
+</code></pre></div><h3 id="heading-1">预览</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$hugo server -D 
+</code></pre></div><p>Navigate to your new site at http://localhost:1313/.</p>
+<h3 id="heading-2">个性化主题</h3>
+<p><a href="https://themes.gohugo.io/">https://themes.gohugo.io/</a></p>
+<h4 id="heading-3">网站配置</h4>
+<p><strong>config.toml</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">baseURL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://example.org/&#34;</span>
+languageCode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;en-us&#34;</span>
+title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;My New Hugo Site&#34;</span>
+theme <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ananke&#34;</span>
+
+</code></pre></div><h2 id="postgithub-pages">post到github pages上</h2>
+<ol>
+<li>升级git</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Debian/Ubuntu
+For the latest stable version <span style="color:#66d9ef">for</span> your release of Debian/Ubuntu
+
+<span style="color:#75715e"># apt-get install git</span>
+For Ubuntu, this PPA provides the latest stable upstream Git version
+<span style="color:#75715e"># add-apt-repository ppa:git-core/ppa # apt update; apt install git</span>
+</code></pre></div><ol start="2">
+<li>github上创建USER_NAME.github.io的repo.</li>
+<li>clone repo到public目录</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git submodule add -b master git@github.com:&lt;USERNAME&gt;/&lt;USERNAME&gt;.github.io.git public
+</code></pre></div><ol start="4">
+<li>push</li>
+</ol>
+<p><code>depl4oy.sh</code>如下</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
+</span><span style="color:#75715e"></span>
+echo -e <span style="color:#e6db74">&#34;\033[0;32mDeploying updates to GitHub...\033[0m&#34;</span>
+
+<span style="color:#75715e"># Build the project.</span>
+hugo <span style="color:#75715e"># if using a theme, replace with `hugo -t &lt;YOURTHEME&gt;`</span>
+
+<span style="color:#75715e"># Go To Public folder</span>
+cd public
+<span style="color:#75715e"># Add changes to git.</span>
+git add .
+
+<span style="color:#75715e"># Commit changes.</span>
+msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rebuilding site `date`&#34;</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $# -eq <span style="color:#ae81ff">1</span> <span style="color:#f92672">]</span>
+  <span style="color:#66d9ef">then</span> msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
+<span style="color:#66d9ef">fi</span>
+git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+
+<span style="color:#75715e"># Push source and build repos.</span>
+git push origin master
+
+<span style="color:#75715e"># Come Back up to the Project Root</span>
+cd ..
+</code></pre></div><h2 id="heading-4">内容编写</h2>
+<h3 id="heading-5">文档模板</h3>
+<p>默认是<code>archetypes /default.md</code>. new 文档时, 根据这个文档创建.</p>
+<p>我的<code>default.md</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">---
+title: &#34;{{ replace .TranslationBaseName &#34;-&#34; &#34; &#34; | title }}&#34;
+date: {{ .Date }}
+lastmod: {{ .Date }}
+draft: true
+keywords: []
+description: &#34;&#34;
+tags: []
+categories: []
+author: &#34;&#34;
+
+# You can also close(false) or open(true) something for this content.
+# P.S. comment can only be closed
+comment: false
+toc: true
+autoCollapseToc: false
+# You can also define another contentCopyright. e.g. contentCopyright: &#34;This is another copyright.&#34;
+#contentCopyright: false
+reward: false
+mathjax: false
+---
+
+&lt;!--more--&gt;
+
+</code></pre></div><h3 id="heading-6">插入图片</h3>
+<p>图片放在static目录下</p>
+<p>例如</p>
+<pre><code>目录下的文件:
+- static
+   - deepin
+      - desktop.png
+      - splitScreen.png
+      - vimMarkdownPreview.png
+</code></pre><p>使用的时候:</p>
+<pre><code>![desktop](/deepin/desktop.png)
+</code></pre><h3 id="heading-7">文章摘要</h3>
+<p><code>&lt;!--more--&gt;</code>前面的会成为文章的摘要, 在首页显示.</p>
+<pre><code>---
+title : &quot;hihi&quot;
+tags :  &quot;blog&quot;
+---
+
+&lt;!--more--&gt;
+
+正文
+</code></pre><h3 id="toc">显示toc</h3>
+<p>toc : true</p>
+<pre><code>---
+title: &quot;Iqiyi开源hook框架XHook分析&quot;
+date: 2018-09-19T02:19:05+08:00
+lastmod: 2018-09-19T02:19:05+08:00
+draft: false
+keywords: []
+description: &quot;&quot;
+tags: [&quot;hook&quot;]
+categories: [&quot;hook&quot;]
+author: &quot;&quot;
+
+# You can also close(false) or open(true) something for this content.
+# P.S. comment can only be closed
+comment: false
+toc: true
+autoCollapseToc: false
+# You can also define another contentCopyright. e.g. contentCopyright: &quot;This is another copyright.&quot;
+contentCopyright: false
+reward: false
+mathjax: false
+---
+</code></pre><h3 id="heading-8">语法高亮</h3>
+<h4 id="chroma">Chroma</h4>
+<p>hugo <strong>使用chroma默认进行语法高亮, 垃圾, 不好用, 推荐highlight.js</strong></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pygmentsCodefences <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown的代码块</span>
+pygmentsCodefencesGuessSyntax <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown中没有标注语言的代码块</span>
+pygmentsStyle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;manni&#39;</span> <span style="color:#75715e">#高亮主题</span>
+</code></pre></div><p>有些主题的默认css设置了background. 会导致highlight时出现字体白色阴影. 此时我们需要将它的background-color删掉或者覆盖掉.</p>
+<p>我使用的主题是<code>jane</code>, 默认css样式是<code>/themes/jane/static/dist/jane.min.css</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css">#jane.<span style="color:#a6e22e">min</span>.<span style="color:#a6e22e">css</span>
+ <span style="color:#f92672">code</span>{<span style="color:#66d9ef">padding</span>:<span style="color:#ae81ff">0</span> <span style="color:#ae81ff">7</span><span style="color:#66d9ef">px</span>;<span style="color:#66d9ef">background</span>:<span style="color:#ae81ff">#f8f5ec</span>;<span style="color:#66d9ef">border-radius</span>:<span style="color:#ae81ff">4</span><span style="color:#66d9ef">px</span>;<span style="color:#66d9ef">color</span>:<span style="color:#ae81ff">#c7254e</span>}
+</code></pre></div><p>把该块删掉.</p>
+<p>这要就可以解决阴影的问题了.<strong>可能自己的主题版本太老了, 可以pull一下最新版本, 这个问题应该会被修复了</strong> .</p>
+<h4 id="highlightjs">highlight.js</h4>
+<p>添加<strong>主题css</strong>和<strong>highlight.pack.js</strong>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">customCSS</span> = [<span style="color:#e6db74">&#39;styles/dracula.css]
+</span><span style="color:#e6db74">customJS = [&#39;</span><span style="color:#a6e22e">highlight</span>.<span style="color:#a6e22e">pack</span>.<span style="color:#a6e22e">js</span>]
+
+</code></pre></div><p><strong>body</strong>中添加<strong>script</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">hljs</span>.<span style="color:#a6e22e">initHighlightingOnLoad</span>();<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
+</code></pre></div><h3 id="heading-9">显示最后更新日期</h3>
+<pre><code>enableGitInfo = true    # 开启gitinfo
+
+[frontmatter]
+date = [&quot;date&quot;, &quot;publishDate&quot;, &quot;lastmod&quot;]
+lastmod = [&quot;:git&quot;, &quot;lastmod&quot;, &quot;date&quot;, &quot;publishDate&quot;]
+publishDate = [&quot;publishDate&quot;, &quot;date&quot;]
+expiryDate = [&quot;expiryDate&quot;]
+</code></pre><p>要实现该功能需要有<strong>commit记录</strong> , 所以需要<strong>添加我们的.md到git版本控制工具</strong> 中. 请阅读下面的<strong>博客搭建心得</strong>.</p>
+<h3 id="heading-10">数学公式</h3>
+<h4 id="mathjax">如何开启mathjax</h4>
+<p><code>/layout/partical</code>目录下创建<code>mathjax_support.html</code>, 写入:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/javascript&#34;</span>
+  <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;</span><span style="color:#f92672">&gt;</span>
+<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
+</code></pre></div><h4 id="heading-11">支持内联</h4>
+<p><code>/layouts/partials/custom_head.html</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/x-mathjax-config&#34;</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#a6e22e">MathJax</span>.<span style="color:#a6e22e">Hub</span>.<span style="color:#a6e22e">Config</span>({<span style="color:#a6e22e">tex2jax</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">inlineMath</span><span style="color:#f92672">:</span> [[<span style="color:#e6db74">&#39;$&#39;</span>,<span style="color:#e6db74">&#39;$&#39;</span>], [<span style="color:#e6db74">&#39;\\(&#39;</span>,<span style="color:#e6db74">&#39;\\)&#39;</span>]]}});  <span style="color:#75715e">// 内联公式
+</span><span style="color:#75715e"></span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
+</code></pre></div><h4 id="color">支持color</h4>
+<p><code>/layouts/partials/custom_head.html</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/x-mathjax-config&#34;</span><span style="color:#f92672">&gt;</span>
+  <span style="color:#a6e22e">MathJax</span>.<span style="color:#a6e22e">Hub</span>.<span style="color:#a6e22e">Config</span>({                                                      <span style="color:#75715e">// support color
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">showProcessingMessages</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>,
+  <span style="color:#a6e22e">jax</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;input/TeX&#34;</span>, <span style="color:#e6db74">&#34;output/HTML-CSS&#34;</span>],
+  <span style="color:#a6e22e">TeX</span><span style="color:#f92672">:</span> {
+    <span style="color:#a6e22e">TagSide</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;left&#34;</span>,
+    <span style="color:#a6e22e">Macros</span><span style="color:#f92672">:</span> {
+      <span style="color:#a6e22e">RR</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{\\bf R}&#39;</span>,
+      <span style="color:#a6e22e">bold</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;{\\bf #1}&#39;</span>,<span style="color:#ae81ff">1</span>]
+    }
+  }
+});
+<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
+
+</code></pre></div><h3 id="mermaid">mermaid</h3>
+<p><code>mermaid</code>支持画流程图, 甘特图等.</p>
+<p><a href="https://github.com/knsv/mermaid/releases">https://github.com/knsv/mermaid/releases</a></p>
+<p>和使用<code>highlight.js</code>的方法类似:</p>
+<p>添加<code>mermaid.css</code> 和 <code>mermaid.min.js</code> .</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">customCSS</span> = [<span style="color:#e6db74">&#39;styles/dracula.css&#39;</span>, <span style="color:#e6db74">&#39;mermaid.css&#39;</span>]            <span style="color:#75715e"># if [&#39;custom.css&#39;], load &#39;/static/css/custom.css&#39; file</span>
+<span style="color:#a6e22e">customJS</span> = [<span style="color:#e6db74">&#39;highlight.pack.js&#39;</span>,<span style="color:#e6db74">&#39;mermaid.min.js&#39;</span>]             <span style="color:#75715e"># if [&#39;custom.js&#39;], load &#39;/static/js/custom.js&#39; file</span>
+</code></pre></div><p><code>script.html</code>中添加</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span>&gt; <span style="color:#a6e22e">mermaid</span>.<span style="color:#a6e22e">initialize</span>({ <span style="color:#a6e22e">startOnLoad</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> });&lt;/<span style="color:#f92672">script</span>&gt;
+</code></pre></div><p>除此之外，还需要在主题的shortcodes目录下创建mermaid.html, 参考:<a href="https://kentxxq.com/contents/%E6%8B%93%E5%B1%95hugo%E7%9A%84markdown_%E6%B5%81%E7%A8%8B%E5%9B%BEmermaid/">mermaid笔记</a></p>
+<pre><code>&lt;!--mermaid.html--&gt;
+&lt;div class=&quot;mermaid&quot; align=&quot;{{ if .Get &quot;align&quot; }}
+                            {{ .Get &quot;align&quot; }}
+                        {{ else }} 
+                            center
+                        {{ end }}&quot;&gt; 
+{{ safeHTML .Inner }}
+&lt;/div&gt;
+</code></pre><h5 id="heading-12">使用</h5>
+<p>要被<code>{{ xxx}}</code>, <code>{{ xxx }}</code>,  括起来, xxx为<code>&lt;mermaid&gt;</code>和<code>&lt;/mermaid&gt;</code></p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">graph TD
+    Start <span style="color:#f92672">-</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span> Stop
+</code></pre></div><p>生成:</p>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TD
+    Start --> Stop
+
+</div>
+<h1 id="heading-13">博客搭建心得</h1>
+<p>注意到, 在上文我们<strong>post网站到github pages</strong> 上时,  是将<strong>public目录作为submodule</strong>  push的. (push 的就是public目录的内容 ).</p>
+<p><img src="/life/blog-public.png" alt="blog-public"></p>
+<p>我们可以将当前的hugo 目录, 按上图来说就是<strong>quickstart目录</strong> 作为我们的博客代码编写目录添加到<strong>quickstart的git版本控制中</strong> .</p>
+<p>我添加到git仓库中的文件有: <strong>config.toml, content/ , deploy.sh</strong>.</p>
+<p><img src="/life/blog-ls-files.png" alt="blog-ls-files"></p>
+<p>添加到版本控制的目的: 可以将它提交到我们的<strong>github</strong>或者 <strong>gitee</strong>上, <strong>方便跨平台编辑, 也可以当作一个备份</strong> .</p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/life"><span class="tag">Life</span></a></li>
+        
+          <li><a href="/tags/blog"><span class="tag">Blog</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>277</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

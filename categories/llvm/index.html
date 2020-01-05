@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>
+  Category → llvm
+  
+   | L0phTg&#39;s Blog
+</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="Ritchie Zhu">
+  <meta name="description" content="Hugo is one of the most popular open-source static site generators. With its amazing speed and flexibility, Hugo makes building websites fun again.">
+
+  
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@gohugoio">
+  <meta name="twitter:title" content="L0phTg&#39;s Blog">
+  <meta name="twitter:description" content="Hugo is one of the most popular open-source static site generators. With its amazing speed and flexibility, Hugo makes building websites fun again.">
+  <meta name="twitter:image" content="/images/avatar.png">
+
+  
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="L0phTg&#39;s Blog">
+  <meta property="og:description" content="Hugo is one of the most popular open-source static site generators. With its amazing speed and flexibility, Hugo makes building websites fun again.">
+  <meta property="og:url" content="/categories/llvm/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/categories/llvm/">
+<link rel="alternate" type="application/rss+xml" href="/categories/llvm/index.xml" title="L0phTg's Blog">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+           is-active
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-list">
+    <header class="list-header offscreen">
+      <h2 class="list-label">Posts List</h2>
+    </header>
+    
+    
+
+    
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/" class="post-link">Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</a></h3>
+    <p class="post-meta">@L0phTg · Jun 26, 2019 · 1 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl10.html">http://llvm.org/docs/tutorial/LangImpl10.html</a></p>
+<p>本文是LLVM教程（Kaleidoscope）的最后一章：介绍教程结论和一些有用的LLVM技巧。</p>
+<p>另：按照原本的计划，&lt;&lt;LLVM系列 * 上半年&raquo;应该还有一篇Kaleidoscope教程的总结、和&lt;&lt;Pass基础知识介绍&raquo;一篇文章，和三篇编写Pass的文章。但是预计近三个月刚入职，事情会比较多，所以这个系列文章的更新时间会推迟&ndash;鸽（好饭不怕晚，哈哈哈&mdash;自卖自夸）。</p>
+<p><strong>Warnning</strong>: 上午尽量少玩手机，伤眼。</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscopeadding-debug-information/" class="post-link">Kaleidoscope：Adding Debug Information</a></h3>
+    <p class="post-meta">@L0phTg · Jun 24, 2019 · 4 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl09.html">http://llvm.org/docs/tutorial/LangImpl09.html</a></p>
+<p>唔，最后两个章节有点难产。</p>
+<p>本章主要介绍：为Kaleidoscope添加调试信息支持。</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscopeadding-debug-information/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscopecompile-to-object-code/" class="post-link">Kaleidoscope：Compile to Object Code</a></h3>
+    <p class="post-meta">@L0phTg · Jun 16, 2019 · 2 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from:http://llvm.org/docs/tutorial/LangImpl08.html</p>
+<p>本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。</p>
+<p>本章内容比较简单。</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscopecompile-to-object-code/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscopeextending-the-languagemutable-variables/" class="post-link">Kaleidoscope：Extending the Language：Mutable Variables</a></h3>
+    <p class="post-meta">@L0phTg · Jun 12, 2019 · 9 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl07.html">http://llvm.org/docs/tutorial/LangImpl07.html</a></p>
+<p>本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对<strong>改变变量</strong>功能的支持。</p>
+<ul>
+<li>
+<p>改变已经存在的变量：</p>
+<ol>
+<li>
+<p>函数参数。</p>
+</li>
+<li>
+<p>迭代变量。</p>
+<p>在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。</p>
+<p>具体到Kaleidoscope语法层面，我们通过'='运算符达到对已经定义变量的改变。</p>
+</li>
+</ol>
+</li>
+<li>
+<p>新定义一个变量：
+通过关键字var/in实现。</p>
+</li>
+</ul>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscopeextending-the-languagemutable-variables/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/" class="post-link">Kaleidoscope：Extending the Language：User Defined Operators</a></h3>
+    <p class="post-meta">@L0phTg · Jun 11, 2019 · 8 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl06.html">http://llvm.org/docs/tutorial/LangImpl06.html</a></p>
+<p>发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。</p>
+<p>扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。</p>
+<ul>
+<li>
+<p>为了实现用户自定义运算符，我们采用了<strong>扩展函数申明和扩展函数定义</strong>的实现方式。</p>
+</li>
+<li>
+<p>为了实现对用户自定义运算符的表达式支持：</p>
+<ol>
+<li>针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如+、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可；</li>
+<li>针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。</li>
+</ol>
+</li>
+</ul>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TB
+
+  subgraph 二元运算符
+    binaryParser[1. 添加词法分析支持] 
+    subgraph 2. 实现用户自定义二元运算符函数
+    funcProtoExtend[扩展函数申明AST] --> funcProtoParser[扩展ParsePrototype函数]
+    end 
+    binaryParser --> funcProtoExtend
+    funcProtoParser --> binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符]
+  end
+
+    subgraph 一元运算符
+    unaryParser["1. 添加词法分析支持"] 
+        subgraph 2. 实现用户自定义的一元运算符函数
+            unaryFuncProtoExtend[扩展函数申明AST] --> unaryFuncProtoParser[扩展ParsePrototype函数]
+    end
+        unaryParser --> unaryFuncProtoExtend
+    subgraph 3. 实现一元运算符表达式的解析 
+            createUnaryAST[创建UnaryExprAST节点] --> parseUnary[添加解析一元运算符表达式的函数]
+            parseUnary --> parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑]
+    end
+        unaryFuncProtoParser --> createUnaryAST
+    end
+
+    style funcProtoExtend fill:#f9f
+  style funcProtoParser fill:#f9f
+  style unaryFuncProtoExtend fill:#f9f
+  style unaryFuncProtoParser fill:#f9f
+  
+  style binaryCodegen fill:#ccff66
+  style createUnaryAST fill:#ccff66
+  style parseUnary fill:#ccff66
+  style parsePrimary fill:#ccff66
+
+</div>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="post-link">Kaleidoscope: 前五章总结</a></h3>
+    <p class="post-meta">@L0phTg · Apr 15, 2019 · 5 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>对前五章做了一个总结, 侧重Codegen部分.</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscope_extending-the-language-control-flow/" class="post-link">Kaleidoscope: Extending the Language Control Flow</a></h3>
+    <p class="post-meta">@L0phTg · Apr 14, 2019 · 9 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl05.html">http://llvm.org/docs/tutorial/LangImpl05.html</a></p>
+<p>本文为Kaleidoscope添加条件判断控制流和循环控制流.</p>
+<p>注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.</p>
+<p>因为这个系列主要是翻译, 所以基本没有涉及自己的理解. <strong>之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结</strong>.</p>
+<p><img src="/docs-pic/llvm/loop.png" alt=""></p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscope_extending-the-language-control-flow/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/" class="post-link">Kaleidoscope: Adding JIT and Optimizer Support</a></h3>
+    <p class="post-meta">@L0phTg · Apr 13, 2019 · 8 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl04.html">http://llvm.org/docs/tutorial/LangImpl04.html</a></p>
+<p>本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.</p>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TB
+  subgraph call
+    funcall("foo(1);")
+  end
+  subgraph expr
+    nodeExpr("1+2;")
+  end
+
+  jitAddModule["JIT中 添加此Module"]
+  jitRemoveModule["JIT中 删除此Module"]
+  anoCodegen["执行 匿名函数Codegen"]
+  AnonymousCall["匿名函数包装"]
+  optimizeFunc["执行 Pass优化"]
+  nodeExpr --> AnonymousCall
+  funcall --> AnonymousCall
+  AnonymousCall --> anoCodegen
+  anoCodegen --> jitAddModule
+  jitAddModule --> optimizeFunc
+  optimizeFunc --> exec["JIT 运行此表达式, 并计算值"]
+  exec --> jitRemoveModule
+
+  subgraph func definition
+    nodeFoo("def foo(x) x+1;")
+    funcCodegen["执行 函数定义Codegen"]
+    nodeFoo --> funcCodegen
+  end
+
+  funcCodegen --> jitAddFuncModule["JIT中 添加此Module"]
+  jitAddFuncModule --> initPassManager["执行 Pass优化"]
+
+  subgraph extern
+    nodeExtern("extern sin(x);")
+    protoCodegen["执行 函数申明Codegen"]
+    nodeExtern --> protoCodegen
+  end
+
+  style jitAddModule fill:#f9f
+	style jitRemoveModule fill:#f9f
+	style jitAddFuncModule fill:#f9f
+	
+	style optimizeFunc fill:#ccff66
+	style initPassManager fill:#ccff66
+	
+	style exec fill:#ff3300
+
+</div>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscope_code-generation-to-llvm-ir/" class="post-link">Kaleidoscope: Code Generation to LLVM IR</a></h3>
+    <p class="post-meta">@L0phTg · Apr 12, 2019 · 6 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl03.html">http://llvm.org/docs/tutorial/LangImpl03.html</a></p>
+<p>介绍四个基本表达式和函数申明与定义的Codegen.</p>
+<p><img src="/docs-pic/llvm/Codegen.png" alt="codegen .png"></p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscope_code-generation-to-llvm-ir/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="/post/llvm/kaleidoscope_implementing-a-parser-and-ast/" class="post-link">Kaleidoscope: Implementing a Parser and AST</a></h3>
+    <p class="post-meta">@L0phTg · Apr 11, 2019 · 6 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl02.html">http://llvm.org/docs/tutorial/LangImpl02.html</a></p>
+<p><img src="/docs-pic/dots/uml/ExprAst-1.png" alt=""></p>
+<p>介绍AST(抽象语法树)和Parser.</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="/post/llvm/kaleidoscope_implementing-a-parser-and-ast/">Read More →</a>
+  </footer>
+</article>
+
+      
+     
+    
+      <footer class="list-footer">
+        <nav class="pagination">
+          <h3 class="offscreen">Pagination</h3>
+          
+          
+            <a class="pagination-next" href="/categories/llvm/page/2/">Older Posts →</a>
+          
+        </nav>
+      </footer>
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+
+
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

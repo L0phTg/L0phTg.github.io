@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kaleidoscope: Tutorial Introduction and Lexer</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="translate from http://llvm.org/docs/tutorial/LangImpl01.html
+本tutorial将会介绍一个简单语言的实现.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Kaleidoscope: Tutorial Introduction and Lexer">
+    <meta name="twitter:description" content="translate from http://llvm.org/docs/tutorial/LangImpl01.html
+本tutorial将会介绍一个简单语言的实现.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Kaleidoscope: Tutorial Introduction and Lexer">
+  <meta property="og:description" content="translate from http://llvm.org/docs/tutorial/LangImpl01.html
+本tutorial将会介绍一个简单语言的实现.
+">
+  <meta property="og:url" content="/post/kaleidoscope_tutorial-introduction-and-lexer/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/kaleidoscope_tutorial-introduction-and-lexer/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kaleidoscope: Tutorial Introduction and Lexer</h1>
+      <p class="post-meta">@L0phTg · Apr 10, 2019 · 2 min read</p>
+    </header>
+    <article class="post-content"><p>translate from <a href="http://llvm.org/docs/tutorial/LangImpl01.html">http://llvm.org/docs/tutorial/LangImpl01.html</a></p>
+<p>本tutorial将会介绍一个简单语言的实现.</p>
+<h1 id="11-tutorial-introduction">1.1 Tutorial Introduction</h1>
+<h1 id="12-the-basic-language">1.2 The Basic Language</h1>
+<p><code>Kaleidoscope</code>是一个过程语言. 它允许你定义函数, 使用条件分支, math, etc.</p>
+<p>在本tutorial中,  我们将会扩展Kaleidoscope来支持<strong>if/then/else 判断</strong>, <strong>for循环</strong>, <strong>用户自定义operators</strong>, <strong>用一个简单的命令行接口的JIT 编译</strong> , etc.</p>
+<p>因为我们都想要把事情做的简单. 所以in Kaleidoscope中, 唯一的数据类型是<strong>64-bit floating point type</strong>. 因此, 所有的values都隐式地<strong>double</strong>类型.</p>
+<p>下面是使用Kaleidoscope来计算Fibonacci numbers的一个simple example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">//Compute the x&#39;th fibonacci number.
+</span><span style="color:#75715e"></span>def fib(x)
+    <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span> then 
+        <span style="color:#ae81ff">1</span>
+    <span style="color:#66d9ef">else</span>
+        fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>)
+
+<span style="color:#75715e">#</span><span style="color:#75715e"> This expression will compute the 40th number        </span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>fib(<span style="color:#ae81ff">40</span>)
+</code></pre></div><p>我们也允许Kaleidoscope来调用标准库函数. 这意味着, 你可以在函数前面加关键字&rdquo;<strong>extern</strong>&quot;.</p>
+<p>For Example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">sin</span>(arg);
+<span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">cos</span>(arg);
+<span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">atan2</span>(arg2, arg2);
+
+atan2(sin(<span style="color:#ae81ff">.4</span>), cos(<span style="color:#ae81ff">42</span>))
+</code></pre></div><p>第6章包含更有趣的例子, 我们使用Kaleidoscope写了一个小型应用 display a Mandelbrot Set at various levels of magnification.</p>
+<p>下面让我们探究Kaleidoscope的实现吧!!!.</p>
+<h1 id="13-lexer">1.3 Lexer</h1>
+<p>Token类型:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// The lexer returns tokens [0-255] if it is an unknown character, otherwise one
+</span><span style="color:#75715e"></span><span style="color:#75715e">// of these for known things.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">Token</span> {
+  tok_eof <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,
+
+  <span style="color:#75715e">// commands
+</span><span style="color:#75715e"></span>  tok_def <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>,
+  tok_extern <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">3</span>,
+
+  <span style="color:#75715e">// primary
+</span><span style="color:#75715e"></span>  tok_identifier <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>,
+  tok_number <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>,
+};
+
+<span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string IdentifierStr; <span style="color:#75715e">// Filled in if tok_identifier
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">double</span> NumVal;             <span style="color:#75715e">// Filled in if tok_number
+</span></code></pre></div><p>从标准输入中返回next token</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// gettok - Return the next token from standard input.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">gettok</span>() {
+  <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> LastChar <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#39;</span>;
+
+  <span style="color:#75715e">// Skip any whitespace.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">while</span> (isspace(LastChar))
+    LastChar <span style="color:#f92672">=</span> getchar();
+</code></pre></div><p>判断token是否为标识符</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">if</span> (isalpha(LastChar)) { <span style="color:#75715e">// identifier: [a-zA-Z][a-zA-Z0-9]*
+</span><span style="color:#75715e"></span>  IdentifierStr <span style="color:#f92672">=</span> LastChar;
+  <span style="color:#66d9ef">while</span> (isalnum((LastChar <span style="color:#f92672">=</span> getchar())))
+    IdentifierStr <span style="color:#f92672">+</span><span style="color:#f92672">=</span> LastChar;
+
+  <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">def</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">return</span> tok_def;
+  <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">extern</span><span style="color:#e6db74">&#34;</span>)
+    <span style="color:#66d9ef">return</span> tok_extern;
+  <span style="color:#66d9ef">return</span> tok_identifier;
+}
+</code></pre></div><p>判断token是否为数字</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">if</span> (isdigit(LastChar) <span style="color:#f92672">|</span><span style="color:#f92672">|</span> LastChar <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#39;</span>) {   <span style="color:#75715e">// Number: [0-9.]+
+</span><span style="color:#75715e"></span>  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string NumStr;
+  <span style="color:#66d9ef">do</span> {
+    NumStr <span style="color:#f92672">+</span><span style="color:#f92672">=</span> LastChar;
+    LastChar <span style="color:#f92672">=</span> getchar();
+  } <span style="color:#66d9ef">while</span> (isdigit(LastChar) <span style="color:#f92672">|</span><span style="color:#f92672">|</span> LastChar <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#39;</span>);
+
+  NumVal <span style="color:#f92672">=</span> strtod(NumStr.c_str(), <span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">return</span> tok_number;
+}
+</code></pre></div><p>判断是否为注释</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">if</span> (LastChar <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">#</span><span style="color:#e6db74">&#39;</span>) {
+  <span style="color:#75715e">// Comment until end of line.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">do</span>
+    LastChar <span style="color:#f92672">=</span> getchar();
+  <span style="color:#66d9ef">while</span> (LastChar <span style="color:#f92672">!</span><span style="color:#f92672">=</span> EOF <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> LastChar <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\n</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> LastChar <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\r</span><span style="color:#e6db74">&#39;</span>);
+
+  <span style="color:#66d9ef">if</span> (LastChar <span style="color:#f92672">!</span><span style="color:#f92672">=</span> EOF)
+    <span style="color:#66d9ef">return</span> gettok();
+}
+</code></pre></div><p>是否文件末尾</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Check for end of file.  Don&#39;t eat the EOF.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (LastChar <span style="color:#f92672">=</span><span style="color:#f92672">=</span> EOF)
+      <span style="color:#66d9ef">return</span> tok_eof;
+
+<span style="color:#75715e">// Otherwise, just return the character as its ascii value.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> ThisChar <span style="color:#f92672">=</span> LastChar;
+LastChar <span style="color:#f92672">=</span> getchar();
+<span style="color:#66d9ef">return</span> ThisChar;
+}
+</code></pre></div></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/llvm"><span class="tag">Llvm</span></a></li>
+        
+          <li><a href="/tags/kaleidoscope"><span class="tag">Kaleidoscope</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>270</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

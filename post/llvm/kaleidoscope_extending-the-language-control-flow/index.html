@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kaleidoscope: Extending the Language Control Flow</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="translate from: http://llvm.org/docs/tutorial/LangImpl05.html
+本文为Kaleidoscope添加条件判断控制流和循环控制流.
+注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.
+因为这个系列主要是翻译, 所以基本没有涉及自己的理解. 之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Kaleidoscope: Extending the Language Control Flow">
+    <meta name="twitter:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl05.html
+本文为Kaleidoscope添加条件判断控制流和循环控制流.
+注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.
+因为这个系列主要是翻译, 所以基本没有涉及自己的理解. 之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Kaleidoscope: Extending the Language Control Flow">
+  <meta property="og:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl05.html
+本文为Kaleidoscope添加条件判断控制流和循环控制流.
+注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.
+因为这个系列主要是翻译, 所以基本没有涉及自己的理解. 之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结.
+">
+  <meta property="og:url" content="/post/llvm/kaleidoscope_extending-the-language-control-flow/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/llvm/kaleidoscope_extending-the-language-control-flow/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kaleidoscope: Extending the Language Control Flow</h1>
+      <p class="post-meta">@L0phTg · Apr 14, 2019 · 9 min read</p>
+    </header>
+    <article class="post-content"><p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl05.html">http://llvm.org/docs/tutorial/LangImpl05.html</a></p>
+<p>本文为Kaleidoscope添加条件判断控制流和循环控制流.</p>
+<p>注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.</p>
+<p>因为这个系列主要是翻译, 所以基本没有涉及自己的理解. <strong>之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结</strong>.</p>
+<p><img src="/docs-pic/llvm/loop.png" alt=""></p>
+<h1 id="chapter-5-introduction">Chapter 5 Introduction</h1>
+<p>Welcome to Chapter 5 of the &ldquo;Implementing a language with LLVM &quot; tutorial.</p>
+<p>第一章到第四章描述了Kaleidoscope的简单的实现并且支持了LLVM IR的生成, 然后是优化和JIT编译器.</p>
+<p>不幸地是, 正如你现在现在看到的, Kaleidoscope 是几乎无用的:</p>
+<p>​	除了调用和返回之外, 它没有其他控制流. 这意味着你在代码中没有条件分支, 从而限制了它的功能.</p>
+<p>在本期 构建编译器中, 我们将会扩展Kaleidoscope, 使它拥有 <strong>if/then/else表达式</strong>和一个简单的 <strong>for 循环</strong>.</p>
+<h1 id="ifthenelse">if/Then/Else</h1>
+<p>扩展Kaleidoscope来支持if/then/else是相当直接的. 它基本上就是为<strong>词法分析器, 解析器, AST, LLVM Code emitter</strong>增加新的概念.</p>
+<p>例子是很不错的, 因为它表明了<code>随着时间的推移, 根据新的概念来对语言进行扩展是多么的容易</code>.</p>
+<p>在我们进行扩展之前, 让我们讨论一下我们到底想要做什么.</p>
+<p>基本的意思是我们想要能够写出这样的代码:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">def <span style="color:#a6e22e">fib</span>(x)
+  <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span> then
+    <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">else</span>
+    fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span>fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>);
+</code></pre></div><p>在Kaleidoscope中, 每个构造都是一个表达式: 没有语句. 因此, <strong>if/then/else</strong> 表达式需要像其他表达式一样返回值. 由于我们正在使用一个普遍的功能形式, 我们会计算它的条件, 然后根据条件的解析方式返回 <strong>then</strong>或<strong>else</strong>值.</p>
+<p>if/then/else的表达式的语义是: <code>它能够将条件计算为一个bool等价的值</code>: 0.0被认为是false, everything else被认为是true. 如果条件为true, 则计算并返回第一个子表达式值; 如果条件为false, 则计算并返回第二个表达式值. 由于Kaleidoscope 允许产生副作用, 所以将该行为确定下来是非常重要的.</p>
+<p>现在我们知道了我们想要做什么, 下面让我们一起了解它的组成部分.</p>
+<h2 id="ifthenelselexer">if/then/else的Lexer扩展</h2>
+<p>词法分析扩展是相当直接的. 首先我们<strong>为新的tokens增加新的enum值</strong>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// control
+</span><span style="color:#75715e"></span>tok_if <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>,
+tok_then <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">7</span>,
+tok_else <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>,
+</code></pre></div><p>一旦我们有了它们 我们就意识到了在词法分析器中有了新的<strong>keywords(关键字)</strong>. This is pretty simple stuff:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">...
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">def</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_def;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">extern</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_extern;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">if</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_if;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">then</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_then;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">else</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_else;
+<span style="color:#66d9ef">return</span> tok_identifier;
+</code></pre></div><h2 id="ifthenelseast-">if/then/else的AST 扩展</h2>
+<p>if/then/else 属于表达式, 所以==IfExprAST==继承自==ExprAST==.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// IfExprAST - Expression class for if/then/else.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">IfExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Cond, Then, Else;
+
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+  IfExprAST(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Cond, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Then,
+            std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Else)
+    <span style="color:#f92672">:</span> Cond(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Cond)), Then(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Then)), Else(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Else)) {}
+
+  Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#66d9ef">override</span>;
+};
+</code></pre></div><h2 id="ifthenelseparser">if/then/else的parser扩展</h2>
+<p>现在我们有了词法分析的tokens和AST节点, 我们现在的解析逻辑就相当直接了.</p>
+<p>首先我们定义一个新的解析函数:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">/// ifexpr ::= &#39;if&#39; expression &#39;then&#39; expression &#39;else&#39; expression
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseIfExpr() {
+  getNextToken();  <span style="color:#75715e">// eat the if.
+</span><span style="color:#75715e"></span>
+  <span style="color:#75715e">// condition.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> Cond <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Cond)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_then)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected then</span><span style="color:#e6db74">&#34;</span>);
+  getNextToken();  <span style="color:#75715e">// eat the then
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">auto</span> Then <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Then)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_else)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected else</span><span style="color:#e6db74">&#34;</span>);
+
+  getNextToken();
+
+  <span style="color:#66d9ef">auto</span> Else <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Else)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>IfExprAST<span style="color:#f92672">&gt;</span>(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Cond), std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Then),
+                                      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Else));
+}
+</code></pre></div><p>现在我们将它与primay expression连接起来:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParsePrimary() {
+  <span style="color:#66d9ef">switch</span> (CurTok) {
+  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unknown token when expecting an expression</span><span style="color:#e6db74">&#34;</span>);
+  <span style="color:#66d9ef">case</span> tok_identifier:
+    <span style="color:#66d9ef">return</span> ParseIdentifierExpr();
+  <span style="color:#66d9ef">case</span> tok_number:
+    <span style="color:#66d9ef">return</span> ParseNumberExpr();
+  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> ParseParenExpr();
+  <span style="color:#66d9ef">case</span> tok_if:
+    <span style="color:#66d9ef">return</span> ParseIfExpr();
+  }
+}
+</code></pre></div><h2 id="ifthenelsellvm-ir">if/then/else的LLVM IR</h2>
+<p>现在我们已经解析完成并且建立了抽象语法树, 最后的内容是增加==LLVM code generation support==. 这是 if/else/then的例子中最有趣的地方, <strong>因为它开始引入了新的概念</strong>. 上面所有的代码都在以前的章节详细介绍过.</p>
+<p>为了产生我们想要得到的代码. 让我们看一个简单的例子. Consider:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>();
+<span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">bar</span>();
+def <span style="color:#a6e22e">baz</span>(x) <span style="color:#66d9ef">if</span> x then foo() <span style="color:#66d9ef">else</span> bar();
+
+</code></pre></div><p>如果禁用优化, 你可以看到生成的IR是下面这样的:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @foo()
+
+<span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @bar()
+
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @baz(<span style="color:#66d9ef">double</span> %x) {
+entry:
+  %ifcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %ifcond, <span style="color:#66d9ef">label</span> %then, <span style="color:#66d9ef">label</span> %else
+
+then:       <span style="color:#75715e">; preds = %entry
+</span><span style="color:#75715e"></span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo()
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+else:       <span style="color:#75715e">; preds = %entry
+</span><span style="color:#75715e"></span>  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar()
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+ifcont:     <span style="color:#75715e">; preds = %else, %then
+</span><span style="color:#75715e"></span>  %iftmp = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ %calltmp, %then ], [ %calltmp1, %else ] <span style="color:#75715e">; 返回值
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %iftmp
+}
+</code></pre></div><p>为了使流程图可视化:</p>
+<ul>
+<li>
+<p>你能够使用LLVM <strong>opt</strong> tool的一个漂亮的功能. 如果你将LLVM IR放到 &ldquo;t.ll&quot;中, 并且运行 <code>llvm-as &lt; t.ll | opt -analyze -view-cfg</code>, 一个window将会弹出, 并且你将会看到这幅图:</p>
+<p><img src="/docs-pic/llvm/if.png" alt="if CFG"></p>
+</li>
+<li>
+<p>另一种方法: 可以通过调用 <code>F-&gt;viewCFG() </code> 或者<code>F-&gt;viewCFGOnly()</code>(where F is a &ldquo;Function&rdquo;)通过插入实际的调用到代码中并且重新编译, 可以得到我们想要的CFG图. 或者通过在编译器中调用他们. LLVM具有许多很友好的特性来可视化出各种各样的图形.</p>
+</li>
+</ul>
+<p>回到我们的Codegen代码中, 它是相当简单地:</p>
+<p><strong>The entry block</strong>: 计算条件表达式 (在我们的例子中是&quot;x&rdquo; ) 并且使用==fcmp one==指令将<strong>result</strong>与<strong>0.0</strong>相比较 ( <strong>one</strong> 表示有序并且不相等). 基于该表达式的结果, 代码跳转到<strong>then block</strong> 或者 <strong>else block</strong>, which 包含 true/false cases的表达式.</p>
+<p>一旦 <strong>then/else block</strong>执行完成了, 他们都返回到**&ldquo;ifcont&rdquo; block**来执行 if/then/else 之后发生的代码. 在这种情况下, 唯一要做的事情就是返回到函数的调用者.</p>
+<p>现在我们的问题是: <code>代码是如何知道哪一个表达式要返回的呢?</code></p>
+<p>这个问题的答案涉及重要的<strong>SSA 操作</strong>: <a href="https://en.wikipedia.org/wiki/Static_single_assignment_form">the Phi operation</a>(或者看我之前翻译的文章: <a href="https://l0phtg.github.io/post/llvm/static-single-assignment/">Staitc Single Assignment</a>). 如果你不熟悉SSA, <a href="https://en.wikipedia.org/wiki/Static_single_assignment_form">the wikipedia article</a>是一个很不错的入门并且你最喜欢的搜索引擎上各种其它的介绍.</p>
+<p>一个简单的对$phi$ 函数执行的介绍是: <code>可以确定我们是从哪一个表达式返回的</code>. <strong>The phi operation</strong>采用与输入控制块相对应的value.</p>
+<p>在这个例子中, 如果控制来自 <strong>&ldquo;then&rdquo; block</strong>, 则它获得<strong>calltmp</strong>的值.</p>
+<p>如果控制来自**&ldquo;else&rdquo; block**, 它获得**calltmp1**的值.</p>
+<p>此刻, 你可能已经开始思考了. &ldquo;Oh no!&rdquo; 这意味着我的简单优雅的前端必须开始生成SSA 才能使用LLVM. 幸运地是, 我们强烈建议不要在你的前端实现SSA构造算法除非你有一个非常好的理由这样做. 实际上,  对于你的命令行式编程语言来说,出现下面这两种情况时, 这表明此刻可能需要Phi nodes:</p>
+<ol>
+<li>代码涉及用户变量: x = 1; x = x + 1;</li>
+<li>Values可能隐式地在AST结构中, 例如在本例子中的Phi node.</li>
+</ol>
+<p>在<a href="http://llvm.org/docs/tutorial/LangImpl07.html">第七章</a>  (&ldquo;多元变量&rdquo;), 我们将讨论第一种情况. 现在, 请相信我你不需要SSA构造来处理这种情况.</p>
+<p>对于第二种情况, 你可以选择使用我们将为 #1描述的技术. 或者你能直接插入Phi 节点(如果方便的话).</p>
+<p>在我们这个例子中 产生 Phi code真的是简单的, 所以我们选择直接插入Phi节点.</p>
+<p>Okay. 我们已经了解了足够多, 让我们生成代码吧.</p>
+<h2 id="ifthenelse-">if/then/else 的代码产生</h2>
+<p>为了产生代码, 我们需要实现<strong>IfExpAST</strong>的codegen方法.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>IfExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
+  Value <span style="color:#f92672">*</span>CondV <span style="color:#f92672">=</span> Cond<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>CondV)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#75715e">// Convert condition to a bool by comparing non-equal to 0.0.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 转换条件到一个bool值. 
+</span><span style="color:#75715e"></span>  CondV <span style="color:#f92672">=</span> Builder.CreateFCmpONE(
+      CondV, ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(TheContext, APFloat(<span style="color:#ae81ff">0.0</span>)), <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ifcond</span><span style="color:#e6db74">&#34;</span>);
+</code></pre></div><p>这段代码很直接, 和我们之前看到的类似. 我们 emit the expression for the condition, 然后将值与0进行比较, 得到bool值.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> Builder.GetInsertBlock()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getParent();
+
+<span style="color:#75715e">// Create blocks for the then and else cases.  Insert the &#39;then&#39; block at the
+</span><span style="color:#75715e"></span><span style="color:#75715e">// end of the function.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 创建then and else case的blocks. 
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 插入 &#39;then&#39; block在函数的最后
+</span><span style="color:#75715e"></span>
+BasicBlock <span style="color:#f92672">*</span>ThenBB <span style="color:#f92672">=</span>
+    BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">then</span><span style="color:#e6db74">&#34;</span>, TheFunction);
+BasicBlock <span style="color:#f92672">*</span>ElseBB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">else</span><span style="color:#e6db74">&#34;</span>);
+BasicBlock <span style="color:#f92672">*</span>MergeBB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ifcont</span><span style="color:#e6db74">&#34;</span>);
+
+Builder.CreateCondBr(CondV, ThenBB, ElseBB);
+</code></pre></div><p>这个代码创建与 <strong>if/then/else</strong>语句相关的<strong>basic block</strong>, 并且直接对应于上例中的块.</p>
+<p>第一行获取当前正在构建的<strong>Function</strong>对象: 它通过询问<strong>Builder</strong>当前的<strong>BasicBlock</strong>, 并询问当前<strong>Block的parent</strong>, 来获取此信息.</p>
+<p>获得函数之后, 我们会创建三个Blocks. 注意: 它传递&quot;TheFunction<strong>到&quot;then&quot;block的构造器中</strong>. <code>这会导致构造函数会自动地在指定的函数中插入new block</code>. <strong>其他的两个block被创建, 但是还没有被插入</strong>.</p>
+<p>一旦<strong>block</strong>被创建, 我们就可以<code>emit the 在它们之间选择的条件分支</code>. 注意, 创建新的<strong>block</strong>不会隐式地影响<strong>IRBuilder</strong>, 因此它仍然可以插入条件到进入的块中.  另外要注意, 它正在<code>创建到&quot;then&quot;block和&quot;else&quot;block的分支</code>, 即使&quot;else&quot;block还未插入到函数中.</p>
+<p>This is all ok. 它是LLVM支持==forward references==的标准方法.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Emit then value.       
+</span><span style="color:#75715e"></span>Builder.SetInsertPoint(ThenBB);
+
+Value <span style="color:#f92672">*</span>ThenV <span style="color:#f92672">=</span> Then<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ThenV)
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+Builder.CreateBr(MergeBB);
+<span style="color:#75715e">// Codegen of &#39;Then&#39; can change the current block, update ThenBB for the PHI.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// &#39;Then&#39;的Codegen会改变目前的block, update ThenBB for the PHI.
+</span><span style="color:#75715e"></span>ThenBB <span style="color:#f92672">=</span> Builder.GetInsertBlock();
+</code></pre></div><p>在条件分支被插入之后, 我们move the builder来插入&quot;then&quot;block. 严格上来说, this call移动插入点到指定block的end. 然而, 由于 &ldquo;then&rdquo; block是空的, 所以它就会从block的开始进行插入.</p>
+<p>一旦插入点被设置了, 我们可以递归地从AST中codegen the &ldquo;then&quot;表达式. 为了完成&quot;then&quot;块, 我们为合并块创建了一个无条件分支.</p>
+<p>LLVM IR一个有趣的方面是<strong>它要求所有的BasicBlock都用控制流指令来中止(Ex: return and branch)</strong>.</p>
+<p>这意味着所有的控制流, including fall throughs, 必须在LLVM IR中被显示地指定. 如果违反此规则, 验证程序会报错.</p>
+<p>这里的最后一行相当<strong>微妙</strong>, 但是是非常重要的. 基本问题就是当我们在<strong>merge block</strong>中创建 Phi node时, 我们需要设置 <strong>block/value pairs</strong> 来表明Phi是如何工作的. 重要的 , The Phi node 期待在CFG的块中每一个前节点都有一个entry.</p>
+<p>那么, 为什么在第 5 行, 我们设置ThenBB为获取当前块呢?  &ldquo;Then&quot;表达式实际上可能会改变当前的block.  例如, 它包含了一个嵌套的&quot;if/then/else&quot;表达式. 因为递归地调用codegen()会任意改变当前块的notion, 我们需要得到将要设置的Phi node代码的最新值.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// Emit else block. 
+</span><span style="color:#75715e"></span>TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getBasicBlockList().push_back(ElseBB);
+Builder.SetInsertPoint(ElseBB);
+
+Value <span style="color:#f92672">*</span>ElseV <span style="color:#f92672">=</span> Else<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ElseV)
+  <span style="color:#66d9ef">return</span> nullptr;
+
+Builder.CreateBr(MergeBB);
+<span style="color:#75715e">// codegen of &#39;Else&#39; can change the current block, update ElseBB for the PHI.
+</span><span style="color:#75715e"></span>ElseBB <span style="color:#f92672">=</span> Builder.GetInsertBlock();
+</code></pre></div><p><strong>&lsquo;else&rsquo;<strong>代码块的codegen与</strong>&lsquo;then&rsquo; block</strong>的codegen基本相同. 唯一的显著差异是第一行: 它将&quot;else&quot;block 添加到函数中. 回想之前, 我们已经创建了'else'块, 但未添加到该函数中.</p>
+<p>现在<strong>then</strong> 和 <strong>else</strong> 代码块的IR都已经产生了, 我们现在可以完成我们的<strong>Merge</strong>代码了.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">// Emit merge block.
+</span><span style="color:#75715e"></span>  TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getBasicBlockList().push_back(MergeBB);
+  Builder.SetInsertPoint(MergeBB);
+  PHINode <span style="color:#f92672">*</span>PN <span style="color:#f92672">=</span>
+    Builder.CreatePHI(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext), <span style="color:#ae81ff">2</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">iftmp</span><span style="color:#e6db74">&#34;</span>);
+
+  PN<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addIncoming(ThenV, ThenBB);
+  PN<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addIncoming(ElseV, ElseBB);
+  <span style="color:#66d9ef">return</span> PN;
+}
+
+</code></pre></div><p>开始的两行是相似的: 第一行添加 <strong>&ldquo;merge&rdquo; block</strong>到<strong>function object</strong>中(之前merge block被创建之后, 还没有插入函数中). 第二行改变插入点位置, 所以新的codegen的代码会在<strong>Merge Block</strong>中. 一旦做完这些之后, 我们需要创建PHI node并且给phi 节点设置一组值(block/value pairs).</p>
+<p>最后, CodeGen函数返回 phi nodes作为if/then/else表达式计算的值. 在我们上面的例子中, 返回值将会提供给顶级函数的代码中, 该函数将会创建返回指令.</p>
+<p>总的来说, 我们现在能够在Kaleidoscope中执行条件代码. 加入这项扩展之后, Kaleidoscope是一个相当完整的语言(因为它可以计算大量的数值函数).</p>
+<p>下一步我们将会添加另一个有用的表达式 that is familiar from non-functional languages.</p>
+<h1 id="for-loop-expression">&lsquo;for&rsquo; Loop Expression</h1>
+<p>现在我们知道了如何在语言中添加基本的控制流, 我们有了一些工具来添加更多强大的功能.</p>
+<p>让我们来做一些更有趣的, <strong>&lsquo;for&rsquo; expression</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">putchard</span>(<span style="color:#66d9ef">char</span>);
+def <span style="color:#a6e22e">printstar</span>(n)
+  <span style="color:#66d9ef">for</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, i <span style="color:#f92672">&lt;</span> n, <span style="color:#ae81ff">1.0</span> in
+    putchard(<span style="color:#ae81ff">42</span>);  <span style="color:#960050;background-color:#1e0010">#</span> ascii <span style="color:#ae81ff">42</span> <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span>
+
+<span style="color:#75715e">#</span><span style="color:#75715e"> print 100 &#39;*&#39; characters</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>printstar(<span style="color:#ae81ff">100</span>);
+</code></pre></div><p>在此例中, 这个表达式定义的一个新的变量(&ldquo;i&rdquo;), <strong>i</strong> 从初始值开始迭代, 当条件( <strong>&ldquo;i &lt; n&rdquo;</strong> )为true时, 以步长(<strong>&ldquo;1.0&rdquo;</strong>)开始增加.</p>
+<p>如果<strong>步长</strong>被省略了, 默认设置它为1.0.</p>
+<p>当<strong>循环条件为true</strong>时, 它会执行它的body expression. 因为我们没有什么要返回的, 所以我们定义<strong>the loop总是返回0.0</strong>.</p>
+<p>在未来当我们有<strong>可变变量</strong>时, 它会变得更有用.</p>
+<p>像往常一样, 让我们开始讨论如何设计Kaleidoscope来支持 <strong>for循环</strong>.</p>
+<h2 id="lexer-extensions-for-the-for-loop">Lexer Extensions for the &lsquo;for&rsquo; Loop</h2>
+<p>扩展词法分析器与 <strong>if/then/else</strong>相似:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">... in <span style="color:#66d9ef">enum</span> Token ...
+<span style="color:#75715e">// control
+</span><span style="color:#75715e"></span>tok_if <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">6</span>, tok_then <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">7</span>, tok_else <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>,
+tok_for <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">9</span>, tok_in <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">10</span>
+
+... in gettok ...
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">def</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_def;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">extern</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_extern;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">if</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_if;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">then</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_then;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">else</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_else;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">for</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_for;
+<span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">in</span><span style="color:#e6db74">&#34;</span>)
+  <span style="color:#66d9ef">return</span> tok_in;
+<span style="color:#66d9ef">return</span> tok_identifier;
+</code></pre></div><h2 id="ast-extensions-for-the-for-loop">AST Extensions for the &lsquo;for&rsquo; Loop</h2>
+<p>The AST node也很简单. 它基本上就是包含: <strong>节点中的变量名</strong> 和 <strong>组成它的表达式</strong>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// ForExprAST - Expression class for for/in.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ForExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string VarName;  <span style="color:#75715e">// 迭代器变量名称
+</span><span style="color:#75715e"></span>  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Start, End, Step, Body;
+
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+  ForExprAST(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string <span style="color:#f92672">&amp;</span>VarName, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Start,
+             std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> End, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Step,
+             std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Body)
+    <span style="color:#f92672">:</span> VarName(VarName), Start(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Start)), End(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(End)),
+      Step(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Step)), Body(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Body)) {}
+
+  Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#66d9ef">override</span>;
+};
+</code></pre></div><h2 id="parser-extensions-for-the-for-loop">Parser Extensions for the &lsquo;for&rsquo; Loop</h2>
+<p>解析器代码也是相当标准的.</p>
+<p>唯一有趣的事情是这里会处理可选的<strong>步长</strong>. 解析器代码通过<code>检查第二个逗号是否存在来处理</code>. <code>如果没有发现逗号, 我们会在AST节点中将步长设置为null</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">/// forexpr ::= &#39;for&#39; identifier &#39;=&#39; expr &#39;,&#39; expr (&#39;,&#39; expr)? &#39;in&#39; expression
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseForExpr() {
+  getNextToken();  <span style="color:#75715e">// eat the for.
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_identifier)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected identifier after for</span><span style="color:#e6db74">&#34;</span>);
+
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string IdName <span style="color:#f92672">=</span> IdentifierStr;
+  getNextToken();  <span style="color:#75715e">// eat identifier.
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected &#39;=&#39; after for</span><span style="color:#e6db74">&#34;</span>);
+  getNextToken();  <span style="color:#75715e">// eat &#39;=&#39;.
+</span><span style="color:#75715e"></span>
+
+  <span style="color:#66d9ef">auto</span> Start <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Start)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected &#39;,&#39; after for start value</span><span style="color:#e6db74">&#34;</span>);
+  getNextToken();
+
+  <span style="color:#66d9ef">auto</span> End <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>End)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#75715e">// The step value is optional.
+</span><span style="color:#75715e"></span>  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Step;
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>) {
+    getNextToken();
+    Step <span style="color:#f92672">=</span> ParseExpression();
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Step)
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+  }
+
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_in)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected &#39;in&#39; after for</span><span style="color:#e6db74">&#34;</span>);
+  getNextToken();  <span style="color:#75715e">// eat &#39;in&#39;.
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">auto</span> Body <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Body)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>ForExprAST<span style="color:#f92672">&gt;</span>(IdName, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Start),
+                                       std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(End), std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Step),
+                                       std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Body));
+}
+</code></pre></div><p>当然了, 我们会将它作为主表达式的一部分.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParsePrimary() {
+  <span style="color:#66d9ef">switch</span> (CurTok) {
+  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unknown token when expecting an expression</span><span style="color:#e6db74">&#34;</span>);
+  <span style="color:#66d9ef">case</span> tok_identifier:
+    <span style="color:#66d9ef">return</span> ParseIdentifierExpr();
+  <span style="color:#66d9ef">case</span> tok_number:
+    <span style="color:#66d9ef">return</span> ParseNumberExpr();
+  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> ParseParenExpr();
+  <span style="color:#66d9ef">case</span> tok_if:
+    <span style="color:#66d9ef">return</span> ParseIfExpr();
+  <span style="color:#66d9ef">case</span> tok_for:
+    <span style="color:#66d9ef">return</span> ParseForExpr();
+  }
+}
+</code></pre></div><h2 id="llvm-ir-for-the-for-loop">LLVM IR for the &lsquo;for&rsquo; loop</h2>
+<p>下一步, 我们现在需要为For循环产生IR. 根据上面的例子, 我们可以产生下面这样的IR(注意: 为了清楚起见, 我们在产生时关闭了优化):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @putchard(<span style="color:#66d9ef">double</span>)
+
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @printstar(<span style="color:#66d9ef">double</span> %n) {
+entry:
+  <span style="color:#75715e">; initial value = 1.0 (inlined into phi)
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %loop
+
+loop:       <span style="color:#75715e">; preds = %loop, %entry
+</span><span style="color:#75715e"></span>  %i = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ <span style="color:#ae81ff">1.000000e+00</span>, %entry ], [ %nextvar, %loop ]
+  <span style="color:#75715e">; body
+</span><span style="color:#75715e"></span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @putchard(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.200000e+01</span>)
+  <span style="color:#75715e">; increment
+</span><span style="color:#75715e"></span>  %nextvar = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %i, <span style="color:#ae81ff">1.000000e+00</span>
+
+  <span style="color:#75715e">; termination test
+</span><span style="color:#75715e"></span>  %cmptmp = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ult</span> <span style="color:#66d9ef">double</span> %i, %n
+  %booltmp = <span style="color:#66d9ef">uitofp</span> <span style="color:#66d9ef">i1</span> %cmptmp <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">double</span>
+  %loopcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %booltmp, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %loopcond, <span style="color:#66d9ef">label</span> %loop, <span style="color:#66d9ef">label</span> %afterloop
+
+afterloop:      <span style="color:#75715e">; preds = %loop
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">; loop always returns 0.0
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">0.000000e+00</span>
+}
+</code></pre></div><p>该循环包含我们之前看到的相同的结构: <strong>a phi node</strong>, <strong>several expressions</strong>, and <strong>some basic blocks</strong>.</p>
+<p>CFG:</p>
+<p><img src="/docs-pic/llvm/loop.png" alt=""></p>
+<h2 id="code-generation-for-the-for-loop">Code Generation for the &lsquo;for&rsquo; Loop</h2>
+<p>codegen的第一部分是简单的, 我们只是输出<strong>循环的起始表达式</strong>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Value <span style="color:#f92672">*</span>ForExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
+  <span style="color:#75715e">// Emit the start code first, without &#39;variable&#39; in scope.
+</span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>StartVal <span style="color:#f92672">=</span> Start<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>StartVal)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</code></pre></div><p>在此之后, 下一步是为<strong>loop body</strong>的启动设置<strong>LLVM basic block</strong>. 在上面的例子中, 整个loop body是一个<strong>block</strong>. 但是记住: <code>body node 本身可以包含多个blocks</code>. (E.g: 它可以包含 if/then/else 或者 a for/in expression).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Make the new basic block for the loop header, inserting after current
+</span><span style="color:#75715e"></span><span style="color:#75715e">// block.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 为loop header make新的basic block, 在当前block之后插入
+</span><span style="color:#75715e"></span>Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> Builder.GetInsertBlock()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getParent();
+BasicBlock <span style="color:#f92672">*</span>PreheaderBB <span style="color:#f92672">=</span> Builder.GetInsertBlock();
+BasicBlock <span style="color:#f92672">*</span>LoopBB <span style="color:#f92672">=</span>
+    BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">loop</span><span style="color:#e6db74">&#34;</span>, TheFunction);
+
+<span style="color:#75715e">// Insert an explicit fall through from the current block to the LoopBB.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 从当前块插入explicit fall through to the LoopBB
+</span><span style="color:#75715e"></span>Builder.CreateBr(LoopBB);
+</code></pre></div><p>代码与我们在if/then/else中看到的代码相似. 因为之后我们将会需要它来创建一个Phi node, 所以我们保存了那个刚进入循环的块.</p>
+<p>在做完这些之后, 我们创建<strong>Loop Block</strong>, 并且为两个块之前的连接创建一个无条件分支.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Start insertion in LoopBB.   开始插入
+</span><span style="color:#75715e"></span>Builder.SetInsertPoint(LoopBB);
+
+<span style="color:#75715e">// Start the PHI node with an entry for Start. 
+</span><span style="color:#75715e"></span>
+PHINode <span style="color:#f92672">*</span>Variable <span style="color:#f92672">=</span> Builder.CreatePHI(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext),
+                                      <span style="color:#ae81ff">2</span>, VarName.c_str());
+Variable<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addIncoming(StartVal, PreheaderBB);
+</code></pre></div><p>现在 loop 的**&ldquo;preheader&rdquo;**已经设置好了, 我们切换到为 loop body来emitting code.</p>
+<p>首先: 我们移动插入点, and <strong>为loop indunction 变量创建PHI node</strong>. 由于我们已经知道起始值的传入值, 我们将它加入到PHI node 中.</p>
+<p>注意到Phi之后会最终获得备份的第二个值, 但是我们现在还不能set it up yet (因为它目前还不存在!)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Within the loop, the variable is defined equal to the PHI node.  If it
+</span><span style="color:#75715e"></span><span style="color:#75715e">// shadows an existing variable, we have to restore it, so save it now.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>OldVal <span style="color:#f92672">=</span> NamedValues[VarName];
+NamedValues[VarName] <span style="color:#f92672">=</span> Variable;
+
+<span style="color:#75715e">// Emit the body of the loop.  This, like any other expr, can change the
+</span><span style="color:#75715e"></span><span style="color:#75715e">// current BB.  Note that we ignore the value computed by the body, but don&#39;t
+</span><span style="color:#75715e"></span><span style="color:#75715e">// allow an error.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Body<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen())
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</code></pre></div><p>现在代码开始变得有趣了,  我在符号表中为<code>for</code> 循环引入了新的变量. 这意味着: 我们的符号表现在可以包含<strong>函数参数 <strong>或者</strong>循环变量</strong>. 为了处理这个问题, 在我们为循环体body 进行 codegen之前, 我们在符号表中添加<strong>该循环变量的名称</strong>以及<strong>它的当前值</strong>.</p>
+<p>注意: <code>外部作用域可能会有相同的变量名称</code>. 我们很容易会犯这个错误(就是如果已经存在varName, 我们会采取报错并且返回error这个措施).  <strong>但是我们选择了允许隐藏存在的变量</strong>. 为了正确的实现该目标, 我们会保存之前存在的varName的值(当然了, 如果之前没有varName的话, 我们会设置它为null).</p>
+<p>一旦将循环变量加入到符号表中之后,  我们就可以<strong>递归地对Body进行Codegen</strong>. 我们允许<strong>body使用循环变量</strong>: 我们可以在符号表中找到循环变量, 来实现对它的引用.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Emit the step value.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>StepVal <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
+<span style="color:#66d9ef">if</span> (Step) {
+  StepVal <span style="color:#f92672">=</span> Step<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>StepVal)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+} <span style="color:#66d9ef">else</span> {
+  <span style="color:#75715e">// If not specified, use 1.0.
+</span><span style="color:#75715e"></span>  StepVal <span style="color:#f92672">=</span> ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(TheContext, APFloat(<span style="color:#ae81ff">1.0</span>));
+}
+
+Value <span style="color:#f92672">*</span>NextVar <span style="color:#f92672">=</span> Builder.CreateFAdd(Variable, StepVal, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">nextvar</span><span style="color:#e6db74">&#34;</span>);
+</code></pre></div><p>现在 the body is emitted,  我们计算迭代器的下一个值. (迭代器的下一个值= 迭代器当前的值+步长; 如果步长未被设置, 默认为 1.0)</p>
+<p>&lsquo;<strong>NextValue</strong>&lsquo;将会是循环的下一次迭代的迭代器值.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Compute the end condition.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>EndCond <span style="color:#f92672">=</span> End<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>EndCond)
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+<span style="color:#75715e">// Convert condition to a bool by comparing non-equal to 0.0.
+</span><span style="color:#75715e"></span>EndCond <span style="color:#f92672">=</span> Builder.CreateFCmpONE(
+    EndCond, ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(TheContext, APFloat(<span style="color:#ae81ff">0.0</span>)), <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">loopcond</span><span style="color:#e6db74">&#34;</span>);
+</code></pre></div><p>最后, 我们计算循环的退出值,  来决定是否退出循环. 这与 if/then/else 语句的条件值计算是一样的.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">// Create the &#34;after loop&#34; block and insert it.
+</span><span style="color:#75715e"></span>BasicBlock <span style="color:#f92672">*</span>LoopEndBB <span style="color:#f92672">=</span> Builder.GetInsertBlock();
+BasicBlock <span style="color:#f92672">*</span>AfterBB <span style="color:#f92672">=</span>
+    BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">afterloop</span><span style="color:#e6db74">&#34;</span>, TheFunction);
+
+<span style="color:#75715e">// Insert the conditional branch into the end of LoopEndBB.
+</span><span style="color:#75715e"></span>Builder.CreateCondBr(EndCond, LoopBB, AfterBB);
+
+<span style="color:#75715e">// Any new code will be inserted in AfterBB.
+</span><span style="color:#75715e"></span>Builder.SetInsertPoint(AfterBB);
+</code></pre></div><p>随着循环体的代码完成, 我们现在只需要为它完成控制流程. 该代码保存<strong>end block</strong>(for the phi node), 然后为Loop exit(&ldquo;afterloop&rdquo;)创建 block. 基于退出条件的值, 它创建了一个条件分支来<strong>来在再一次执行循环和退出循环之前选择</strong>. 任何之后创建的指令都会在 <strong>afterloop block</strong> 中,  所以我们设置了Builder的插入位置.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">  <span style="color:#75715e">// Add a new entry to the PHI node for the backedge.
+</span><span style="color:#75715e"></span>  Variable<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addIncoming(NextVar, LoopEndBB);
+
+  <span style="color:#75715e">// Restore the unshadowed variable.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (OldVal)
+    NamedValues[VarName] <span style="color:#f92672">=</span> OldVal;
+  <span style="color:#66d9ef">else</span>
+    NamedValues.erase(VarName);
+
+  <span style="color:#75715e">// for expr always returns 0.0.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> Constant<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getNullValue(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext));
+}
+</code></pre></div><p>最后的代码处理各种cleanups: 现在我们有了 <strong>&ldquo;NextVar&rdquo; 值</strong>, 我们可以将<strong>NextVar/LoopEndBB</strong>添加到 Loop PHI node中. 在这之后, 我们从符号表中移除循环变量. 所以 for 循环完成之后, 它就不在作用域中了. 最后, for 循环的代码产生总是返回 0.0, 这就是我们从 ForExprAST::codegen()中返回的内容.</p>
+<p>现在我们总结本教程中 &ldquo;adding control flow to Kaleidoscope&rdquo; 这章.</p>
+<p>在本章, 我们增加了两个控制流结构, 通过实现我们了解到了 LLVM IR 的几个方面 (这些对于编译器前端实现者来说是很重要的).</p>
+<p>在下一章, 我们将会变得更疯狂并且我们会为我们的Kaleidoscope添加用户自定义的运算符.</p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/llvm"><span class="tag">Llvm</span></a></li>
+        
+          <li><a href="/tags/kaleidoscope"><span class="tag">Kaleidoscope</span></a></li>
+        
+          <li><a href="/tags/control-flow"><span class="tag">Control Flow</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>266</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

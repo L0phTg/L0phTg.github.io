@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>life on L0phTg&#39;s Blog</title>
+    <link>/categories/life/</link>
+    <description>Recent content in life on L0phTg&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 15 Apr 2019 10:13:04 +0800</lastBuildDate>
+    
+	<atom:link href="/categories/life/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>书签整理</title>
+      <link>/post/life/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/</link>
+      <pubDate>Mon, 15 Apr 2019 10:13:04 +0800</pubDate>
+      
+      <guid>/post/life/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/</guid>
+      <description>&lt;p&gt;昨晚闲得无聊, 整理了一下自己的chrome书签.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>如果你冲动删除了python</title>
+      <link>/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</link>
+      <pubDate>Tue, 02 Apr 2019 21:12:17 +0800</pubDate>
+      
+      <guid>/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</guid>
+      <description>&lt;p&gt;在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!&lt;/p&gt;
+&lt;p&gt;所以你输入了下面的几行命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#hahaha&lt;/span&gt;
+$sudo apt remove python
+$sudo apt remove python3
+$sudo apt remove pip
+$sudo apt remove pip3
+&lt;span style=&#34;color:#75715e&#34;&gt;#一定删除的不彻底, 我要彻底删除&lt;/span&gt;
+$sudo apt autoremove -f 
+看到要删除600+M, 毅然决然的按了 y.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Bingo 然后你看到了我这篇文章.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>本科应届生安全岗面试总结</title>
+      <link>/post/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Tue, 02 Apr 2019 11:24:31 +0800</pubDate>
+      
+      <guid>/post/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</guid>
+      <description>&lt;p&gt;很久没有更新博客了, 主要原因是因为现在笔记都记在了有道云笔记中. 并且 很多篇文章都只写了一半, 也不想发出来.&lt;/p&gt;
+&lt;p&gt;近期时间充裕, 应该会保持每周一更, 将以前写的或者近期学到的知识总结一下发在博客里.&lt;/p&gt;
+&lt;p&gt;本篇文章是19年春节写的, 主要记录了自己在18年的几次面试记录, 和大学期间的一些学习经历.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>我的zsh和vim配置</title>
+      <link>/post/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Wed, 24 Oct 2018 00:14:31 +0800</pubDate>
+      
+      <guid>/post/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</guid>
+      <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://l0phtg.github.io/customConfig/myVimPreview.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Hugo搭建博客</title>
+      <link>/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Wed, 19 Sep 2018 20:04:10 +0800</pubDate>
+      
+      <guid>/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
+      <description>&lt;p&gt;博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.&lt;/p&gt;
+&lt;p&gt;以前使用hexo搭的, 最近发现了好多人在用&lt;code&gt;hugo&lt;/code&gt;, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>装机日志-deepin</title>
+      <link>/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</link>
+      <pubDate>Thu, 28 Dec 2017 11:47:58 +0000</pubDate>
+      
+      <guid>/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</guid>
+      <description>&lt;p&gt;17年使用了一段时间deepin系统, 这里简单记录一些使用心得(现在已转ubuntu.&lt;/p&gt;
+&lt;p&gt;主要就是&lt;strong&gt;装机的过程&lt;/strong&gt;, 以及&lt;strong&gt;装机后的效果展示&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/deepin/desktop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blog on L0phTg&#39;s Blog</title>
+    <link>/tags/blog/</link>
+    <description>Recent content in blog on L0phTg&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Wed, 19 Sep 2018 20:04:10 +0800</lastBuildDate>
+    
+	<atom:link href="/tags/blog/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Hugo搭建博客</title>
+      <link>/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Wed, 19 Sep 2018 20:04:10 +0800</pubDate>
+      
+      <guid>/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
+      <description>&lt;p&gt;博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.&lt;/p&gt;
+&lt;p&gt;以前使用hexo搭的, 最近发现了好多人在用&lt;code&gt;hugo&lt;/code&gt;, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Dominator(graph Theory)</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="translate from : https://en.wikipedia.org/wiki/Dominator_(graph_theory).
+最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Dominator(graph Theory)">
+    <meta name="twitter:description" content="translate from : https://en.wikipedia.org/wiki/Dominator_(graph_theory).
+最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Dominator(graph Theory)">
+  <meta property="og:description" content="translate from : https://en.wikipedia.org/wiki/Dominator_(graph_theory).
+最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.
+">
+  <meta property="og:url" content="/post/dominatorgraph-theory/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/dominatorgraph-theory/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Dominator(graph Theory)</h1>
+      <p class="post-meta">@L0phTg · Apr 6, 2019 · 1 min read</p>
+    </header>
+    <article class="post-content"><p>translate from : <a href="https://en.wikipedia.org/wiki/Dominator_(graph_theory)">https://en.wikipedia.org/wiki/Dominator_(graph_theory)</a>.</p>
+<p>最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.</p>
+<h1 id="dominator-graph-theory">Dominator (graph theory)</h1>
+<p>在计算机科学中, 在控制流图中, 如果从入口点到节点 $\bold{n}$ 的每条路径都经过节点 $\bold{d}$, 则称节点 $\bold{d}$ dominates 节点 $\bold{n}$</p>
+<p>被写作 $\bold{d}$ dom $\bold{n}$ (or $\bold{d} \gg \bold {n}$).</p>
+<p>另外我们定义, 每个节点都 dominates 它自身.</p>
+<p><img src="/llvm/300px-Dominator_control_flow_graph.svg.png" alt=""></p>
+<p>这里有一些相关的概念:</p>
+<ul>
+<li>
+<p>节点 $\bold{d}$ <em>strictly dominates</em> (严格支配) 节点 $\bold {n} $ : $\bold{d}$ dominates $\bold{n}$ 并且 $\bold{d} $ 与 $\bold{n}$ 不相等.</p>
+</li>
+<li>
+<p>节点 $\bold{n}$ 的 <em>immediate dominator</em> (直接支配者) or <strong>idom</strong> : 一个节点严格支配 $\bold{n}$ 但是不严格支配其他严格支配$\bold{n}$ 的节点. 除了入口点之外, 每一个节点都有一个直接支配者.</p>
+</li>
+<li>
+<p>节点 $\bold{d}$ 的 <em>dominance frontier</em> :  所有节点$\bold{n}$ 的集合, 使得 $\bold{d}$ 支配 $\bold{n}$ 的 immediate predecessor. 但是 $\bold{d} $ 不严格支配节点 $\bold{n}$ . 这是一组 $\bold{d's}$ dominance 停止的节点集合.</p>
+</li>
+<li>
+<p>一个 <em>dominator tree</em> : 一颗树, 这棵树每个节点的子节点是它直接支配的节点. 因为直接支配者是独一无二的, 所以它是一棵树. 开始节点是树的根节点.</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>1</strong></th>
+<th>$\color{black}{dom}$</th>
+<th>$\color{Gray}{1}$</th>
+<th>$\color{Red}{2}$</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2</strong></td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td>$\color{Gray}{2}$</td>
+<td>$\color{Red}{3}$</td>
+<td>$\color{Red}{4}$</td>
+<td><strong>5</strong></td>
+<td>$\color{Red}{6}$</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td></td>
+<td>$\color{Gray}{3}$</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td></td>
+<td></td>
+<td>$\color{Gray}{4}$</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>$\color{Gray}{5}$</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td>$\color{black}{dom}$</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>$\color{Gray}{6}$</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>与 domination关系相对应</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$灰色的节点\color{Gray}{灰色的节点}$ 是 非严格 dominated</td>
+</tr>
+<tr>
+<td>$红色的节点\color{Red}{红色的节点}$ 是 直接 dominated</td>
+</tr>
+</tbody>
+</table>
+<p>dominator tree:</p>
+<p><img src="/llvm/300px-Dominator_tree.svg.png" alt="dominator tree"></p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/graph-theory"><span class="tag">Graph Theory</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>273</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

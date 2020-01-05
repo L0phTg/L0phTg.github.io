@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kaleidoscope on L0phTg&#39;s Blog</title>
+    <link>/tags/kaleidoscope/</link>
+    <description>Recent content in Kaleidoscope on L0phTg&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh</language>
+    <lastBuildDate>Mon, 15 Apr 2019 17:58:13 +0800</lastBuildDate>
+    
+	<atom:link href="/tags/kaleidoscope/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Kaleidoscope: 前五章总结</title>
+      <link>/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
+      <description>&lt;p&gt;对前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Extending the Language Control Flow</title>
+      <link>/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
+      <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl05.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl05.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
+&lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
+&lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Adding JIT and Optimizer Support</title>
+      <link>/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</link>
+      <pubDate>Sat, 13 Apr 2019 15:02:51 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl04.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl04.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.&lt;/p&gt;
+
+&lt;div class=&#34;mermaid&#34; align=&#34; 
+                            center
+                        &#34;&gt; 
+
+graph TB
+  subgraph call
+    funcall(&#34;foo(1);&#34;)
+  end
+  subgraph expr
+    nodeExpr(&#34;1+2;&#34;)
+  end
+
+  jitAddModule[&#34;JIT中 添加此Module&#34;]
+  jitRemoveModule[&#34;JIT中 删除此Module&#34;]
+  anoCodegen[&#34;执行 匿名函数Codegen&#34;]
+  AnonymousCall[&#34;匿名函数包装&#34;]
+  optimizeFunc[&#34;执行 Pass优化&#34;]
+  nodeExpr --&gt; AnonymousCall
+  funcall --&gt; AnonymousCall
+  AnonymousCall --&gt; anoCodegen
+  anoCodegen --&gt; jitAddModule
+  jitAddModule --&gt; optimizeFunc
+  optimizeFunc --&gt; exec[&#34;JIT 运行此表达式, 并计算值&#34;]
+  exec --&gt; jitRemoveModule
+
+  subgraph func definition
+    nodeFoo(&#34;def foo(x) x+1;&#34;)
+    funcCodegen[&#34;执行 函数定义Codegen&#34;]
+    nodeFoo --&gt; funcCodegen
+  end
+
+  funcCodegen --&gt; jitAddFuncModule[&#34;JIT中 添加此Module&#34;]
+  jitAddFuncModule --&gt; initPassManager[&#34;执行 Pass优化&#34;]
+
+  subgraph extern
+    nodeExtern(&#34;extern sin(x);&#34;)
+    protoCodegen[&#34;执行 函数申明Codegen&#34;]
+    nodeExtern --&gt; protoCodegen
+  end
+
+  style jitAddModule fill:#f9f
+	style jitRemoveModule fill:#f9f
+	style jitAddFuncModule fill:#f9f
+	
+	style optimizeFunc fill:#ccff66
+	style initPassManager fill:#ccff66
+	
+	style exec fill:#ff3300
+
+&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Code Generation to LLVM IR</title>
+      <link>/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</link>
+      <pubDate>Fri, 12 Apr 2019 16:55:05 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Implementing a Parser and AST</title>
+      <link>/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</link>
+      <pubDate>Thu, 11 Apr 2019 15:41:17 +0800</pubDate>
+      
+      <guid>/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</guid>
+      <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl02.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl02.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/docs-pic/dots/uml/ExprAst-1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;介绍AST(抽象语法树)和Parser.&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Kaleidoscope: Tutorial Introduction and Lexer</title>
+      <link>/post/kaleidoscope_tutorial-introduction-and-lexer/</link>
+      <pubDate>Wed, 10 Apr 2019 10:17:08 +0800</pubDate>
+      
+      <guid>/post/kaleidoscope_tutorial-introduction-and-lexer/</guid>
+      <description>&lt;p&gt;translate from &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl01.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl01.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;本tutorial将会介绍一个简单语言的实现.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

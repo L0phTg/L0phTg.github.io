@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kaleidoscope：Compile to Object Code</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="translate from:http://llvm.org/docs/tutorial/LangImpl08.html
+本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。
+本章内容比较简单。
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Kaleidoscope：Compile to Object Code">
+    <meta name="twitter:description" content="translate from:http://llvm.org/docs/tutorial/LangImpl08.html
+本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。
+本章内容比较简单。
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Kaleidoscope：Compile to Object Code">
+  <meta property="og:description" content="translate from:http://llvm.org/docs/tutorial/LangImpl08.html
+本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。
+本章内容比较简单。
+">
+  <meta property="og:url" content="/post/llvm/kaleidoscopecompile-to-object-code/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/llvm/kaleidoscopecompile-to-object-code/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kaleidoscope：Compile to Object Code</h1>
+      <p class="post-meta">@L0phTg · Jun 16, 2019 · 2 min read</p>
+    </header>
+    <article class="post-content"><p>translate from:http://llvm.org/docs/tutorial/LangImpl08.html</p>
+<p>本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。</p>
+<p>本章内容比较简单。</p>
+<h1 id="81-">8.1 第八章介绍</h1>
+<p>欢迎来到**“通过LLVM实现一个语言”**教程的第八章。本章描述了**如何将我们Kaleidoscope程序编译为目标文件**。</p>
+<h1 id="82-">8.2 选择一个目标</h1>
+<p>LLVM本身支持交叉编译。你可以将项目编译为适用于你当前机器的架构（或者其它架构）的程序，都是很容易完成的。在本教程中，我们将会编译程序为当前机器的架构。</p>
+<p>为了指定我们要编译目标的架构，我们使用一个名为“target triple”的字符串。它的形式为 &lt;arch&gt;&lt;sub&gt;-&lt;vendor&gt;-&lt;sys&gt;-&lt;abi&gt; (阅读<a href="http://clang.llvm.org/docs/CrossCompilation.html#target-triple">交叉编译文档</a>)。</p>
+<p>举个例子，我们可以通过运行下面这条命令看到当前平台架构：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang --version | grep Target
+Target: x86_64-unknown-linux-gnu
+</code></pre></div><p>因为你的架构和操作系统可能和我的不一样，所以在你的机器上运行该命令可能显示出不同的结果。</p>
+<p>幸运地是，我们不需要硬编码一个target triple（目标三元组）来表示当前机器。LLVM提供一个函数：<em>sys::getDefaultTargetTriple</em> ，调用该函数可以得到当前机器的target triple。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> TargetTriple <span style="color:#f92672">=</span> sys<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDefaultTargetTriple();
+</code></pre></div><p>LLVM不要求我们链接所有目标平台。例如，如果我们只是使用JIT，我们就不需要汇编代码生成。同样地，如果我们仅针对某些体系结构，我们可以只链接这些体系结构。</p>
+<p>例如，为了生成目标对象代码，我们将初始化所有的目标：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">InitializeAllTargetInfos();
+InitializeAllTargets();
+InitializeAllTargetMCs();
+InitializeAllAsmParsers();
+InitializeAllAsmPrinters();
+</code></pre></div><p>我们现在能够使用我们target triple来获得目标平台的Target：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string Error;
+<span style="color:#66d9ef">auto</span> Target <span style="color:#f92672">=</span> TargetRegistry<span style="color:#f92672">:</span><span style="color:#f92672">:</span>lookupTarget(TargetTriple, Error);
+
+<span style="color:#75715e">// Print an error and exit if we couldn&#39;t find the requested target.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// This generally occurs if we&#39;ve forgotten to initialise the
+</span><span style="color:#75715e"></span><span style="color:#75715e">// TargetRegistry or we have a bogus target triple.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Target) {
+  errs() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> Error;
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+}
+</code></pre></div><h1 id="83-">8.3 目标机器</h1>
+<p>我们还需要一个<em>TargetMachine</em>. 此类提供了我们当前机器的完整机器描述。如果我们想要指定一个特定的特性（例如SSE）或指定的CPU（例如intel的Sandylake），我们现在就可以开始了。</p>
+<p>我们可以通过llc，来获得LLVM包含的特性和CPU。例如，我们指定目标架构为x86:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ llvm-as &lt; /dev/null | llc -march<span style="color:#f92672">=</span>x86 -mattr<span style="color:#f92672">=</span>help
+Available CPUs <span style="color:#66d9ef">for</span> this target:
+
+  amdfam10      - Select the amdfam10 processor.
+  athlon        - Select the athlon processor.
+  athlon-4      - Select the athlon-4 processor.
+  ...
+
+Available features <span style="color:#66d9ef">for</span> this target:
+
+  16bit-mode            - 16-bit mode <span style="color:#f92672">(</span>i8086<span style="color:#f92672">)</span>.
+  32bit-mode            - 32-bit mode <span style="color:#f92672">(</span>80386<span style="color:#f92672">)</span>.
+  3dnow                 - Enable 3DNow! instructions.
+  3dnowa                - Enable 3DNow! Athlon instructions.
+  ...
+</code></pre></div><p>对于我们的示例，我们将使用没有任何额外特性、选项或者重定位模型的通用CPU。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> CPU <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">generic</span><span style="color:#e6db74">&#34;</span>;
+<span style="color:#66d9ef">auto</span> Features <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>;
+
+TargetOptions opt;
+<span style="color:#66d9ef">auto</span> RM <span style="color:#f92672">=</span> Optional<span style="color:#f92672">&lt;</span>Reloc<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Model<span style="color:#f92672">&gt;</span>();
+<span style="color:#66d9ef">auto</span> TargetMachine <span style="color:#f92672">=</span> Target<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createTargetMachine(TargetTriple, CPU, Features, opt, RM);
+</code></pre></div><h1 id="84-">8.4 配置模块</h1>
+<p>我们现在开始准备配置我们的模块，以指定<em>Target</em>和<em>data layout</em>数据布局。严格来说，这不是必要的，但是<a href="http://llvm.org/docs/Frontend/PerformanceTips.html">前端性能指南</a>推荐我们这样做。在知道了<em>Target</em>目标和<em>data layout</em>数据布局后，会很大程度上帮助我们提高优化能力。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setDataLayout(TargetMachine<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createDataLayout());
+TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setTargetTriple(TargetTriple);
+</code></pre></div><h1 id="85-emit-object-code">8.5 Emit Object Code</h1>
+<p>我们现在准备生成obj代码！ 让我们定义生成的文件位置：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> Filename <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">output.o</span><span style="color:#e6db74">&#34;</span>;
+std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>error_code EC;
+raw_fd_ostream <span style="color:#a6e22e">dest</span>(Filename, EC, sys<span style="color:#f92672">:</span><span style="color:#f92672">:</span>fs<span style="color:#f92672">:</span><span style="color:#f92672">:</span>F_None);
+
+<span style="color:#66d9ef">if</span> (EC) {
+  errs() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Could not open file: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> EC.message();
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+}
+</code></pre></div><p>最后，我们定义了一个pass来生成obf代码。然后我们运行该pass:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">legacy<span style="color:#f92672">:</span><span style="color:#f92672">:</span>PassManager pass;
+<span style="color:#66d9ef">auto</span> FileType <span style="color:#f92672">=</span> TargetMachine<span style="color:#f92672">:</span><span style="color:#f92672">:</span>CGFT_ObjectFile;
+
+<span style="color:#66d9ef">if</span> (TargetMachine<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addPassesToEmitFile(pass, dest, <span style="color:#66d9ef">nullptr</span>, FileType)) {
+  errs() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">TargetMachine can&#39;t emit a file of this type</span><span style="color:#e6db74">&#34;</span>;
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+}
+
+pass.run(<span style="color:#f92672">*</span>TheModule);
+dest.flush();
+</code></pre></div><h1 id="86-">8.6 将它们放在一起</h1>
+<p>我们做的工作成功了吗？让我们测试一下！我们需要编译我们的代码，但是注意<code>llvm-config</code>指定的参数与前面的章节是不同的：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang++ -g -O3 toy.cpp <span style="color:#e6db74">`</span>llvm-config --cxxflags --ldflags --system-libs --libs all<span style="color:#e6db74">`</span> -o toy
+</code></pre></div><p>让我们运行它，并定义一个计算平均值的函数。当你输入完成的时候，按 Ctrl-D。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./toy
+ready&gt; def average<span style="color:#f92672">(</span>x y<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>x + y<span style="color:#f92672">)</span> * 0.5;
+^D
+Wrote output.o
+</code></pre></div><p>我们生成了一个目标文件！为了测试它是否是生成正确，让我们编写一个简单的程序并且将它与我们的输出相链接。这里是源代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">extern</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C</span><span style="color:#e6db74">&#34;</span> {
+    <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">average</span>(<span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">double</span>);
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">average of 3.0 and 4.0: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> average(<span style="color:#ae81ff">3.0</span>, <span style="color:#ae81ff">4.0</span>) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>endl;
+}
+</code></pre></div><p>我们将我们的程序链接为output.o并且检查结果是否符合我们的预期：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang++ main.cpp output.o -o main
+$ ./main
+average of 3.0 and 4.0: 3.5
+</code></pre></div><h1 id="full-code-listing">Full Code Listing</h1>
+<p><a href="http://llvm.org/docs/tutorial/LangImpl08.html#full-code-listing">http://llvm.org/docs/tutorial/LangImpl08.html#full-code-listing</a></p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>202</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

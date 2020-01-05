@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Pixel1 源码编译</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="记录自己Pixel1刷机流程.
+相关网站
+Requirementshttps://source.android.google.cn/setup/build/requirements.html#binarieshttps://source.android.com/setup/build/runningbuile numbershttps://source.android.com/setup/start/build-numbershttps://source.android.com/setup/build/downloading驱动https://developers.google.com/android/drivers">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Pixel1 源码编译">
+    <meta name="twitter:description" content="记录自己Pixel1刷机流程.
+相关网站
+Requirementshttps://source.android.google.cn/setup/build/requirements.html#binarieshttps://source.android.com/setup/build/runningbuile numbershttps://source.android.com/setup/start/build-numbershttps://source.android.com/setup/build/downloading驱动https://developers.google.com/android/drivers">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Pixel1 源码编译">
+  <meta property="og:description" content="记录自己Pixel1刷机流程.
+相关网站
+Requirementshttps://source.android.google.cn/setup/build/requirements.html#binarieshttps://source.android.com/setup/build/runningbuile numbershttps://source.android.com/setup/start/build-numbershttps://source.android.com/setup/build/downloading驱动https://developers.google.com/android/drivers">
+  <meta property="og:url" content="/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Pixel1 源码编译</h1>
+      <p class="post-meta">@L0phTg · Oct 2, 2018 · 6 min read</p>
+    </header>
+    <article class="post-content"><p>记录自己Pixel1刷机流程.</p>
+<p>相关网站</p>
+<pre><code>Requirements
+https://source.android.google.cn/setup/build/requirements.html#binaries
+
+https://source.android.com/setup/build/running
+
+buile numbers
+https://source.android.com/setup/start/build-numbers
+
+https://source.android.com/setup/build/downloading
+
+驱动
+https://developers.google.com/android/drivers
+</code></pre><h2 id="ota-image">ota, image</h2>
+<p>刷机使用. 不需要编译源码, 直接刷机.</p>
+<p>下载刷机包</p>
+<pre><code>https://developers.google.com/android/images
+
+https://developers.google.com/android/ota
+</code></pre><p>刷入:</p>
+<pre><code>$sudo ./flash_all.sh
+</code></pre><h2 id="heading">源码下载</h2>
+<pre><code>repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest -b android-6.0.1_r77
+repo sync -j8
+</code></pre><p>适用于pixel 的:
+NZH54D android-7.1.2_r33
+OPM4.171019.021.P1 android-8.1.0_r38</p>
+<p>repo init -u <a href="https://aosp.tuna.tsinghua.edu.cn/platform/manifest">https://aosp.tuna.tsinghua.edu.cn/platform/manifest</a> -b android-7.1.2_r33</p>
+<p>repo init -u <a href="https://aosp.tuna.tsinghua.edu.cn/platform/manifest">https://aosp.tuna.tsinghua.edu.cn/platform/manifest</a> -b android-8.1.0_r38</p>
+<h2 id="heading-1">编译</h2>
+<p>直接编译userdebug版本, 方便我们调试</p>
+<p>安装jdk</p>
+<pre><code>sudo add-apt-repository ppa:openjdk-r/ppa  
+sudo apt-get update   
+sudo apt-get install openjdk-7-jdk  
+</code></pre><p>编译,<code> 如果要刷真机的话, 需要提前下载驱动到源码目录, 并解压之后运行.sh, ACCEPT后释放出来驱动相关文件.(https://developers.google.com/android/drivers)</code></p>
+<pre><code>$source ./build/envsetup.sh
+$lunch
+编译全部源码
+$make -j12 
+编译某个module
+$make -j12 libart_32
+</code></pre><p>输入系统</p>
+<pre><code>这里不需要sudo 
+$fastboot flashall -w
+</code></pre><h2 id="root">root</h2>
+<p>root无源码的机型.</p>
+<ol>
+<li>解锁boot</li>
+<li>刷入twrp</li>
+<li>装入supersu.apk</li>
+<li>重启</li>
+</ol>
+<p><a href="https://gist.github.com/rhyttr/931f5f14f40793a45170809bec6ca62a">https://gist.github.com/rhyttr/931f5f14f40793a45170809bec6ca62a</a></p>
+<pre><code># Download latest Android image, &quot;hammerhead&quot; for Nexus 5 (GSM/LTE)
+https://developers.google.com/android/nexus/images#hammerhead
+
+# Download latest TWRP
+https://dl.twrp.me/hammerhead/
+
+# Download latest SuperSu
+https://download.chainfire.eu/supersu
+
+Enable USB debugging.
+Reboot into bootloader (power off, volume down + power on or sudo adb reboot-bootloader)
+# Wait for boot loader to start
+# Install factory ROM:
+unzip hammerhead-m4b30z-factory-625c027b.zip
+cd hammerhead-m4b30z
+unzip image-hammerhead-m4b30z.zip
+fastboot flash bootloader bootloader-hammerhead-hhz20h.img
+fastboot reboot-bootloader #or power off/start bootloader
+fastboot flash radio radio-hammerhead-m8974a-2.0.50.2.30.img
+fastboot flash boot boot.img
+fastboot flash cache cache.img
+fastboot flash system system.img
+# add params -S 256M if remaining memory is not enough . eg: sudo fastboot flash -S 256M system system.img
+fastboot flash recovery recovery.img
+fastboot reboot
+
+# Wait boot to finish for application upgrade.
+adb push SR1-SuperSU-v2.82-SR1-20170608224931.zip /sdcard/
+adb reboot-bootloader
+
+# [Wait for bootloader to start]
+adb start-server
+fastboot flash recovery twrp-3.1.1-0-hammerhead.img
+fastboot reboot-bootloader
+# on the screen, Navigate into Recovery mode (Reboot) -&gt; Install -&gt; zip, select SR3-SuperSU-v2.79-SR3-20170114223742.zip -&gt; Swipe to confirm Flash
+# Reboot System
+</code></pre><h2 id="heading-2">调试</h2>
+<p>更改system分区读写权限</p>
+<pre><code>$adb disable verity
+$mount -o remount,rw /system
+</code></pre><h2 id="emulator">emulator测试</h2>
+<ol>
+<li>列出创建avd</li>
+</ol>
+<pre><code>emulator -list-avd
+</code></pre><ol start="2">
+<li>emulator 启动avd</li>
+</ol>
+<pre><code>$emulator -avd PixelN
+</code></pre><ol start="3">
+<li>使<code>system</code>分区可写</li>
+</ol>
+<pre><code>$emulator -writable-system -avd PixelN
+启动之后
+$adb remount
+</code></pre><p>n. help</p>
+<pre><code>~$ emulator -help
+ndroid Emulator usage: emulator [options] [-qemu args]
+ options:
+   -list-avds                      list available AVDs
+   -sysdir &lt;dir&gt;                   search for system disk images in &lt;dir&gt;
+   -system &lt;file&gt;                  read initial system image from &lt;file&gt;
+   -vendor &lt;file&gt;                  read initial vendor image from &lt;file&gt;
+   -writable-system                make system &amp; vendor image writable after 'adb remount'
+   -datadir &lt;dir&gt;                  write user data into &lt;dir&gt;
+   -kernel &lt;file&gt;                  use specific emulated kernel
+   -ramdisk &lt;file&gt;                 ramdisk image (default &lt;system&gt;/ramdisk.img
+   -image &lt;file&gt;                   obsolete, use -system &lt;file&gt; instead
+   -initdata &lt;file&gt;                same as '-init-data &lt;file&gt;'
+   -data &lt;file&gt;                    data image (default &lt;datadir&gt;/userdata-qemu.img
+   -encryption-key &lt;file&gt;          read initial encryption key image from &lt;file&gt;
+   -logcat-output &lt;file&gt;           output file of logcat(default none)
+   -partition-size &lt;size&gt;          system/data partition size in MBs
+   -cache &lt;file&gt;                   cache partition image (default is temporary file)
+   -cache-size &lt;size&gt;              cache partition size in MBs
+   -no-cache                       disable the cache partition
+   -nocache                        same as -no-cache
+   -sdcard &lt;file&gt;                  SD card image (default &lt;datadir&gt;/sdcard.img
+   -quit-after-boot &lt;timeout&gt;      qeuit emulator after guest boots completely, or after timeout in seconds
+   -snapstorage &lt;file&gt;             file that contains all state snapshots (default &lt;datadir&gt;/snapshots.img)
+   -no-snapstorage                 do not mount a snapshot storage file (this disables all snapshot functionality)
+   -snapshot &lt;name&gt;                name of snapshot within storage file for auto-start and auto-save (default 'default-boot')
+   -no-snapshot                    perform a full boot and do not auto-save, but qemu vmload and vmsave operate on snapstorage
+   -no-snapshot-save               do not auto-save to snapshot on exit: abandon changed state
+   -no-snapshot-load               do not auto-start from snapshot: perform a full boot
+   -snapshot-list                  show a list of available snapshots
+   -no-snapshot-update-time        do not try to correct snapshot time on restore
+   -wipe-data                      reset the user data image (copy it from initdata)
+   -avd &lt;name&gt;                     use a specific android virtual device
+   -skindir &lt;dir&gt;                  search skins in &lt;dir&gt; (default &lt;system&gt;/skins)
+   -skin &lt;name&gt;                    select a given skin
+   -no-skin                        deprecated: create an AVD with no skin instead
+   -noskin                         same as -no-skin
+   -memory &lt;size&gt;                  physical RAM size in MBs
+   -cores &lt;number&gt;                 Set number of CPU cores to emulator
+   -accel &lt;mode&gt;                   Configure emulation acceleration
+   -no-accel                       Same as '-accel off'
+   -ranchu                         Use new emulator backend instead of the classic one
+   -engine &lt;engine&gt;                Select engine. auto|classic|qemu2
+   -netspeed &lt;speed&gt;               maximum network download/upload speeds
+   -netdelay &lt;delay&gt;               network latency emulation
+   -netfast                        disable network shaping
+   -code-profile &lt;name&gt;            enable code profiling
+   -show-kernel                    display kernel messages
+   -shell                          enable root shell on current terminal
+   -no-jni                         disable JNI checks in the Dalvik runtime
+   -nojni                          same as -no-jni
+   -logcat &lt;tags&gt;                  enable logcat output with given tags
+   -use-system-libs                Use system libstdc++ instead of bundled one
+   -bluetooth &lt;vendorid:productid&gt; forward bluetooth to vendorid:productid
+   -no-audio                       disable audio support
+   -noaudio                        same as -no-audio
+   -audio &lt;backend&gt;                use specific audio backend
+   -radio &lt;device&gt;                 redirect radio modem interface to character device
+   -port &lt;port&gt;                    TCP port that will be used for the console
+   -ports &lt;consoleport&gt;,&lt;adbport&gt;  TCP ports used for the console and adb bridge
+   -onion &lt;image&gt;                  use overlay PNG image over screen
+   -onion-alpha &lt;%age&gt;             specify onion-skin translucency
+   -onion-rotation 0|1|2|3         specify onion-skin rotation
+   -dpi-device &lt;dpi&gt;               specify device's resolution in dpi (default 165)
+   -scale &lt;scale&gt;                  scale emulator window (deprecated)
+   -http-proxy &lt;proxy&gt;             make TCP connections through a HTTP/HTTPS proxy
+   -timezone &lt;timezone&gt;            use this timezone instead of the host's default
+   -dns-server &lt;servers&gt;           use this DNS server(s) in the emulated system
+   -net-tap &lt;interface&gt;            use this TAP interface for networking
+   -net-tap-script-up &lt;script&gt;     script to run when the TAP interface goes up
+   -net-tap-script-down &lt;script&gt;   script to run when the TAP interface goes down
+   -cpu-delay &lt;cpudelay&gt;           throttle CPU emulation
+   -no-boot-anim                   disable animation for faster boot
+   -no-window                      disable graphical window display
+   -no-sim                         device has no SIM card
+   -lowram                         device is a low ram device
+   -version                        display emulator version number
+   -report-console &lt;socket&gt;        report console port to remote socket
+   -gps &lt;device&gt;                   redirect NMEA GPS to character device
+   -shell-serial &lt;device&gt;          specific character device for root shell
+   -tcpdump &lt;file&gt;                 capture network packets to file
+   -bootchart &lt;timeout&gt;            enable bootcharting
+   -charmap &lt;file&gt;                 use specific key character map
+   -studio-params &lt;file&gt;           used by Android Studio to provide parameters
+   -prop &lt;name&gt;=&lt;value&gt;            set system property on boot
+   -shared-net-id &lt;number&gt;         join the shared network, using IP address 10.1.2.&lt;number&gt;
+   -nand-limits &lt;nlimits&gt;          enforce NAND/Flash read/write thresholds
+   -gpu &lt;mode&gt;                     set hardware OpenGLES emulation mode
+   -camera-back &lt;mode&gt;             set emulation mode for a camera facing back
+   -camera-front &lt;mode&gt;            set emulation mode for a camera facing front
+   -webcam-list                    lists web cameras available for emulation
+   -screen &lt;mode&gt;                  set emulated screen mode
+   -selinux &lt;disabled|permissive&gt;  Set SELinux to either disabled or permissive mode
+   -unix-pipe &lt;path&gt;               Add &lt;path&gt; to the list of allowed Unix pipes
+   -fixed-scale                    Use fixed 1:1 scale for the initial emulator window.
+   -wait-for-debugger              Pause on launch and wait for a debugger process to attach before resuming
+   -skip-adb-auth                  Skip adb authentication dialogue
+   -metrics-to-console             Enable usage metrics and print the messages to stdout
+   -metrics-to-file &lt;file&gt;         Enable usage metrics and write the messages into specified file
+   -feature &lt;name|-name&gt;           Force-enable or disable (-name) the features
+   -sim-access-rules-file &lt;file&gt;   Use SIM access rules from specified file
+   -phone-number-prefix &lt;string&gt;   Number to use as the emulator's phone number prefix
+
+    -qemu args...                  pass arguments to qemu
+    -qemu -h                       display qemu help
+
+    -verbose                       same as '-debug-init'
+    -debug &lt;tags&gt;                  enable/disable debug messages
+    -debug-&lt;tag&gt;                   enable specific debug messages
+    -debug-no-&lt;tag&gt;                disable specific debug messages
+
+    -help                          print this help
+    -help-&lt;option&gt;                 print option-specific help
+
+    -help-disk-images              about disk images
+    -help-debug-tags               debug tags for -debug &lt;tags&gt;
+    -help-char-devices             character &lt;device&gt; specification
+    -help-environment              environment variables
+    -help-virtual-device           virtual device management
+    -help-sdk-images               about disk images when using the SDK
+    -help-build-images             about disk images when building Android
+    -help-all                      prints all help content
+</code></pre></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/android"><span class="tag">Android</span></a></li>
+        
+          <li><a href="/tags/pixel1"><span class="tag">Pixel1</span></a></li>
+        
+          <li><a href="/tags/root"><span class="tag">Root</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>460</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>如果你冲动删除了python</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  <meta name="description" content="在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!
+所以你输入了下面的几行命令
+#hahaha$sudo apt remove python$sudo apt remove python3$sudo apt remove pip$sudo apt remove pip3#一定删除的不彻底, 我要彻底删除$sudo apt autoremove -f 看到要删除600&#43;M, 毅然决然的按了 y.&amp;hellip;
+Bingo 然后你看到了我这篇文章.
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="如果你冲动删除了python">
+    <meta name="twitter:description" content="在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!
+所以你输入了下面的几行命令
+#hahaha$sudo apt remove python$sudo apt remove python3$sudo apt remove pip$sudo apt remove pip3#一定删除的不彻底, 我要彻底删除$sudo apt autoremove -f 看到要删除600&#43;M, 毅然决然的按了 y.&amp;hellip;
+Bingo 然后你看到了我这篇文章.
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="如果你冲动删除了python">
+  <meta property="og:description" content="在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!
+所以你输入了下面的几行命令
+#hahaha$sudo apt remove python$sudo apt remove python3$sudo apt remove pip$sudo apt remove pip3#一定删除的不彻底, 我要彻底删除$sudo apt autoremove -f 看到要删除600&#43;M, 毅然决然的按了 y.&amp;hellip;
+Bingo 然后你看到了我这篇文章.
+">
+  <meta property="og:url" content="/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">如果你冲动删除了python</h1>
+      <p class="post-meta">@ · Apr 2, 2019 · 2 min read</p>
+    </header>
+    <article class="post-content"><p>在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!</p>
+<p>所以你输入了下面的几行命令</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#hahaha</span>
+$sudo apt remove python
+$sudo apt remove python3
+$sudo apt remove pip
+$sudo apt remove pip3
+<span style="color:#75715e">#一定删除的不彻底, 我要彻底删除</span>
+$sudo apt autoremove -f 
+看到要删除600+M, 毅然决然的按了 y.
+</code></pre></div><p>&hellip;</p>
+<p>Bingo 然后你看到了我这篇文章.</p>
+<h1 id="heading">一、基础知识</h1>
+<h2 id="1-pythonpip">1. 重新安装python和pip</h2>
+<h3 id="11-python">1.1 安装python</h3>
+<p>由于ubuntu16.04默认安装的python版本是 <strong>python2.7</strong>  和 <strong>python3.5</strong> .</p>
+<p>所以<strong>为了满足系统的需要</strong>, 我们<strong>需要重新安装python2.7 和 python3.5</strong>.</p>
+<p>安装方式很简单:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装python2.7和python3.5</span>
+$sudo apt install python  <span style="color:#75715e"># 默认安装的python2.7</span>
+$sudo apt install python3 <span style="color:#75715e"># 默认安装的python3.5</span>
+</code></pre></div><p>除此之外, 我们还需要安装一些<strong>python的dev库</strong> ,  因为系统和很多软件运行时都依赖它(这也是我们删除python 并 autoremove后, 发现系统gg的一部分原因)</p>
+<p>安装方式同样很简单:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装dev库</span>
+$sudo apt install libpython2.7 libpython2.7-dev
+$sudo apt install libpython3.5 libpython3.5-dev
+</code></pre></div><p><strong>注意</strong>: 虽然系统的apt源不直接提供python3.6以及更高版本的python程序. 但是<strong>提供了python全版本的libdev库</strong>.</p>
+<p>所以, 如果你想要安装<strong>libpython3.6</strong>的话, 也是可以的:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装python3.6的dev库</span>
+$sudo apt install libpython3.6 
+</code></pre></div><p>但是如果想要安装<strong>python3.6</strong>及以上的包, 该怎么办呢?</p>
+<p>方法有很多, 这里推荐<strong>源安装的方式</strong> :</p>
+<p>可以参考(<a href="https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/">https://linuxize.com/post/how-to-install-python-3-7-on-ubuntu-18-04/</a>)</p>
+<p>具体操作:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 安装python3.6 above</span>
+$sudo apt update
+$sudo apt install software-properties-common
+
+$sudo add-apt-repository ppa:deadsnakes/ppa   <span style="color:#75715e">#加入python源, 并按[enter]确认</span>
+
+$sudo apt update      <span style="color:#75715e"># 之后重新更新我们的源库</span>
+
+<span style="color:#75715e"># 现在就可以安装python的其他版本了</span>
+$sudo apt install python3.6       <span style="color:#75715e"># 例如你想安装python3.6</span>
+</code></pre></div><p><img src="https://l0phtg.github.io/life/python-install.png" alt=""></p>
+<h3 id="12-pip">1.2 安装pip</h3>
+<p>安装pip, 这里只推荐一种方式:</p>
+<p>参照官方安装文档: <a href="https://pip.pypa.io/en/stable/installing/">https://pip.pypa.io/en/stable/installing/</a></p>
+<p>首先, 下载<strong>get-pip.py</strong> :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#使用curl命令(如果未安装, 先{sudo apt install curl}) 来下载get-pip.py</span>  
+$curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py <span style="color:#75715e"># 下载get-pip.py</span>
+</code></pre></div><p>然后, 安装<strong>你需要的pip版本</strong> , (注意: 这里有<strong>全局安装</strong>和<strong>user安装</strong> 两种方式) :</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装pip3.6</span>
+$ sudo python3.6 get-pip.py    <span style="color:#75715e"># 全局安装</span>
+
+$ python3.6 get-pip.py --user  <span style="color:#75715e"># user安装</span>
+</code></pre></div><h2 id="2-pip">2. pip使用</h2>
+<h3 id="21-packageuserpackage">2.1 全局安装package和user安装package</h3>
+<p>我们在使用pip 安装 <strong>package</strong> 时, 有两种选择:</p>
+<ol>
+<li><strong>全局安装</strong> package, 对所有系统用户生效</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"> 
+$sudo pip2.7 install <span style="color:#f92672">{</span>package<span style="color:#f92672">}</span>   <span style="color:#75715e"># python2.7使用pip2.7安装package</span> 
+$sudo pip3.5 install <span style="color:#f92672">{</span>package<span style="color:#f92672">}</span>   <span style="color:#75715e"># python3.5使用pip3.5安装package</span> 
+</code></pre></div><ol start="2">
+<li><strong>user安装</strong> package, 只对user(当前用户生效)</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">#
+$pip2.7 install --user <span style="color:#f92672">{</span>package<span style="color:#f92672">}</span> 
+$pip3.5 install --user <span style="color:#f92672">{</span>package<span style="color:#f92672">}</span>
+</code></pre></div><p>相信<strong>sudo</strong>和**&ndash;user**大家一眼就可以看到.</p>
+<p>那么除了这两个地方的不同, 还有哪些不同值得我们了解的呢?</p>
+<h3 id="22-package">2.2 两种安装package方式的不同</h3>
+<p><strong>dist-packages</strong> : 这是我们package安装后的存放目录.</p>
+<p>肯定地, <strong>全局安装</strong>和 <strong>user安装</strong> 的<strong>package存放路径是不同的</strong> .</p>
+<ol>
+<li><strong>全局安装</strong>时的<strong>package存放路径</strong>:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"># 
+$sudo pip3.6 --version
+pip 19.0.3 from /usr/local/lib/python3.6/dist-packages/pip <span style="color:#f92672">(</span>python 3.6<span style="color:#f92672">)</span>
+</code></pre></div><ol start="2">
+<li><strong>user安装</strong>时的<strong>package存放路径</strong>:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">#
+$ pwd             <span style="color:#75715e"># 查看当前绝对路径</span>
+/home/l0phtg
+
+$ pip3.6 install --user neovim  <span style="color:#75715e"># 注意这里显示的路径是相对路径</span>
+Requirement already satisfied: neovim in ./.local/lib/python3.6/site-packages <span style="color:#f92672">(</span>0.3.1<span style="color:#f92672">)</span>
+Requirement already satisfied: pynvim&gt;<span style="color:#f92672">=</span>0.3.1 in ./.local/lib/python3.6/site-packages <span style="color:#f92672">(</span>from neovim<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>0.3.2<span style="color:#f92672">)</span>
+Requirement already satisfied: msgpack&gt;<span style="color:#f92672">=</span>0.5.0 in ./.local/lib/python3.6/site-packages <span style="color:#f92672">(</span>from pynvim&gt;<span style="color:#f92672">=</span>0.3.1-&gt;neovim<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>0.6.1<span style="color:#f92672">)</span>
+Requirement already satisfied: greenlet in ./.local/lib/python3.6/site-packages <span style="color:#f92672">(</span>from pynvim&gt;<span style="color:#f92672">=</span>0.3.1-&gt;neovim<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>0.4.15<span style="color:#f92672">)</span>
+
+</code></pre></div><p>即<strong>user安装python3.6的package时</strong>, package 默认存放在了 <strong>~/.local/lib/python3.6/site-packages</strong> .路径下.</p>
+<h1 id="-">二、 安装被你意外删掉的库</h1>
+<p>在安装了前面所需的python2.7, python3.5, pip2.7, pip3.5, libpython2.7,  libpython2.7-dev, libpython3.5, libpython3.5-dev 之后, 你需要安装ubuntu系统的一些库.</p>
+<p>ubuntu系统所需的库为<strong>ubuntu-minimal, ubuntu-standard, ubuntu-desktop</strong> .</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$sudo apt install ubuntu-minimal ubuntu-standard ubuntu-desktop
+</code></pre></div><p>这时, 系统就已经可以<strong>正常启动, 并正常进入和显示桌面</strong> 了.</p>
+<p>最后,  因为你的操作, 可能导致<strong>一些三方应用不能启动</strong> , 这时你只能自行重装了.</p>
+<p>我这里已经知道的影响到的三方软件为: Chrome浏览器, wps.</p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/ubuntu"><span class="tag">Ubuntu</span></a></li>
+        
+          <li><a href="/tags/python"><span class="tag">Python</span></a></li>
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>277</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Kaleidoscope：Extending the Language：Mutable Variables</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="translate from: http://llvm.org/docs/tutorial/LangImpl07.html
+本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对改变变量功能的支持。
+  改变已经存在的变量：
+  函数参数。
+  迭代变量。
+在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。
+具体到Kaleidoscope语法层面，我们通过&#39;=&#39;运算符达到对已经定义变量的改变。
+    新定义一个变量： 通过关键字var/in实现。
+ ">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Kaleidoscope：Extending the Language：Mutable Variables">
+    <meta name="twitter:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl07.html
+本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对改变变量功能的支持。
+  改变已经存在的变量：
+  函数参数。
+  迭代变量。
+在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。
+具体到Kaleidoscope语法层面，我们通过&#39;=&#39;运算符达到对已经定义变量的改变。
+    新定义一个变量： 通过关键字var/in实现。
+ ">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Kaleidoscope：Extending the Language：Mutable Variables">
+  <meta property="og:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl07.html
+本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对改变变量功能的支持。
+  改变已经存在的变量：
+  函数参数。
+  迭代变量。
+在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。
+具体到Kaleidoscope语法层面，我们通过&#39;=&#39;运算符达到对已经定义变量的改变。
+    新定义一个变量： 通过关键字var/in实现。
+ ">
+  <meta property="og:url" content="/post/llvm/kaleidoscopeextending-the-languagemutable-variables/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/llvm/kaleidoscopeextending-the-languagemutable-variables/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Kaleidoscope：Extending the Language：Mutable Variables</h1>
+      <p class="post-meta">@L0phTg · Jun 12, 2019 · 9 min read</p>
+    </header>
+    <article class="post-content"><p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl07.html">http://llvm.org/docs/tutorial/LangImpl07.html</a></p>
+<p>本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对<strong>改变变量</strong>功能的支持。</p>
+<ul>
+<li>
+<p>改变已经存在的变量：</p>
+<ol>
+<li>
+<p>函数参数。</p>
+</li>
+<li>
+<p>迭代变量。</p>
+<p>在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。</p>
+<p>具体到Kaleidoscope语法层面，我们通过'='运算符达到对已经定义变量的改变。</p>
+</li>
+</ol>
+</li>
+<li>
+<p>新定义一个变量：
+通过关键字var/in实现。</p>
+</li>
+</ul>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph TB
+	subgraph 添加 var/in 以支持用户自定义变量
+		subgraph 1.添加词法分析支持
+			extendParser["扩展词法分析器"]
+		end
+		subgraph 2.构建varExprAST
+			buildAST["定义varExprAST节点"] --> parseAST["实现ParserVarExpr达到对var/in表达式的解析"]
+		end
+		subgraph 3.添加Codegen支持
+			varExprCodegen["实现varExprAST的Codegen"]
+		end
+		extendParser --> buildAST
+		parseAST --> varExprCodegen
+	end
+
+  subgraph 添加 赋值运算符 以支持改变已有变量
+		subgraph 1.根据已有变量创建Alloca指令
+			createAlloca["为现有的变量创建Alloca指令"] --> StoreInitialValue["Alloca内存中存入初始值"]
+			StoreInitialValue --> updateSymbolTable["更新NamedValues符号表"]
+		end
+		subgraph 2.利用Alloca实现变量引用
+			variableCodegen["更改VariableExprAST实现变量引用"]
+		end
+		subgraph 3.添加mem2reg Pass
+			addMem2regPass["添加mem2reg Pass支持"]
+		end
+		subgraph 3.定义赋值运算符实现变量修改
+			serPrecedence[添加赋值运算符并设置运算符优先级] --> binaryCodegen["为赋值运算符实现Codegen"]
+		end
+		updateSymbolTable --> variableCodegen
+		variableCodegen --> addMem2regPass
+		addMem2regPass --> serPrecedence
+	end
+
+  style buildAST fill:#f9f
+	style parseAST fill:#f9f
+	style variableCodegen fill:#f9f
+	style serPrecedence fill:#f9f
+	style binaryCodegen fill:#f9f
+	
+	style varExprCodegen fill:#ccff66
+	style addMem2regPass fill:#ccff66
+
+</div>
+<h1 id="chapter-7-introduction">Chapter 7 Introduction</h1>
+<p>欢迎来到“使用LLVM来实现一门语言”的第七章。在第一章到第六章，我们已经构建了一个简单但是功能强大的编程语言。在我们的学习过程中，我们学习了一些<strong>词法解析技巧</strong>，<strong>如何构建和表示AST</strong>，<strong>如何生成 LLVM IR</strong>，以及<strong>如何优化结果代码</strong>以及 <strong>使用JIT来编译它</strong>。</p>
+<p>虽然 Kaleidoscope 作为一种功能性语言是非常有趣的，但同时对于它来说产生LLVM IR的实现是很简单的。特别地，函数式语言使得<strong>直接以 SSA 形式构建 LLVM IR 变得非常容易</strong>。由于 LLVM 要求输入代码是 SSA 形式的（这是非常好的性质），但是对于新手来说不明白<strong>如何使用可变变量为命令式语言产生代码</strong>。</p>
+<p>本章的内容: 你不必为前端构建 SSA形式，LLVM为此提供了高度优化且经过良好测试的支持，尽管它的工作方式对某些人来说有点意外。</p>
+<h1 id="72-">7.2 为什么这是一个困难的问题？</h1>
+<p>为了理解为什么可变变量会<strong>导致SSA构造的复杂性</strong>*，考虑下面这个极其简单的 c 代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> G, H;
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">test</span>(_Bool Condition) {
+  <span style="color:#66d9ef">int</span> X;
+  <span style="color:#66d9ef">if</span> (Condition)
+    X <span style="color:#f92672">=</span> G;
+  <span style="color:#66d9ef">else</span>
+    X <span style="color:#f92672">=</span> H;
+  <span style="color:#66d9ef">return</span> X;
+}
+</code></pre></div><p>在这个例子中，我们有变量 &ldquo;X&rdquo;，<strong>它的值依赖于程序运行时执行的路径</strong>。因为返回指令之前有两个可能的值，所以一个 PHI 节点会被插入以用来合并这两个值。它生成的LLVM IR看起来像下面这样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm">@G = <span style="color:#66d9ef">weak</span> <span style="color:#66d9ef">global</span> <span style="color:#66d9ef">i32</span> <span style="color:#ae81ff">0</span>   <span style="color:#75715e">; type of @G is i32*
+</span><span style="color:#75715e"></span>@H = <span style="color:#66d9ef">weak</span> <span style="color:#66d9ef">global</span> <span style="color:#66d9ef">i32</span> <span style="color:#ae81ff">0</span>   <span style="color:#75715e">; type of @H is i32*
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">i32</span> @test(<span style="color:#66d9ef">i1</span> %Condition) {
+entry:
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %Condition, <span style="color:#66d9ef">label</span> %cond_true, <span style="color:#66d9ef">label</span> %cond_false
+
+cond_true:
+  %X.0 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* @G
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %cond_next
+
+cond_false:
+  %X.1 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* @H
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %cond_next
+
+cond_next:
+  %X.2 = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">i32</span> [ %X.1, %cond_false ], [ %X.0, %cond_true ]
+  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">i32</span> %X.2
+}
+</code></pre></div><p>在此例中，来自 G 和 H 全局变量的加载在 LLVM IR 中是显式的，并且他们位于 if 语句的 then/else 分支（ cond_true/cond_false）。为了合并传入的值，在 cond_next 块中根据控制流来自何处来选择要使用的正确值：如果控制流来自 cond_false 块，X.2 将会得到 X.1 的值。可选地，如果控制流来自 cond_true，它得到 X.0 的值。本章的目的不是解释 SSA 形式的细节。为了了解更多有关SSA的信息，请阅读 <a href="http://en.wikipedia.org/wiki/Static_single_assignment_form">many online references</a>.</p>
+<p>本篇文章的问题是“当降低可变变量的赋值时，谁会放置phi节点?”. 这里的问题是 LLVM 要求它的 IR 一定是 SSA 形式：它没有“非SSA”模式。然而，SSA构造需要 非平凡（non-trivial） 算法和数据结构，所以对于每一个前端来说必须重写这段逻辑，它是不方便并且也是浪费的。</p>
+<h1 id="73-llvm">7.3 LLVM中的内存</h1>
+<p>这里的“技巧”是：LLVM要求所有的寄存器值都是SSA形式，它不要求（或者允许）内存对象是 SSA 形式。在上面的例子中，注意到 G 和 H 的负载是对 G 和 H 的直接访问：他们不会重命名或者更改版本。这与其他一些会尝试改变内存对象的版本的编译器系统不同。在 LLVM 中，它不会将内存的数据流分析编码到 LLVM IR 中，而是通过<a href="http://llvm.org/docs/WritingAnLLVMPass.html">分析passes</a>来处理（按需计算）。</p>
+<p>考虑到这一点，高级一些的思路是我们为函数中的每个可变对象创建一个栈变量。为了利用这个技巧，我们需要讨论 LLVM 如何表示栈变量。</p>
+<p>在LLVM中，<strong>所有内存访问都是显式地通过使用加载/存储指令来完成的</strong>，并且它被精心设计过使它不需要“地址”运算符。注意**@G/@H全局变量的类型实际上是 &ldquo;i32&rdquo;**，即使该变量被定义为“i32”。这意味着@G在全局数据区域中为一个i32定义了空间，但是它的名字实际上指向该空间的地址。栈变量工作方式相同，除了不是使用全局变量定义声明，应该使用<a href="http://llvm.org/docs/LangRef.html#alloca-instruction">LLVM alloca</a>指令申明它们：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm"><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">i32</span> @example() {
+entry:
+  %X = <span style="color:#66d9ef">alloca</span> <span style="color:#66d9ef">i32</span>           <span style="color:#75715e">; type of %X is i32*.
+</span><span style="color:#75715e"></span>  ...
+  %tmp = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* %X       <span style="color:#75715e">; load the stack value %X from the stack.
+</span><span style="color:#75715e"></span>  %tmp2 = <span style="color:#66d9ef">add</span> <span style="color:#66d9ef">i32</span> %tmp, <span style="color:#ae81ff">1</span>   <span style="color:#75715e">; increment it
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">store</span> <span style="color:#66d9ef">i32</span> %tmp2, <span style="color:#66d9ef">i32</span>* %X  <span style="color:#75715e">; store it back
+</span><span style="color:#75715e"></span>  ...
+</code></pre></div><p>此代码展示了<strong>如何在LLVM IR中申明和操作堆栈变量</strong>。使用alloca指令分配的堆栈内存是完全通用的：你可以将堆栈槽的地址传给函数，你可以将其存储在其它变量中，等等。在我们上面的例子中，我们可以<strong>使用alloca技术重写</strong>来避免使用PHI节点：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm">@G = <span style="color:#66d9ef">weak</span> <span style="color:#66d9ef">global</span> <span style="color:#66d9ef">i32</span> <span style="color:#ae81ff">0</span>   <span style="color:#75715e">; type of @G is i32*
+</span><span style="color:#75715e"></span>@H = <span style="color:#66d9ef">weak</span> <span style="color:#66d9ef">global</span> <span style="color:#66d9ef">i32</span> <span style="color:#ae81ff">0</span>   <span style="color:#75715e">; type of @H is i32*
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">i32</span> @test(<span style="color:#66d9ef">i1</span> %Condition) {
+entry:
+  %X = <span style="color:#66d9ef">alloca</span> <span style="color:#66d9ef">i32</span>           <span style="color:#75715e">; type of %X is i32*.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %Condition, <span style="color:#66d9ef">label</span> %cond_true, <span style="color:#66d9ef">label</span> %cond_false
+
+cond_true:
+  %X.0 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* @G
+  <span style="color:#66d9ef">store</span> <span style="color:#66d9ef">i32</span> %X.0, <span style="color:#66d9ef">i32</span>* %X   <span style="color:#75715e">; Update X
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %cond_next
+
+cond_false:
+  %X.1 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* @H
+  <span style="color:#66d9ef">store</span> <span style="color:#66d9ef">i32</span> %X.1, <span style="color:#66d9ef">i32</span>* %X   <span style="color:#75715e">; Update X
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %cond_next
+
+cond_next:
+  %X.2 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* %X       <span style="color:#75715e">; Read X
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">i32</span> %X.2
+}
+</code></pre></div><p>通过这种方式，我们发现了一种<strong>不需要创建PHI节点就能处理任意可变变量的方法</strong>：</p>
+<ol>
+<li>每一个可变变量都成为栈分配；</li>
+<li>每次读取变量变成了栈中加载；</li>
+<li>变量的每次更新变成了向栈中存储；</li>
+<li>获取变量的地址只是直接使用栈地址；</li>
+</ol>
+<p>虽然这个解决方案解决了我们目前的问题，但是它引入了另一个问题：我们现在显然已经为非常简单和常见的操作引入了大量的栈流量，<strong>这是一个主要的性能的问题</strong>。对我们来说是幸运地是，<strong>LLVM优化器有一个名为“mem2reg”的高度优化的pass来处理这种情况</strong>，将分配提升到 SSA 寄存器中，并根据需要插入PHI节点。例如，如果你通过该pass运行此例，你将获得：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm"><span style="color:#960050;background-color:#1e0010">$</span> <span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">s</span> &lt; <span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">x</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span>.<span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">l</span> <span style="color:#960050;background-color:#1e0010">|</span> <span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span> <span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">g</span> <span style="color:#960050;background-color:#1e0010">|</span> <span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">m</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">s</span>
+@G = <span style="color:#66d9ef">weak</span> <span style="color:#66d9ef">global</span> <span style="color:#66d9ef">i32</span> <span style="color:#ae81ff">0</span>
+@H = <span style="color:#66d9ef">weak</span> <span style="color:#66d9ef">global</span> <span style="color:#66d9ef">i32</span> <span style="color:#ae81ff">0</span>
+
+<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">i32</span> @test(<span style="color:#66d9ef">i1</span> %Condition) {
+entry:
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %Condition, <span style="color:#66d9ef">label</span> %cond_true, <span style="color:#66d9ef">label</span> %cond_false
+
+cond_true:
+  %X.0 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* @G
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %cond_next
+
+cond_false:
+  %X.1 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">i32</span>* @H
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %cond_next
+
+cond_next:
+  %X.01 = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">i32</span> [ %X.1, %cond_false ], [ %X.0, %cond_true ]
+  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">i32</span> %X.01
+}
+</code></pre></div><p>mem2reg pass<strong>实现了用于构造SSA形式的标准“iterated dominance frontier”算法</strong>，并且具有很多非常常见的优化。mem2reg 优化 pass 是处理可变变量的实现方案，我们强烈推荐你依赖它。注意：<strong>mem2reg只对特定情况下的变量可以起作用</strong>：</p>
+<ol>
+<li>mem2reg 是 alloca 驱动的：它寻找allocas，如果它可以处理他们，它会促进他们。它不适用于全局变量或者堆分配变量。</li>
+<li>mem2reg 只在函数的<strong>entry block查找alloca指令</strong>。在entry block中保证alloca<strong>只执行一次</strong>（这会使分析更简单）。</li>
+<li>mem2reg 只能优化<strong>使用直接加载和存储的allocas</strong>。如果栈变量的地址被传递给一个函数，或者涉及任何有趣的指针算法，则不会优化alloca。</li>
+<li>mem2reg只对第一类值的allocas起作用（such as 指针、标量和向量），并且仅在分配的数组大小是1时有效（或者在.ll文件中缺失才有效）。mem2reg无法将结构体或者数组转换为寄存器。注意：“sroa” pass 是一个更加强大的pass，它在许多情况下可以转换结构体，“联合”，和数组为寄存器。</li>
+</ol>
+<p>所有这些性质属性对于命令式语言都是很适合的，我们将在下面用Kaleidoscope进行说明。你可能会问的最后一个问题是：<strong>我应该为我的前端使用mem2reg吗</strong>? <strong>如果我直接使用SSA构建，避免使用mem2reg会不会更好</strong>？简而言之，我们强烈建议你使用此技术来构建SSA形式，除非有非常好的理由不这样做。</p>
+<p>使用mem2reg的优点：</p>
+<ul>
+<li>经验证且经过充分的测试：clang对于本地可变变量会使用mem2reg。你可以确保快速找到错误并尽早修复。</li>
+<li>速度极快：mem2reg 有许多特殊的情况，可以使它在常见情况下快速完成。例如，它对于只被用于单个基本块的变量（这些变量只有一个赋值的地方）有一个快速的路径，它会避免插入不需要的phi节点，等等。</li>
+<li>需要调试信息生成：在LLVM中<a href="http://llvm.org/docs/SourceLevelDebugging.html">调试信息</a>依赖于公开变量的地址，以便可以将调试信息附加到它上面。这种技术与这种调试信息风格非常吻合。</li>
+</ul>
+<p>如果不出意外，这样会使你的前端更容易上手和运行，并且实现起来非常简单。现在让我们开始为Kaleidoscope添加可变变量扩展吧！</p>
+<h1 id="74-kaleidoscope">7.4 Kaleidoscope中可变变量</h1>
+<p>现在我们知道了我们想要解决的问题，让我们看看在Kaleidoscope它是如何实现的。我们将会添加两个特性：</p>
+<ol>
+<li>使用‘=’运算符来改变变量的能力。</li>
+<li>定义新变量的能力。</li>
+</ol>
+<p>到目前为止，我们的变量包含<strong>传入的参数</strong>和<strong>归纳的变量（迭代变量）<strong>和</strong>重新定义的那些变量</strong>:). 此外，无论你是否改变变量，拥有定义新变量的能力都是有用的。这是一个很不错的例子，展示了我们如何使用它们：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Define &#39;:&#39; for sequencing: as a low-precedence operator that ignores operands</span>
+<span style="color:#75715e"># and just returns the RHS.</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span> : <span style="color:#ae81ff">1</span> (x y) y;
+
+<span style="color:#75715e"># Recursive fib, we could do this before.</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fib</span>(x)
+  <span style="color:#66d9ef">if</span> (x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span>) then
+    <span style="color:#ae81ff">1</span>
+  <span style="color:#66d9ef">else</span>
+    fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span>fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>);
+
+<span style="color:#75715e"># Iterative fib.</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fibi</span>(x)
+  var a <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, b <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, c <span style="color:#f92672">in</span>
+  (<span style="color:#66d9ef">for</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>, i <span style="color:#f92672">&lt;</span> x <span style="color:#f92672">in</span>
+     c <span style="color:#f92672">=</span> a <span style="color:#f92672">+</span> b :
+     a <span style="color:#f92672">=</span> b :
+     b <span style="color:#f92672">=</span> c) :
+  b;
+
+<span style="color:#75715e"># Call it.</span>
+fibi(<span style="color:#ae81ff">10</span>);
+</code></pre></div><p>为了改变变量，我们必须使用“alloca技巧”来实现。一旦我们实现了该功能，我们之后将会添加一个新的运算符，然后扩展Kaleidoscope来支持新的变量定义。</p>
+<h1 id="75-">7.5 改变现有的变量</h1>
+<p>代码生成时，Kaleidoscope中的符号表通过&quot;NamedValues&quot;映射来管理。这个映射目前跟踪了LLVM的“Value”，它包含给定变量的数值。为了支持变量的改变，我们需要稍微改变一下代码，<strong>使 <em>NamedValues</em> 保存有问题变量的内存位置</strong>。注意：这种改变是一种重构：它改变了代码的结构，但是没有（本身）改变编译器的行为。所有这些改变都只在Kaleidoscope代码产生器进行。</p>
+<p>在Kaleidoscope的发展过程中，它目前只支持两种类型的变量：函数的传入参数和'for'循环的归纳（迭代）变量。为了保持一致性，除了其他用户定义的变量外，我们还允许对这些变量进行改变。这意味着这些都需要内存位置。</p>
+<p>为了开始我们的Kaleidoscope的转换，我们将改变NamedValues映射，使其映射到AllocaInst*而不是Value *。一旦我们这样做了， C++编译器将告诉我们代码中哪些部分需要更新。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>map<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, AllocaInst<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> NamedValues;
+</code></pre></div><p>此外，因为我们需要创建这些allocas，我们将使用一个辅助函数来确保在函数的入口块创建allocas：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// CreateEntryBlockAlloca - Create an alloca instruction in the entry block of
+</span><span style="color:#75715e"></span><span style="color:#75715e">/// the function.  This is used for mutable variables etc.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> AllocaInst <span style="color:#f92672">*</span><span style="color:#a6e22e">CreateEntryBlockAlloca</span>(Function <span style="color:#f92672">*</span>TheFunction,
+                                          <span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string <span style="color:#f92672">&amp;</span>VarName) {
+  IRBuilder<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span> TmpB(<span style="color:#f92672">&amp;</span>TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getEntryBlock(),
+                 TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getEntryBlock().begin());
+  <span style="color:#66d9ef">return</span> TmpB.CreateAlloca(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext), <span style="color:#ae81ff">0</span>,
+                           VarName.c_str());
+}
+</code></pre></div><p>这个看起来很有趣的代码创建了一个指向入口块的第一条指令的IRBuilder对象(.begin())。它然后根据给定名称创建了一个alloca并返回它。因为在Kaleidoscope中所有的值都是doubles，因此不必传入要使用的类型。</p>
+<p>有了辅助函数之后，我们想要做的第一个功能改变属于<strong>变量引用</strong>。在我们新的方案中，变量存在于栈中，所以生成一个对代码的引用实际上需要从栈上产生一个加载指令：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>VariableExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
+  <span style="color:#75715e">// Look this variable up in the function.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 读取 Value
+</span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>V <span style="color:#f92672">=</span> NamedValues[Name];
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>V)
+    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unknown variable name</span><span style="color:#e6db74">&#34;</span>);
+
+  <span style="color:#75715e">// Load the value.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 加载value
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> Builder.CreateLoad(V, Name.c_str());
+}
+</code></pre></div><p>正如你看到的，这非常简单。现在我们需要更新定义变量的内容来设置alloca。我们将从 ForExprAST::codegen()开始:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> Builder.GetInsertBlock()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getParent();
+
+<span style="color:#75715e">// Create an alloca for the variable in the entry block.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 在entry block中为变量创建Alloca指令
+</span><span style="color:#75715e"></span>AllocaInst <span style="color:#f92672">*</span>Alloca <span style="color:#f92672">=</span> CreateEntryBlockAlloca(TheFunction, VarName);
+
+<span style="color:#75715e">// Emit the start code first, without &#39;variable&#39; in scope.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>StartVal <span style="color:#f92672">=</span> Start<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>StartVal)
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+<span style="color:#75715e">// Store the value into the alloca.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 将值存入Alloca中
+</span><span style="color:#75715e"></span>Builder.CreateStore(StartVal, Alloca);
+...
+
+<span style="color:#75715e">// Compute the end condition.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>EndCond <span style="color:#f92672">=</span> End<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>EndCond)
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+<span style="color:#75715e">// Reload, increment, and restore the alloca.  This handles the case where
+</span><span style="color:#75715e"></span><span style="color:#75715e">// the body of the loop mutates the variable.
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>CurVar <span style="color:#f92672">=</span> Builder.CreateLoad(Alloca);
+Value <span style="color:#f92672">*</span>NextVar <span style="color:#f92672">=</span> Builder.CreateFAdd(CurVar, StepVal, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">nextvar</span><span style="color:#e6db74">&#34;</span>);
+Builder.CreateStore(NextVar, Alloca);
+...
+</code></pre></div><p>此代码实际上与我们之前的代码大致相同。最大的区别是我们不再需要构建一个PHI节点，并且我们使用 load/store 来根据需要获取变量。</p>
+<p>为了支持可变参数变量，我们还需要为它们进行分配空间。代码实现也非常简单：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
+  ...
+  Builder.SetInsertPoint(BB);
+
+  <span style="color:#75715e">// Record the function arguments in the NamedValues map.
+</span><span style="color:#75715e"></span>  NamedValues.clear();
+  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>args()) {
+    <span style="color:#75715e">// Create an alloca for this variable.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 为每个变量创建Alloca
+</span><span style="color:#75715e"></span>    AllocaInst <span style="color:#f92672">*</span>Alloca <span style="color:#f92672">=</span> CreateEntryBlockAlloca(TheFunction, Arg.getName());
+
+    <span style="color:#75715e">// Store the initial value into the alloca.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 将初始值存入Alloca中
+</span><span style="color:#75715e"></span>    Builder.CreateStore(<span style="color:#f92672">&amp;</span>Arg, Alloca);
+
+    <span style="color:#75715e">// Add arguments to variable symbol table.
+</span><span style="color:#75715e"></span>    <span style="color:#960050;background-color:#1e0010">更</span><span style="color:#960050;background-color:#1e0010">新</span>NamedValues符号表
+    NamedValues[Arg.getName()] <span style="color:#f92672">=</span> Alloca;
+  }
+
+  <span style="color:#66d9ef">if</span> (Value <span style="color:#f92672">*</span>RetVal <span style="color:#f92672">=</span> Body<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen()) {
+    ...
+</code></pre></div><p>对于每个参数，我们都会创建一个alloca指令，将函数的参数（即初始值）存储到alloca分配的空间中，并将alloca注册为参数的内存位置。在为函数设置了入口基本块之后，Function::codegen()立即被调用。</p>
+<p>最后剩下的部分是添加mem2reg pass，这可以使我们生成的代码进行再一次的优化：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Promote allocas to registers.
+</span><span style="color:#75715e"></span>TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createPromoteMemoryToRegisterPass());
+<span style="color:#75715e">// Do simple &#34;peephole&#34; optimizations and bit-twiddling optzns.
+</span><span style="color:#75715e"></span>TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createInstructionCombiningPass());
+<span style="color:#75715e">// Reassociate expressions.
+</span><span style="color:#75715e"></span>TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createReassociatePass());
+...
+</code></pre></div><p>有趣的是看看mem2reg优化运行之前和之后的代码是什么样的。例如，这是我们的递归fib函数的优化前/优化后代码。在优化之前：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm"><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %x) {
+entry:
+  %x1 = <span style="color:#66d9ef">alloca</span> <span style="color:#66d9ef">double</span>
+  <span style="color:#66d9ef">store</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#66d9ef">double</span>* %x1
+  %x2 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">double</span>* %x1
+  %cmptmp = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ult</span> <span style="color:#66d9ef">double</span> %x2, <span style="color:#ae81ff">3.000000e+00</span>
+  %booltmp = <span style="color:#66d9ef">uitofp</span> <span style="color:#66d9ef">i1</span> %cmptmp <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">double</span>
+  %ifcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %booltmp, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %ifcond, <span style="color:#66d9ef">label</span> %then, <span style="color:#66d9ef">label</span> %else
+
+then:       <span style="color:#75715e">; preds = %entry
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+else:       <span style="color:#75715e">; preds = %entry
+</span><span style="color:#75715e"></span>  %x3 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">double</span>* %x1
+  %subtmp = <span style="color:#66d9ef">fsub</span> <span style="color:#66d9ef">double</span> %x3, <span style="color:#ae81ff">1.000000e+00</span>
+  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %subtmp)
+  %x4 = <span style="color:#66d9ef">load</span> <span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">double</span>* %x1
+  %subtmp5 = <span style="color:#66d9ef">fsub</span> <span style="color:#66d9ef">double</span> %x4, <span style="color:#ae81ff">2.000000e+00</span>
+  %calltmp6 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %subtmp5)
+  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp6
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+ifcont:     <span style="color:#75715e">; preds = %else, %then
+</span><span style="color:#75715e"></span>  %iftmp = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ <span style="color:#ae81ff">1.000000e+00</span>, %then ], [ %addtmp, %else ]
+  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %iftmp
+}
+</code></pre></div><p>这里只有一个变量（x，传入的参数）但是你仍然可以看到我们正在使用的极其简单的代码生成策略。在入口基本块，一个alloca被创建，并且初始值被存储到其中。每个对变量的引用都会从栈中重新加载。注意：我们不会修改 if/then/else 表达式，因为它只插入PHI节点。虽然我们可以为它创建一个alloca，但实际上为它创建一个PHI节点是更容易的，所以我们仍然使用PHI指令。</p>
+<p>下面是mem2reg pass运行之后的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm"><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %x) {
+entry:
+  %cmptmp = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ult</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">3.000000e+00</span>
+  %booltmp = <span style="color:#66d9ef">uitofp</span> <span style="color:#66d9ef">i1</span> %cmptmp <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">double</span>
+  %ifcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %booltmp, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %ifcond, <span style="color:#66d9ef">label</span> %then, <span style="color:#66d9ef">label</span> %else
+
+then:
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+else:
+  %subtmp = <span style="color:#66d9ef">fsub</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">1.000000e+00</span>
+  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %subtmp)
+  %subtmp5 = <span style="color:#66d9ef">fsub</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">2.000000e+00</span>
+  %calltmp6 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %subtmp5)
+  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp6
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+
+ifcont:     <span style="color:#75715e">; preds = %else, %then
+</span><span style="color:#75715e"></span>  %iftmp = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ <span style="color:#ae81ff">1.000000e+00</span>, %then ], [ %addtmp, %else ]
+  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %iftmp
+}
+</code></pre></div><p>这是mem2reg的一个简单案例，因为没有对变量进行重新定义。</p>
+<p>在剩余的优化运行之后，我们得到：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-llvm" data-lang="llvm"><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %x) {
+entry:
+  %cmptmp = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ult</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">3.000000e+00</span>
+  %booltmp = <span style="color:#66d9ef">uitofp</span> <span style="color:#66d9ef">i1</span> %cmptmp <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">double</span>
+  %ifcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ueq</span> <span style="color:#66d9ef">double</span> %booltmp, <span style="color:#ae81ff">0.000000e+00</span>
+  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %ifcond, <span style="color:#66d9ef">label</span> %else, <span style="color:#66d9ef">label</span> %ifcont
+
+else:
+  %subtmp = <span style="color:#66d9ef">fsub</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">1.000000e+00</span>
+  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %subtmp)
+  %subtmp5 = <span style="color:#66d9ef">fsub</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">2.000000e+00</span>
+  %calltmp6 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @fib(<span style="color:#66d9ef">double</span> %subtmp5)
+  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp6
+  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+
+ifcont:
+  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.000000e+00</span>
+}
+</code></pre></div><p>在这里，我们看到simplifycfg pass决定将返回指令克隆到‘else’块的末尾。这允许它消除一些分支和PHI节点。</p>
+<p>现在所有的符号表引用都更新为使用栈变量，之后我们将添加赋值运算符。</p>
+<h1 id="76-">7.6 创建赋值运算符</h1>
+<p>使用我们目前的框架，添加新的赋值运算符是非常简单的。我们将会和解析其他二元操作符一样解析它，但是我们是在内部处理它（而不是允许用户定义它）。第一步是设置优先级：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+  <span style="color:#75715e">// Install standard binary operators.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 1 is lowest precedence.
+</span><span style="color:#75715e"></span>  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">+</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
+  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
+</code></pre></div><p>现在负责所有解析和AST生成的解析器知道了二元运算符的优先级。我们只需要为赋值运算符实现codegen。这看起来像：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>BinaryExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
+  <span style="color:#75715e">// Special case &#39;=&#39; because we don&#39;t want to emit the LHS as an expression.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (Op <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=</span><span style="color:#e6db74">&#39;</span>) {
+    <span style="color:#75715e">// Assignment requires the LHS to be an identifier.
+</span><span style="color:#75715e"></span>    VariableExprAST <span style="color:#f92672">*</span>LHSE <span style="color:#f92672">=</span> <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>VariableExprAST<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(LHS.get());
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>LHSE)
+      <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">destination of &#39;=&#39; must be a variable</span><span style="color:#e6db74">&#34;</span>);
+</code></pre></div><p>与其他二元运算符不同，我们的赋值运算符不遵循“emit LHS，emit RHS，do computation”模型。因此，在其他二元运算符被处理之前，它会被当作一个特殊的例子来处理。另一个奇怪的事情是它需要<strong>将LHS作为变量</strong>。“(x + 1) = expr”无效，只允许“x = expr”之类的二元表达式。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"> <span style="color:#75715e">// Codegen the RHS.
+</span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>Val <span style="color:#f92672">=</span> RHS<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Val)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#75715e">// Look up the name.
+</span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>Variable <span style="color:#f92672">=</span> NamedValues[LHSE<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getName()];
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Variable)
+    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unknown variable name</span><span style="color:#e6db74">&#34;</span>);
+
+  Builder.CreateStore(Val, Variable);
+  <span style="color:#66d9ef">return</span> Val;
+}
+...
+</code></pre></div><p>一旦我们得到了变量，codegen的赋值就是很简单直接的：我们emit赋值的RHS，创建一个store，并且返回计算值。返回值允许链式赋值，就像“X = (Y = Z)”。</p>
+<p>现在我们有了一个赋值运算符，我们可以改变循环变量和参数。例如，我们现在可以运行下面的代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Function to print a double.</span>
+extern printd(x);
+
+<span style="color:#75715e"># Define &#39;:&#39; for sequencing: as a low-precedence operator that ignores operands</span>
+<span style="color:#75715e"># and just returns the RHS.</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span> : <span style="color:#ae81ff">1</span> (x y) y;
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test</span>(x)
+  printd(x) :
+  x <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span> :
+  printd(x);
+
+test(<span style="color:#ae81ff">123</span>);
+</code></pre></div><p>运行时，该代码先打印“123”，然后打印“4”，表明了我们实际上确实改变了该值。不错，我们现在正式实现了我们的目标：在一般情况下，要实现该目标需要SSA构建。然而，为了真正有用，我们希望能够定义我们自己的本地变量，让我们接下来添加它。</p>
+<h1 id="77-">7.7 用户定义变量</h1>
+<p>添加 var/in 就像我们对Kaleidoscope进行的任何其他扩展一样：我们扩展词法分析器，解析器和AST以及代码生成器。添加新的'var/in'结构的第一步是<strong>扩展词法分析器</strong>。和以前一样，这非常简单，代码就像下面这样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">Token</span> {
+  ...
+  <span style="color:#75715e">// var definition
+</span><span style="color:#75715e"></span>  tok_var <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">13</span>
+...
+}
+...
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> gettok() {
+...
+    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">in</span><span style="color:#e6db74">&#34;</span>)
+      <span style="color:#66d9ef">return</span> tok_in;
+    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">binary</span><span style="color:#e6db74">&#34;</span>)
+      <span style="color:#66d9ef">return</span> tok_binary;
+    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unary</span><span style="color:#e6db74">&#34;</span>)
+      <span style="color:#66d9ef">return</span> tok_unary;
+    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">var</span><span style="color:#e6db74">&#34;</span>)
+      <span style="color:#66d9ef">return</span> tok_var;
+    <span style="color:#66d9ef">return</span> tok_identifier;
+...
+</code></pre></div><p>下一步是<strong>定义我们将要构造的AST节点</strong>。对于 var/in 来说，它看起来就像下面这样:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// VarExprAST - Expression class for var/in
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">VarExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>pair<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> VarNames;
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Body;
+
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+  VarExprAST(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>pair<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> VarNames,
+             std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Body)
+    <span style="color:#f92672">:</span> VarNames(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(VarNames)), Body(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Body)) {}
+
+  Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#66d9ef">override</span>;
+};
+</code></pre></div><p>var/in允许一次定义名称列表，每个名称可以选择是否拥有初始值。因此，我们在VarNames向量中获取此信息。另外，var/in有body，它被允许访问var/in定义的变量。</p>
+<p>有了这个，我们可以定义解析器片段。我们要做的第一件事是将其添加为主要表达式：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// primary
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= identifierexpr
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= numberexpr
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= parenexpr
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= ifexpr
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= forexpr
+</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= varexpr
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParsePrimary() {
+  <span style="color:#66d9ef">switch</span> (CurTok) {
+  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unknown token when expecting an expression</span><span style="color:#e6db74">&#34;</span>);
+  <span style="color:#66d9ef">case</span> tok_identifier:
+    <span style="color:#66d9ef">return</span> ParseIdentifierExpr();
+  <span style="color:#66d9ef">case</span> tok_number:
+    <span style="color:#66d9ef">return</span> ParseNumberExpr();
+  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">return</span> ParseParenExpr();
+  <span style="color:#66d9ef">case</span> tok_if:
+    <span style="color:#66d9ef">return</span> ParseIfExpr();
+  <span style="color:#66d9ef">case</span> tok_for:
+    <span style="color:#66d9ef">return</span> ParseForExpr();
+  <span style="color:#66d9ef">case</span> tok_var:	<span style="color:#75715e">// 此处添加了一个case
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> ParseVarExpr();
+  }
+}
+</code></pre></div><p>现在我们定义 <em>ParseVarExpr</em>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// varexpr ::= &#39;var&#39; identifier (&#39;=&#39; expression)?
+</span><span style="color:#75715e"></span><span style="color:#75715e">//                    (&#39;,&#39; identifier (&#39;=&#39; expression)?)* &#39;in&#39; expression
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseVarExpr() {
+  getNextToken();  <span style="color:#75715e">// eat the var.
+</span><span style="color:#75715e"></span>
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>pair<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> VarNames;
+
+  <span style="color:#75715e">// At least one variable name is required.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 至少有一个变量名字
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_identifier)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected identifier after var</span><span style="color:#e6db74">&#34;</span>);
+</code></pre></div><p>此代码的第一部分将<strong>标识符/表达式列表</strong>解析为<strong>本地VarNames向量</strong>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">while</span> (<span style="color:#ae81ff">1</span>) {
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string Name <span style="color:#f92672">=</span> IdentifierStr;
+  getNextToken();  <span style="color:#75715e">// eat identifier.
+</span><span style="color:#75715e"></span>
+  <span style="color:#75715e">// Read the optional initializer.
+</span><span style="color:#75715e"></span>  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Init;
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">=</span><span style="color:#e6db74">&#39;</span>) {
+    getNextToken(); <span style="color:#75715e">// eat the &#39;=&#39;.
+</span><span style="color:#75715e"></span>
+    Init <span style="color:#f92672">=</span> ParseExpression();
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Init) <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+  }
+
+  VarNames.push_back(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_pair(Name, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Init)));
+
+  <span style="color:#75715e">// End of var list, exit loop.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>) <span style="color:#66d9ef">break</span>;
+  getNextToken(); <span style="color:#75715e">// eat the &#39;,&#39;.
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_identifier)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected identifier list after var</span><span style="color:#e6db74">&#34;</span>);
+}
+</code></pre></div><p>一旦解析完成了所有变量，我们就会解析body并创建AST节点：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">// At this point, we have to have &#39;in&#39;.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 我们有了 in 表达式
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> tok_in)
+    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">expected &#39;in&#39; keyword after &#39;var&#39;</span><span style="color:#e6db74">&#34;</span>);
+  getNextToken();  <span style="color:#75715e">// eat &#39;in&#39;.
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">auto</span> Body <span style="color:#f92672">=</span> ParseExpression();
+  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Body)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+
+  <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>VarExprAST<span style="color:#f92672">&gt;</span>(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(VarNames),
+                                       std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Body));
+}
+</code></pre></div><p>现在我们可以解析并且表示代码，我们需要支持emmision of LLVM IR for it.我们可以这样开始：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>VarExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>AllocaInst <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> OldBindings;
+
+  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> Builder.GetInsertBlock()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getParent();
+
+  <span style="color:#75715e">// Register all variables and emit their initializer.
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 注册所有的变量并且emit他们的初始化器
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">unsigned</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, e <span style="color:#f92672">=</span> VarNames.size(); i <span style="color:#f92672">!</span><span style="color:#f92672">=</span> e; <span style="color:#f92672">+</span><span style="color:#f92672">+</span>i) {
+    <span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string <span style="color:#f92672">&amp;</span>VarName <span style="color:#f92672">=</span> VarNames[i].first;
+    ExprAST <span style="color:#f92672">*</span>Init <span style="color:#f92672">=</span> VarNames[i].second.get();
+</code></pre></div><p>它会遍历所有变量，一次记录一个变量。对于我们放入符号表的每个变量，我们保存了OldBindings中记录的以前的值。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">// Emit the initializer before adding the variable to scope, this prevents
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// the initializer from referencing the variable itself, and permits stuff
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// like this:
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">//  var a = 1 in
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">//    var a = a in ...   # refers to outer &#39;a&#39;.
+</span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>InitVal;
+  <span style="color:#66d9ef">if</span> (Init) {
+    InitVal <span style="color:#f92672">=</span> Init<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>InitVal)
+      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+  } <span style="color:#66d9ef">else</span> { <span style="color:#75715e">// If not specified, use 0.0.
+</span><span style="color:#75715e"></span>    InitVal <span style="color:#f92672">=</span> ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(TheContext, APFloat(<span style="color:#ae81ff">0.0</span>));
+  }
+
+  AllocaInst <span style="color:#f92672">*</span>Alloca <span style="color:#f92672">=</span> CreateEntryBlockAlloca(TheFunction, VarName);
+  Builder.CreateStore(InitVal, Alloca);
+
+  <span style="color:#75715e">// Remember the old variable binding so that we can restore the binding when
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// we unrecurse.
+</span><span style="color:#75715e"></span>  OldBindings.push_back(NamedValues[VarName]);
+
+  <span style="color:#75715e">// Remember this binding.
+</span><span style="color:#75715e"></span>  NamedValues[VarName] <span style="color:#f92672">=</span> Alloca;
+}
+</code></pre></div><p>代码中包含很多注释。基本思路是我们emit初始化器，创建alloca，然后更新符号表来指向它。一旦所有的变量都存放在了符号表中，我们就会计算var/in表达式的body：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Codegen the body, now that all vars are in scope.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// 对 body 进行 Codegen，现在所有的变量都在作用域中。
+</span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>BodyVal <span style="color:#f92672">=</span> Body<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
+<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>BodyVal)
+  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</code></pre></div><p>最后，在返回之前，我们恢复以前的变量绑定：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">// Pop all our variables from scope.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">unsigned</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, e <span style="color:#f92672">=</span> VarNames.size(); i <span style="color:#f92672">!</span><span style="color:#f92672">=</span> e; <span style="color:#f92672">+</span><span style="color:#f92672">+</span>i)
+    NamedValues[VarNames[i].first] <span style="color:#f92672">=</span> OldBindings[i];
+
+  <span style="color:#75715e">// Return the body computation.
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> BodyVal;
+}
+</code></pre></div><p>最终结果是我们获得了确定定义域内的变量定义，并且我们甚至允许改变他们。</p>
+<p>现在我们完成了我们想要做的。我们的迭代fit示例可以成功编译并运行得很好。mem2reg pass将我们所有的栈变量优化到了SSA寄存器中，在需要的地方插入PHI节点，并且我们的前端实现仍然是很简单的：在任何地方都没有“iterated dominance frontier”计算。</p>
+<h1 id="78-">7.8 全部代码</h1>
+<p><a href="http://llvm.org/docs/tutorial/LangImpl07.html#id1">http://llvm.org/docs/tutorial/LangImpl07.html#id1</a></p></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+      </ul>
+      
+      <p class="post-copyright">
+        This post was published <strong>206</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
+      </p>
+    </footer>
+    
+      
+    
+  </section>
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>
