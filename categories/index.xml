@@ -5,7 +5,7 @@
     <link>/categories/</link>
     <description>Recent content in Categories on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>zh</language>
+    <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Wed, 26 Jun 2019 16:04:38 +0800</lastBuildDate>
     
 	<atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
@@ -75,7 +75,7 @@
     </item>
     
     <item>
-      <title>hook</title>
+      <title>Hook</title>
       <link>/categories/hook/</link>
       <pubDate>Sun, 19 Aug 2018 02:19:05 +0800</pubDate>
       

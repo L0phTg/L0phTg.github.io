@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Hive笔记</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="2020年，新年快乐！ 重新搭建了下博客，开始定期更新模式。
+本文是前段时间阅读&amp;laquo;hive权威指南&amp;raquo;总结的笔记。
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Hive笔记">
+    <meta name="twitter:description" content="2020年，新年快乐！ 重新搭建了下博客，开始定期更新模式。
+本文是前段时间阅读&amp;laquo;hive权威指南&amp;raquo;总结的笔记。
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Hive笔记">
+  <meta property="og:description" content="2020年，新年快乐！ 重新搭建了下博客，开始定期更新模式。
+本文是前段时间阅读&amp;laquo;hive权威指南&amp;raquo;总结的笔记。
+">
+  <meta property="og:url" content="/post/bigdata/hive%E7%AC%94%E8%AE%B0/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="/post/bigdata/hive%E7%AC%94%E8%AE%B0/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  <header class="site-header">
+  <a href=""><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Hive笔记</h1>
+      <p class="post-meta">@L0phTg · Jan 5, 2020 · 7 min read</p>
+      
+    </header>
+    <article class="post-content"><p>2020年，新年快乐！
+重新搭建了下博客，开始定期更新模式。</p>
+<p>本文是前段时间阅读&laquo;hive权威指南&raquo;总结的笔记。</p>
+<p>hiveql可以用来查询hdfs等分布式文件系统的数据。</p>
+<p>我们经常会使用到hiveql来查询数据（在不涉及大量的数据迭代处理操作）。</p>
+<p>本文大部分内容引用自&laquo;hive权威指南&raquo;。</p>
+<h1 id="---">基础 - 数据类型</h1>
+<h2 id="heading">基本数据类型</h2>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>长度</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tinyint</td>
+<td>1byte有符号整数</td>
+<td></td>
+</tr>
+<tr>
+<td>smallint</td>
+<td>2byte有符号整数</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>4byte有符号整数</td>
+<td></td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>8byte有符号整数</td>
+<td></td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>布尔类型</td>
+<td></td>
+</tr>
+<tr>
+<td>float</td>
+<td>单精度浮点数</td>
+<td></td>
+</tr>
+<tr>
+<td>double</td>
+<td>双精度浮点数</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>字符序列</td>
+<td></td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>binary</td>
+<td>字节数组</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="heading-1">复合数据类型</h2>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>描述</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>struct</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>map</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>array</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h1 id="heading-2">数据库和表操作</h1>
+<h2 id="---database">数据库操作 - database</h2>
+<h3 id="---create">创建数据库 - create</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">database</span> test;
+</code></pre></div><p>判断是否存在:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">database</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">exists</span> test;
+</code></pre></div><p>为数据库添加描述信息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">database</span> test comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">This is a example</span><span style="color:#e6db74">&#34;</span>;
+</code></pre></div><p>为数据库添加key-value属性信息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">database</span> test
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">with</span> <span style="color:#a6e22e">dbproperties</span> (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">creator</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">L0phTg</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2019-08-23</span><span style="color:#e6db74">&#39;</span>);
+</code></pre></div><h3 id="---show">查看所有数据库 - show</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">databases</span>;
+</code></pre></div><p>正则匹配：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">databases</span> <span style="color:#66d9ef">like</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">info.*</span><span style="color:#e6db74">&#39;</span>;
+</code></pre></div><h3 id="---describe">查看数据库的描述信息 - describe</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">desc</span> <span style="color:#66d9ef">database</span> test;
+</code></pre></div><p>查看更多信息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">desc</span> <span style="color:#66d9ef">database</span> extended test;
+</code></pre></div><h3 id="---use">使用数据库 - use</h3>
+<p>即设置目标数据库为当前工作目录。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">use</span> test;
+</code></pre></div><h3 id="---drop">删除数据库 - drop</h3>
+<p>hive默认不允许用户删除一个包含有表的数据库。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">database</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">exists</span> test;
+</code></pre></div><p>如果想要强制删除库和库中的所有表，可以使用<strong>cascade</strong>关键字。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">database</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">exists</span> test <span style="color:#66d9ef">cascade</span>;
+</code></pre></div><h2 id="---table">表操作 - table</h2>
+<h3 id="heading-3">查看表</h3>
+<ol>
+<li>
+<p>显示当前工作数据库中的表。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">tables</span>;
+</code></pre></div></li>
+<li>
+<p>显示指定数据库中的表。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">tables</span> <span style="color:#66d9ef">in</span> mydb;
+</code></pre></div></li>
+<li>
+<p>正则匹配表名。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">tables</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">employee.*</span><span style="color:#e6db74">&#39;</span>;
+</code></pre></div></li>
+<li>
+<p>查看表的详细信息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">desc</span> extended mydb.employees;
+</code></pre></div></li>
+</ol>
+<h3 id="heading-4">创建表</h3>
+<ol>
+<li>
+<p>创建。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> mytable;
+</code></pre></div></li>
+<li>
+<p>额外的信息。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">exists</span> mydb.<span style="color:#a6e22e">employees</span> (
+ name	string comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Employee name</span><span style="color:#e6db74">&#39;</span>,
+ salary	<span style="color:#66d9ef">float</span> comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">employee salary</span><span style="color:#e6db74">&#39;</span>,
+ subordinates array<span style="color:#f92672">&lt;</span>string<span style="color:#f92672">&gt;</span> comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Names of subordinates</span><span style="color:#e6db74">&#39;</span>
+) 
+   comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Descirption of the table</span><span style="color:#e6db74">&#39;</span>
+   <span style="color:#a6e22e">tblproperties</span> (<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">creator</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">L0phTg</span><span style="color:#e6db74">&#39;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">date</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">=</span><span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">2019-08-23</span><span style="color:#e6db74">&#39;</span>)
+   location <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">/user/hive/warehouse/mydb.db/employees</span><span style="color:#e6db74">&#39;</span>;
+   
+</code></pre></div></li>
+</ol>
+<h3 id="heading-5">表分区</h3>
+<ol>
+<li>
+<p>新建分区。</p>
+<p>数据分区，依次按照year、month、day对表进行分区。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> <span style="color:#a6e22e">AccessRecord</span> (
+ name 	string,
+    job		string
+) partitioned <span style="color:#66d9ef">by</span> (<span style="color:#66d9ef">year</span> <span style="color:#66d9ef">int</span>, month <span style="color:#66d9ef">int</span>, day <span style="color:#66d9ef">int</span>);
+   
+</code></pre></div><p>分区字段一旦建好，表现得就和普通的字段一样。</p>
+<p>分区可以提高查询性能。</p>
+</li>
+<li>
+<p>查看分区。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> partitions AccessRecord;
+   
+</code></pre></div></li>
+<li>
+<p>分区过滤查询。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> partitions <span style="color:#a6e22e">AccessRecord</span>(<span style="color:#66d9ef">year</span><span style="color:#f92672">=</span><span style="color:#ae81ff">2019</span>);
+   
+</code></pre></div></li>
+</ol>
+<h3 id="heading-6">删除表</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">table</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">exists</span> mytable;
+
+</code></pre></div><h3 id="heading-7">修改表</h3>
+<p>大多数表属性可以通过Alter table语句来进行修改。这种操作会修改元数据，但不会修改数据本身。</p>
+<ol>
+<li>
+<p>表重命名。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> log_messages <span style="color:#66d9ef">rename</span> <span style="color:#66d9ef">to</span> logmsgs;
+   
+</code></pre></div></li>
+<li>
+<p>增加表分区。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> log_messages <span style="color:#66d9ef">add</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">exists</span>
+ <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">partition</span> (<span style="color:#66d9ef">year</span><span style="color:#f92672">=</span><span style="color:#ae81ff">2019</span>, month<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>, day<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+ <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">partition</span> (<span style="color:#66d9ef">year</span><span style="color:#f92672">=</span><span style="color:#ae81ff">2019</span>, month<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>, day<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>)
+ <span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">partition</span> (<span style="color:#66d9ef">year</span><span style="color:#f92672">=</span><span style="color:#ae81ff">2019</span>, month<span style="color:#f92672">=</span><span style="color:#ae81ff">8</span>, day<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>);
+   
+</code></pre></div></li>
+<li>
+<p>删除某个分区。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> log_messages <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">if</span> <span style="color:#66d9ef">exists</span> <span style="color:#a6e22e">partition</span>(<span style="color:#66d9ef">year</span><span style="color:#f92672">=</span><span style="color:#ae81ff">2019</span>, month<span style="color:#f92672">=</span><span style="color:#ae81ff">9</span>, day<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>); 
+   
+</code></pre></div></li>
+<li>
+<p>修改列信息。（用户可以对某个字段进行重命名，并修改其位置、类型或者注释）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> log_messages
+ <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">change</span> <span style="color:#66d9ef">column</span> hms hours_minutes_seconds <span style="color:#66d9ef">int</span>
+ <span style="color:#f92672">&gt;</span> comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">The hours, minutes, and seconds part of the timestamp</span><span style="color:#e6db74">&#39;</span>
+ <span style="color:#f92672">&gt;</span> after severity; <span style="color:#75715e"># after表示将字段移动到severity字段的后面
+</span><span style="color:#75715e"></span>   
+</code></pre></div><p>使用first关键字，可以将这个字段移动到第一个位置。</p>
+</li>
+<li>
+<p>增加列。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> log_messages <span style="color:#66d9ef">add</span> <span style="color:#a6e22e">columns</span> (
+ app_name string comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">Application Name</span><span style="color:#e6db74">&#39;</span>,
+ session_id <span style="color:#66d9ef">long</span> comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">The current session id</span><span style="color:#e6db74">&#39;</span>
+);
+   
+</code></pre></div></li>
+<li>
+<p>删除或者替换列。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> log_messages <span style="color:#66d9ef">replace</span> <span style="color:#a6e22e">columns</span> (
+ hours_mins_secs <span style="color:#66d9ef">int</span> comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">hour, minute, seconds, from timestamp</span><span style="color:#e6db74">&#39;</span>,
+ severity string comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">The message severity</span><span style="color:#e6db74">&#39;</span>
+    message string comment <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">The reset of the message</span><span style="color:#e6db74">&#39;</span>
+);
+   
+</code></pre></div><p>这条语句重命名了之前的hms字段并且从之前的表定义的模式中移除了字段server和process_id。（因为是alter语句，所以只有表的元数据信息改变了）</p>
+</li>
+</ol>
+<h1 id="heading-8">数据操作</h1>
+<p>hive没有行级别的数据插入、数据更新和删除操作。那么往表中装载数据的唯一途径就是使用一种大量的数据装载操作。</p>
+<h2 id="load---">load - 装载文件数据到内部表中</h2>
+<p>通过关键字overwrite来装载数据到表中。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">load</span> data local inpath <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">$(env:HOME)/california-employees</span><span style="color:#e6db74">&#39;</span>
+	<span style="color:#f92672">&gt;</span> overwrite <span style="color:#66d9ef">into</span> <span style="color:#66d9ef">table</span> employees
+	<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">partition</span> (country <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">US</span><span style="color:#e6db74">&#39;</span>, state <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">CA</span><span style="color:#e6db74">&#39;</span>);
+
+</code></pre></div><p>通常情况下指定的路径应该是一个目录，而不是单独的文件。</p>
+<h2 id="insert---">insert - 通过查询语句向表中插入数据</h2>
+<p>insert语句允许用户通过查询语句向目标表中插入数据。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> overwrite <span style="color:#66d9ef">table</span> employees
+	<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">partition</span> (count <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">US</span><span style="color:#e6db74">&#39;</span>, state <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">OR</span><span style="color:#e6db74">&#39;</span>)
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> staged_employees se
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> se.cnty <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">US</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">and</span> se.st <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">OR</span><span style="color:#e6db74">&#39;</span>;
+
+</code></pre></div><p>这里使用了<strong>overwrite</strong>关键字，因此之前分区中的内容将会被覆盖掉。</p>
+<p>如果这里使用了<strong>into</strong>关键字，那么hive会以追加的方式写入数据而不会覆盖掉之前存在的内容。</p>
+<h2 id="heading-9">单个查询语句创建表</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> ca_employees
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">select</span> name, salary, address
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">from</span> employees
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> se.state <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">CA</span><span style="color:#e6db74">&#39;</span>;
+
+</code></pre></div><h1 id="select-">Select 查询操作</h1>
+<h2 id="select--from-">select &hellip; from &hellip;</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name, salary <span style="color:#66d9ef">from</span> employees;
+John Doe 	<span style="color:#ae81ff">10000</span>.<span style="color:#ae81ff">0</span>
+Mary Smith 	<span style="color:#ae81ff">8000</span>.<span style="color:#ae81ff">0</span>
+Todd Jones  <span style="color:#ae81ff">7000</span>.<span style="color:#ae81ff">0</span>
+Bill King   <span style="color:#ae81ff">6000</span>.<span style="color:#ae81ff">0</span>
+
+</code></pre></div><h3 id="heading-10">表别名查询</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> e.name, e.salary <span style="color:#66d9ef">from</span> employees e;
+
+</code></pre></div><h3 id="heading-11">引用集合数据类型的元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name, subordinate <span style="color:#66d9ef">from</span> employees;
+John Doe 		[<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Mary Smith</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Todd Jones</span><span style="color:#e6db74">&#34;</span>]
+Mary Smith		[<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Bill King</span><span style="color:#e6db74">&#34;</span>]
+Todd Jones		[]
+Bill King		[]
+hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name, subordinate[<span style="color:#ae81ff">0</span>] <span style="color:#66d9ef">from</span> employees;
+John Doe 		Mary Smith
+Mary Smith		Bill King
+Todd Jones		<span style="color:#66d9ef">NULL</span>
+Bill King		<span style="color:#66d9ef">NULL</span>
+
+</code></pre></div><h3 id="map">引用Map元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name, deductions[<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">State Taxes</span><span style="color:#e6db74">&#34;</span>] <span style="color:#66d9ef">from</span> employees;
+John Doe 		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">05</span>
+Mary Smith		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">05</span>
+Todd Jones 		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">03</span>
+Bill King		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">03</span>
+
+</code></pre></div><h3 id="struct">引用Struct中的元素</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name, address.city <span style="color:#66d9ef">from</span> employees;
+John Doe 		Chicago
+Mary Smith		Chicago
+Todd Jones		Oak Park
+Bill King		Obscuria
+
+</code></pre></div><h3 id="heading-12">使用正则表达式指定列</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> symbol, <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">price.*</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">from</span> stocks;
+AAPL <span style="color:#ae81ff">143</span>.<span style="color:#ae81ff">33</span> <span style="color:#ae81ff">123</span>.<span style="color:#ae81ff">33</span> <span style="color:#ae81ff">132</span>.<span style="color:#ae81ff">43</span> <span style="color:#ae81ff">133</span>.<span style="color:#ae81ff">34</span> <span style="color:#ae81ff">155</span>.<span style="color:#ae81ff">33</span>
+AAPL ...
+...
+...
+
+</code></pre></div><h3 id="heading-13">使用列值进行计算</h3>
+<p>用户不但可以选择表中的列，还可以使用函数和算术表达式来操作列值。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#a6e22e">upper</span>(name), salary, <span style="color:#a6e22e">deductions</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Federal Taxes</span><span style="color:#e6db74">&#34;</span>),
+	<span style="color:#f92672">&gt;</span> <span style="color:#a6e22e">round</span>(salary <span style="color:#f92672">*</span> (<span style="color:#ae81ff">1</span> <span style="color:#f92672">-</span> deductions[<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Federal Taxes</span><span style="color:#e6db74">&#34;</span>])) <span style="color:#66d9ef">from</span> employees;
+JOHN DOE 	<span style="color:#ae81ff">10000</span>.<span style="color:#ae81ff">0</span>		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">2</span> 	<span style="color:#ae81ff">8000</span>  <span style="color:#75715e"># 数据是我随便写的,
+</span><span style="color:#75715e"></span>MARY SMITH	<span style="color:#ae81ff">8000</span>.<span style="color:#ae81ff">0</span>		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">2</span>		<span style="color:#ae81ff">6400</span>
+TODD JONES  <span style="color:#ae81ff">7000</span>.<span style="color:#ae81ff">0</span> 		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">15</span> 	<span style="color:#ae81ff">5900</span>
+BILL KING   <span style="color:#ae81ff">6000</span>.<span style="color:#ae81ff">0</span>		<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">15</span>	<span style="color:#ae81ff">5100</span>
+
+</code></pre></div><h3 id="heading-14">算术表达式</h3>
+<table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A + B</td>
+<td>数值</td>
+<td>相加</td>
+</tr>
+<tr>
+<td>A - B</td>
+<td>数值</td>
+<td>相减</td>
+</tr>
+<tr>
+<td>A * B</td>
+<td>数值</td>
+<td>相乘</td>
+</tr>
+<tr>
+<td>A / B</td>
+<td>数值</td>
+<td>相除</td>
+</tr>
+<tr>
+<td>A % B</td>
+<td>数值</td>
+<td>取余</td>
+</tr>
+<tr>
+<td>A &amp; B</td>
+<td>数值</td>
+<td>与</td>
+</tr>
+<tr>
+<td>A | B</td>
+<td>数值</td>
+<td>或</td>
+</tr>
+<tr>
+<td>A ^ B</td>
+<td>数值</td>
+<td>亦或</td>
+</tr>
+<tr>
+<td>~A</td>
+<td>数值</td>
+<td>取反</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading-15">函数</h3>
+<ol>
+<li>
+<p>数学函数</p>
+<table>
+<thead>
+<tr>
+<th>返回值类型</th>
+<th>样式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bigint</td>
+<td>round(double d)</td>
+<td></td>
+</tr>
+<tr>
+<td>double</td>
+<td>round(double d, int n)</td>
+<td></td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>floor(double d)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>double</td>
+<td>rand()  rand(int seed)</td>
+<td></td>
+</tr>
+<tr>
+<td>double</td>
+<td>exp(double d)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>聚合函数</p>
+<p>聚合函数是一类比较特殊的函数，可以对多行进行一些计算，然后得到一个结果值。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#a6e22e">count</span>(<span style="color:#f92672">*</span>), <span style="color:#a6e22e">avg</span>(salary) <span style="color:#66d9ef">from</span> employees;
+<span style="color:#ae81ff">4</span>	<span style="color:#ae81ff">77500</span>.<span style="color:#ae81ff">0</span>
+   
+</code></pre></div><table>
+<thead>
+<tr>
+<th>返回值类型</th>
+<th>样式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>bigint</td>
+<td>count(*)</td>
+<td>计算总行数，包括含有NULL的行</td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>count(expr)</td>
+<td>计算提供的expr表达式的值非NULL的行数</td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>count(distinct expr[,expr_.])</td>
+<td>计算expr表达式的值去重后非NULL的行数</td>
+</tr>
+<tr>
+<td>double</td>
+<td>sum(col)</td>
+<td>计算指定列的和</td>
+</tr>
+<tr>
+<td>double</td>
+<td>sum(distinct col)</td>
+<td>计算指定列去重后的和</td>
+</tr>
+<tr>
+<td>double</td>
+<td>avg(col)</td>
+<td>计算指定列的值的平均值</td>
+</tr>
+<tr>
+<td>double</td>
+<td>avg(distinct col)</td>
+<td>计算指定列去重后的平均值</td>
+</tr>
+<tr>
+<td>double</td>
+<td>min(col)</td>
+<td>计算指定列的最小值</td>
+</tr>
+<tr>
+<td>double</td>
+<td>max(col)</td>
+<td>计算指定列的最大值</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>array</td>
+<td>collect_set(col)</td>
+<td>返回col的集合的数组</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>表生成函数（将单列扩展成多列或者多行）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#a6e22e">explode</span>(subordinates) <span style="color:#66d9ef">as</span> sub <span style="color:#66d9ef">from</span> employees;
+Mary Smith
+Todd Jones
+Bill King
+   
+</code></pre></div><p>如果某行subordinates的字段为空的话，将不会产生新的记录。</p>
+<p>当使用表生成函数时，Hive要求使用列别名。</p>
+<table>
+<thead>
+<tr>
+<th>返回值类型</th>
+<th>样式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N行结果</td>
+<td>explode(array arr)</td>
+<td></td>
+</tr>
+<tr>
+<td>N行结果</td>
+<td>explode(map mapp)</td>
+<td></td>
+</tr>
+<tr>
+<td>数组的类型</td>
+<td>explode(array<!-- raw HTML omitted --> a)</td>
+<td></td>
+</tr>
+<tr>
+<td>结果插入表中</td>
+<td>inline(array&lt;struct[,struct]&gt;)</td>
+<td></td>
+</tr>
+<tr>
+<td>tuple</td>
+<td>json_tuple(string jsonStr, p1, p2, &hellip;, pn)</td>
+<td></td>
+</tr>
+<tr>
+<td>tuple</td>
+<td>parse_url_tuple(url, partname1, partname2, &hellip;, partNameN), N &gt;= 1</td>
+<td></td>
+</tr>
+<tr>
+<td>N行结果</td>
+<td>stack(int n, col1, &hellip;, colM)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>其它内置函数。</p>
+<table>
+<thead>
+<tr>
+<th>返回值类型</th>
+<th>样式</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>string</td>
+<td>ascii(string s)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>base64(binary bin)</td>
+<td></td>
+</tr>
+<tr>
+<td>binary</td>
+<td>binary(string s) / binary(binary b)</td>
+<td></td>
+</tr>
+<tr>
+<td>type定义的类型</td>
+<td>cast(&lt; expr &gt;) as (<!-- raw HTML omitted -->)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>concat(binary s1, binary s2, &hellip;)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>concat(string s1, string s2, &hellip;)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>concat_ws(string separator, string s1, string s2, &hellip;)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>concat_ws(binary separator, binary s1, binary s2, &hellip;)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>context_ngrams</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>decode(binary bin, string charset)</td>
+<td></td>
+</tr>
+<tr>
+<td>binary</td>
+<td>encode(string src, string charset)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>find_in_set(string s, string commaSeparatedString)</td>
+<td>返回s出现的位置，没有找到则返回NULL</td>
+</tr>
+<tr>
+<td>string</td>
+<td>format_number(number x, int d)</td>
+<td>将数值转换为&rdquo;#,###,###&ldquo;格式字符串，并保留d位小数。</td>
+</tr>
+<tr>
+<td>string</td>
+<td>get_json_object(string json_string, string path)</td>
+<td>从给定路径上的json字符串中抽取json对象，并返回这个对象的json字符串形式</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>in</td>
+<td>test in (val1, val2,)</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>in_file(string s, string filename)</td>
+<td>如果file中有完整的s匹配的话，则返回true</td>
+</tr>
+<tr>
+<td>int</td>
+<td>instr(string str, string substr)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>length(string s)</td>
+<td>计算字符串s的长度</td>
+</tr>
+<tr>
+<td>int</td>
+<td>locate(string substr,string str[,int pos])</td>
+<td>查询substr在strpos后出现的位置</td>
+</tr>
+<tr>
+<td>string</td>
+<td>lower(string s)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>upper(string s)</td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>ltrim(string s)</td>
+<td>将s前面出现的空格全部去除</td>
+</tr>
+<tr>
+<td>string</td>
+<td>parse_url(string url, string partname[,string key])</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>regexp_extract(string subject, string regex_pattern, string index)</td>
+<td>抽取subject中符合正则表达式regex_pattern的第index个部分的子字符串</td>
+</tr>
+<tr>
+<td>string</td>
+<td>regex_replace(string s, string regex, string replacement)</td>
+<td>按照java正则表达式regex将字符串s中符合条件的部分替换为replacement所指定的字符串a.</td>
+</tr>
+<tr>
+<td>string</td>
+<td>repeat(string s, int n)</td>
+<td>重复输出n次字符串s</td>
+</tr>
+<tr>
+<td>string</td>
+<td>reverse(string s)</td>
+<td>反转字符串</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>string</td>
+<td>rtrim(string s)</td>
+<td>将s后面出现的空格全部去除掉</td>
+</tr>
+<tr>
+<td>string</td>
+<td>trim(string s)</td>
+<td>将s前后面出现的空格全部取出掉</td>
+</tr>
+<tr>
+<td>string</td>
+<td>from_unixtime(bigint unixtime[,string format])</td>
+<td>将时间秒数转换为utc时间, 并用字符串表示, 可以通过format指定时间格式</td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>unix_timestamp()</td>
+<td></td>
+</tr>
+<tr>
+<td>bigint</td>
+<td>unix_timestamp(string data)</td>
+<td>输入字符串格式&quot;yyyy-MM-dd HH:mm:ss&rdquo;</td>
+</tr>
+<tr>
+<td>string</td>
+<td>to_date(string timestamp)</td>
+<td>返回yyyy-MM-dd部分</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>from_utc_timestamp(timestamp timestamp, string timezone)</td>
+<td>将其转换为指定时区的时间戳</td>
+</tr>
+<tr>
+<td>timestamp</td>
+<td>to_utc_timestamp(timestamp timestamp, string timezone)</td>
+<td>转换为utc下的时间戳</td>
+</tr>
+<tr>
+<td>int</td>
+<td>year(string date)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>month(string date)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>day(strig date)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>hour(string date)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>minute(string date)</td>
+<td></td>
+</tr>
+<tr>
+<td>int</td>
+<td>second(string date)</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ol>
+<h3 id="limit---">limit - 限制输出</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> name, salary <span style="color:#66d9ef">from</span> employees <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">2</span>;
+john doe 	<span style="color:#ae81ff">11000</span>.<span style="color:#ae81ff">0</span>
+mary smith	<span style="color:#ae81ff">8000</span>.<span style="color:#ae81ff">0</span>
+
+</code></pre></div><h2 id="where---">where - 过滤字段</h2>
+<p>select语句用于选取字段，where语句用于过滤条件。</p>
+<p>where语句使用谓词表达式。有几种谓词表达式可以使用and和or相连接，当谓词表达式的计算结果为true时，相应的行被保留并输出。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> employees
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> country <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">US</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">and</span> state <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">CA</span><span style="color:#e6db74">&#39;</span>;
+
+</code></pre></div><h3 id="heading-16">谓词操作符</h3>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>支持的数据类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A = B</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A &lt;=&gt; B</td>
+<td>基本数据类型</td>
+<td>如果A和B都为NULL则返回NULL</td>
+</tr>
+<tr>
+<td>A == B</td>
+<td>没有</td>
+<td></td>
+</tr>
+<tr>
+<td>A &lt;&gt; B, A != B</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A &lt; B</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A &lt;= B</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A &gt; B</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A &gt;= B</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A [not] between B and C</td>
+<td>基本数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A is null</td>
+<td>所有数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A is not null</td>
+<td>所有数据类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A [not] like B</td>
+<td>string类型</td>
+<td></td>
+</tr>
+<tr>
+<td>A rlike B, A regexp B</td>
+<td>string类型</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="like--rlike">like 和 rlike</h3>
+<p>like 全文匹配</p>
+<p>rlike search匹配</p>
+<h2 id="group-by---">group by - 分组</h2>
+<p>group by语句通常会和聚合函数一起使用，按照一个或者多个列对结果进行分组,然后对每个组执行聚合操作。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#66d9ef">year</span>(ymd), <span style="color:#a6e22e">avg</span>(price_close) <span style="color:#66d9ef">from</span> stocks
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> exchange <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">NASDAQ</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">and</span> symbol <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#39;</span>
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> <span style="color:#66d9ef">year</span>(ymd);
+<span style="color:#ae81ff">1984</span> 	<span style="color:#ae81ff">25</span>.<span style="color:#ae81ff">56777</span>
+<span style="color:#ae81ff">1985</span>	<span style="color:#ae81ff">20</span>.<span style="color:#ae81ff">23454</span>
+<span style="color:#ae81ff">1986</span>	<span style="color:#ae81ff">32</span>.<span style="color:#ae81ff">43563</span>
+<span style="color:#ae81ff">1987</span> 	<span style="color:#ae81ff">45</span>.<span style="color:#ae81ff">12341</span>
+
+</code></pre></div><h3 id="having">having</h3>
+<p>对group by语句产生的分组进行<strong>条件过滤</strong>。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#66d9ef">year</span>(ymd), <span style="color:#a6e22e">avg</span>(price_close) <span style="color:#66d9ef">from</span> stocks
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> exchange <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">NASDAQ</span><span style="color:#e6db74">&#34;</span> <span style="color:#66d9ef">and</span> symbol <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#34;</span>
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> <span style="color:#66d9ef">year</span>(ymd)
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">having</span> <span style="color:#a6e22e">avg</span>(price_close) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">50</span>.<span style="color:#ae81ff">0</span>;
+<span style="color:#ae81ff">1987</span>		<span style="color:#ae81ff">53</span>.<span style="color:#ae81ff">889</span>
+<span style="color:#ae81ff">1991</span>		<span style="color:#ae81ff">52</span>.<span style="color:#ae81ff">495</span>
+<span style="color:#ae81ff">1992</span>		<span style="color:#ae81ff">54</span>.<span style="color:#ae81ff">803</span>
+<span style="color:#ae81ff">1999</span>		<span style="color:#ae81ff">57</span>.<span style="color:#ae81ff">748</span>
+<span style="color:#ae81ff">2000</span>		<span style="color:#ae81ff">71</span>.<span style="color:#ae81ff">748</span>
+
+</code></pre></div><h2 id="join---">join - 多个表查询</h2>
+<h3 id="inner-join">inner join</h3>
+<p>内连接：只有两个表都存在与连接标准相匹配的数据才会保留下来。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> a.ymd, a.price_close, b.price_close
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">from</span> stocks a <span style="color:#66d9ef">join</span> stocks b <span style="color:#66d9ef">on</span> a.ymd <span style="color:#f92672">=</span> b.ymd
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> a.symbol <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#39;</span> <span style="color:#66d9ef">and</span> b.symbol <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">IBM</span><span style="color:#e6db74">&#39;</span>;
+<span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">08</span><span style="color:#f92672">-</span><span style="color:#ae81ff">01</span>		XXX 	XXX
+<span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">08</span><span style="color:#f92672">-</span><span style="color:#ae81ff">02</span>		XXX		XXX
+<span style="color:#ae81ff">2019</span><span style="color:#f92672">-</span><span style="color:#ae81ff">08</span><span style="color:#f92672">-</span><span style="color:#ae81ff">03</span>		XXX		XXX
+
+</code></pre></div><p>on 子句支持 and。</p>
+<h3 id="left-outer-join">left outer join</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> s.ymd, s.symbol, s.price_close, d.dividend
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">from</span> stocks s <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">outer</span> <span style="color:#66d9ef">join</span> dividends d <span style="color:#66d9ef">on</span> s.ymd <span style="color:#f92672">=</span> d.ymd <span style="color:#66d9ef">on</span> s.symbol <span style="color:#f92672">=</span> d.symbol
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">where</span> s.symbol <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">AAPL</span><span style="color:#e6db74">&#39;</span>;
+
+</code></pre></div><p>在这种join连接时，join操作符左边表的符合where子句的所有记录将会被返回。join操作符右边表中如果没有符合on后面连接条件的记录时，那么从右边表指定列选择的值将会是NULL。</p>
+<h3 id="right-outer-join">right outer join</h3>
+<h3 id="full-outer-join">full outer join</h3>
+<h2 id="order-bysort-by">order by和sort by</h2>
+<p>Hive中order by语句和其他sql中的定义是一样的。其会对<strong>查询结果</strong>集执行一个全局排序。</p>
+<p>Hive中提供了一个可供选择的方式，就是sort by。其会在每个reducer中对数据进行排序，也就是执行一个局部排序过程。这可以保证每个reducer的输出数据都是有序的（<strong>但并非全局有序</strong>）。</p>
+<p>ASC表示升序排序。DESC表示降序排序。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> s.ymd, s.price_close
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">from</span> stocks s
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> s.ymd <span style="color:#66d9ef">ASC</span>, s.symbol <span style="color:#66d9ef">DESC</span>;
+
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">hive<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> s.ymd, s.price_close
+	<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">from</span> stocks s
+	<span style="color:#f92672">&gt;</span> sort <span style="color:#66d9ef">by</span> s.ymd <span style="color:#66d9ef">ASC</span>, s.symbol <span style="color:#66d9ef">DESC</span>;	
+
+</code></pre></div><h2 id="cluster-by">Cluster by</h2>
+<h2 id="union-all">Union all</h2>
+<p>union all可以将2个或多个表进行合并。</p>
+<h1 id="heading-17">视图</h1>
+<h1 id="heading-18">索引</h1>
+<p>Hive中没有普通关系型数据库中键的概念，但是还是可以对一些字段建立索引。一张表的索引数据存储在另外一张表中。</p>
+<h1 id="heading-19">函数</h1>
+<h2 id="heading-20">发现和描述函数</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">hive&gt; show functions;
+abs
+acos
+and
+array
+
+</code></pre></div><p>展示对应函数的介绍：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">hive&gt; describe <span style="color:#66d9ef">function</span> concat;
+concat<span style="color:#f92672">(</span>str1, str2, ... strN<span style="color:#f92672">)</span> - returns the concatenation of str1, str2, ... strN
+
+</code></pre></div><p>展示详细文档：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">hive&gt; describe <span style="color:#66d9ef">function</span> extended concat;
+
+</code></pre></div><h2 id="heading-21">调用函数</h2>
+<p>在查询中调用函数名即可。</p>
+<p>同样，udf同样可以返回一个复杂的对象</p>
+<h2 id="heading-22">标准函数</h2>
+<p>UDF：表示一行数据中的一列或者多列数据作为参数，然后返回结果是一个值</p>
+<h2 id="heading-23">聚合函数</h2>
+<p>UDAF：接受从零行到多行的零个列到多个列，然后返回单一值。</p>
+<p>聚合函数通常和group by结合使用</p>
+<h2 id="heading-24">表生成函数</h2>
+<p>UDTF：接受零个或多个输入，然后产生多列或者多行输出。</p>
+<h1 id="heading-25">查询实例</h1>
+<h2 id="json">解析json查询</h2>
+<p>json为字符串数组格式。</p>
+<p>explode： hive的表生成函数只是生成了一种数据的展示方式，而无法在表中产生一个其他的列。</p>
+<p>需求：</p>
+<ol>
+<li>
+<p>json拆分为多个列json_tuple</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span>  json_name, json_value
+<span style="color:#66d9ef">from</span> database1.tableName
+<span style="color:#66d9ef">lateral</span> <span style="color:#66d9ef">view</span> json_tuple(json_string, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">value</span><span style="color:#e6db74">&#34;</span>) jsonTable <span style="color:#66d9ef">as</span> json_name, json_value
+<span style="color:#66d9ef">where</span>
+ <span style="color:#66d9ef">year</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2019</span>
+<span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">10</span>;
+   
+</code></pre></div></li>
+</ol>
+<h3 id="json-1">json数组查询</h3>
+<p>需求：</p>
+<ol>
+<li>
+<p>对数组中每个json做处理，做比较。（先explode，再json_tuple）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> json_name, json_value
+<span style="color:#66d9ef">from</span> database1.tableName
+<span style="color:#66d9ef">lateral</span> <span style="color:#66d9ef">view</span> explode(str_array) explode_table <span style="color:#66d9ef">as</span> str_json
+<span style="color:#66d9ef">lateral</span> <span style="color:#66d9ef">view</span> json_tuple(str_json, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">name</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">value</span><span style="color:#e6db74">&#34;</span>) jsonTable <span style="color:#66d9ef">as</span> json_name, json_value
+<span style="color:#66d9ef">where</span> 
+ <span style="color:#66d9ef">year</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2019</span>
+<span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">10</span>;
+   
+</code></pre></div></li>
+</ol></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/hive"><span class="tag">Hive</span></a></li>
+        
+      </ul>
+      
+      
+      
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">L0phTg</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-01-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">原创文章，如需转载请注明文章作者和出处。谢谢！</span>
+  </p>
+</div>
+    </footer>
+    
+      
+    
+  </section>
+  
+  
+
+  
+  
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="">
 <head>
 
   <meta charset="utf-8" />
@@ -223,6 +223,7 @@ symbol -&amp;gt; symid -&amp;gt; 在got表中的offset -&amp;gt; 目标函数实
     <header class="post-header">
       <h1 class="post-title">Iqiyi开源hook框架XHook分析</h1>
       <p class="post-meta">@ · Aug 19, 2018 · 5 min read</p>
+      
     </header>
     <article class="post-content"><p>Got Hook 可以使用dlsym得到目标函数的地址, 然后遍历got表进行Hook.</p>
 <p>但是有时候我们不能通过dlsym得到函数地址. 这时我们需要怎么办呢? iqiyi的xhook很好的解决了这个问题, (可以参考linker的实现, <strong>有问题, 看源码</strong>.</p>
@@ -611,14 +612,33 @@ xh_core_hook_impl    <span style="color:#f92672">-</span><span style="color:#f92
         
       </ul>
       
-      <p class="post-copyright">
-        This post was published <strong>473</strong> days ago, content in the post may be inaccurate, even wrong now, please take risk yourself.
-      </p>
+      
+      
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content"></span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2018-09-19</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">原创文章，如需转载请注明文章作者和出处。谢谢！</span>
+  </p>
+</div>
     </footer>
     
       
     
   </section>
+  
+  
+
+  
+  
   
 <footer class="site-footer">
   <p>© 2017-2020 L0phTg&#39;s Blog</p>
