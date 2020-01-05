@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>vuls on L0phTg&#39;s Blog</title>
-    <link>/categories/vuls/</link>
+    <link>https://L0phTg.github.io/categories/vuls/</link>
     <description>Recent content in vuls on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Wed, 01 Mar 2017 20:20:20 +0000</lastBuildDate>
     
-	<atom:link href="/categories/vuls/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://L0phTg.github.io/categories/vuls/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>第一篇博文-谈谈CVE-2014-7911</title>
-      <link>/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</link>
+      <link>https://L0phTg.github.io/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</link>
       <pubDate>Wed, 01 Mar 2017 20:20:20 +0000</pubDate>
       
-      <guid>/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</guid>
+      <guid>https://L0phTg.github.io/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</guid>
       <description>&lt;p&gt;分析一个反序列化漏洞, 以及漏洞的产生的利用过程.&lt;/p&gt;
 &lt;p&gt;本文主要内容:&lt;/p&gt;
 &lt;ul&gt;

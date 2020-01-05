@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>graph theory on L0phTg&#39;s Blog</title>
-    <link>/tags/graph-theory/</link>
+    <link>https://L0phTg.github.io/tags/graph-theory/</link>
     <description>Recent content in graph theory on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Sat, 06 Apr 2019 18:00:53 +0800</lastBuildDate>
     
-	<atom:link href="/tags/graph-theory/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://L0phTg.github.io/tags/graph-theory/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Dominator(graph Theory)</title>
-      <link>/post/dominatorgraph-theory/</link>
+      <link>https://L0phTg.github.io/post/dominatorgraph-theory/</link>
       <pubDate>Sat, 06 Apr 2019 18:00:53 +0800</pubDate>
       
-      <guid>/post/dominatorgraph-theory/</guid>
+      <guid>https://L0phTg.github.io/post/dominatorgraph-theory/</guid>
       <description>&lt;p&gt;translate from : &lt;a href=&#34;https://en.wikipedia.org/wiki/Dominator_(graph_theory)&#34;&gt;https://en.wikipedia.org/wiki/Dominator_(graph_theory)&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.&lt;/p&gt;</description>
     </item>

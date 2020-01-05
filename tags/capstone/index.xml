@@ -2,22 +2,22 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>capstone on L0phTg&#39;s Blog</title>
-    <link>/tags/capstone/</link>
+    <link>https://L0phTg.github.io/tags/capstone/</link>
     <description>Recent content in capstone on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Tue, 24 Oct 2017 20:23:30 +0800</lastBuildDate>
     
-	<atom:link href="/tags/capstone/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://L0phTg.github.io/tags/capstone/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>thumb指令虚拟化学习(一)</title>
-      <link>/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
+      <link>https://L0phTg.github.io/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
       <pubDate>Tue, 24 Oct 2017 20:23:30 +0800</pubDate>
       
-      <guid>/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;/thumb-vmp/thumb16.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+      <guid>https://L0phTg.github.io/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/thumb-vmp/thumb16.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上半年接触过一些 &lt;strong&gt;app加固&lt;/strong&gt; 的知识, 对 &lt;strong&gt;vm&lt;/strong&gt; 这块一直空有兴趣而没有了解过;  最近, 阅读了几篇文章, &lt;code&gt;有所启发&lt;/code&gt;, 所以决定学习一下 &lt;strong&gt;vm&lt;/strong&gt; 这块的一些操作.&lt;/p&gt;
 &lt;p&gt;主要内容分为:&lt;/p&gt;
 &lt;ul&gt;

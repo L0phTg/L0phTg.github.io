@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on L0phTg&#39;s Blog</title>
-    <link>/post/</link>
+    <link>https://L0phTg.github.io/post/</link>
     <description>Recent content in Posts on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Sun, 05 Jan 2020 17:44:55 +0800</lastBuildDate>
     
-	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://L0phTg.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Hive笔记</title>
-      <link>/post/bigdata/hive%E7%AC%94%E8%AE%B0/</link>
+      <link>https://L0phTg.github.io/post/bigdata/hive%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Sun, 05 Jan 2020 17:44:55 +0800</pubDate>
       
-      <guid>/post/bigdata/hive%E7%AC%94%E8%AE%B0/</guid>
+      <guid>https://L0phTg.github.io/post/bigdata/hive%E7%AC%94%E8%AE%B0/</guid>
       <description>&lt;p&gt;2020年，新年快乐！
 重新搭建了下博客，开始定期更新模式。&lt;/p&gt;
 &lt;p&gt;本文是前段时间阅读&amp;laquo;hive权威指南&amp;raquo;总结的笔记。&lt;/p&gt;</description>
@@ -24,10 +24,10 @@
     
     <item>
       <title>Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</title>
-      <link>/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</link>
       <pubDate>Wed, 26 Jun 2019 16:04:38 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl10.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl10.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本文是LLVM教程（Kaleidoscope）的最后一章：介绍教程结论和一些有用的LLVM技巧。&lt;/p&gt;
 &lt;p&gt;另：按照原本的计划，&amp;lt;&amp;lt;LLVM系列 * 上半年&amp;raquo;应该还有一篇Kaleidoscope教程的总结、和&amp;lt;&amp;lt;Pass基础知识介绍&amp;raquo;一篇文章，和三篇编写Pass的文章。但是预计近三个月刚入职，事情会比较多，所以这个系列文章的更新时间会推迟&amp;ndash;鸽（好饭不怕晚，哈哈哈&amp;mdash;自卖自夸）。&lt;/p&gt;
@@ -36,10 +36,10 @@
     
     <item>
       <title>Kaleidoscope：Adding Debug Information</title>
-      <link>/post/llvm/kaleidoscopeadding-debug-information/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscopeadding-debug-information/</link>
       <pubDate>Mon, 24 Jun 2019 19:56:26 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscopeadding-debug-information/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscopeadding-debug-information/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl09.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl09.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;唔，最后两个章节有点难产。&lt;/p&gt;
 &lt;p&gt;本章主要介绍：为Kaleidoscope添加调试信息支持。&lt;/p&gt;</description>
@@ -47,10 +47,10 @@
     
     <item>
       <title>Kaleidoscope：Compile to Object Code</title>
-      <link>/post/llvm/kaleidoscopecompile-to-object-code/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscopecompile-to-object-code/</link>
       <pubDate>Sun, 16 Jun 2019 18:42:08 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscopecompile-to-object-code/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscopecompile-to-object-code/</guid>
       <description>&lt;p&gt;translate from:http://llvm.org/docs/tutorial/LangImpl08.html&lt;/p&gt;
 &lt;p&gt;本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。&lt;/p&gt;
 &lt;p&gt;本章内容比较简单。&lt;/p&gt;</description>
@@ -58,10 +58,10 @@
     
     <item>
       <title>Kaleidoscope：Extending the Language：Mutable Variables</title>
-      <link>/post/llvm/kaleidoscopeextending-the-languagemutable-variables/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscopeextending-the-languagemutable-variables/</link>
       <pubDate>Wed, 12 Jun 2019 19:43:42 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscopeextending-the-languagemutable-variables/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscopeextending-the-languagemutable-variables/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl07.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl07.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对&lt;strong&gt;改变变量&lt;/strong&gt;功能的支持。&lt;/p&gt;
 &lt;ul&gt;
@@ -87,10 +87,10 @@
     
     <item>
       <title>Kaleidoscope：Extending the Language：User Defined Operators</title>
-      <link>/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/</link>
       <pubDate>Tue, 11 Jun 2019 21:53:54 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl06.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl06.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。&lt;/p&gt;
 &lt;p&gt;扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。&lt;/p&gt;
@@ -150,10 +150,10 @@ graph TB
     
     <item>
       <title>信号与系统-学习笔记</title>
-      <link>/post/class/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <link>https://L0phTg.github.io/post/class/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
       <pubDate>Tue, 11 Jun 2019 16:32:00 +0800</pubDate>
       
-      <guid>/post/class/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <guid>https://L0phTg.github.io/post/class/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
       <description>&lt;p&gt;昨天刚回家，停更了两天，今天继续更博客。&lt;strong&gt;先简单水一篇&amp;laquo;信号与系统&amp;raquo;的学习记录&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;&amp;laquo;信号与系统&amp;raquo;是我大学期间唯一一门挂了三年的课程，所以我对它的印象不可谓不深刻。&lt;/p&gt;
 &lt;p&gt;为了过补考，在上个寒假时又重新学了一遍课程，并做了很多笔记，&lt;strong&gt;本文发一下我当前的笔记目录，并附上笔记pdf的github地址&lt;/strong&gt;。&lt;/p&gt;
@@ -163,20 +163,20 @@ graph TB
     
     <item>
       <title>C&#43;&#43;：设计一个抽象数据类型</title>
-      <link>/post/c&#43;&#43;/c&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</link>
+      <link>https://L0phTg.github.io/post/c&#43;&#43;/c&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</link>
       <pubDate>Sat, 08 Jun 2019 22:22:06 +0800</pubDate>
       
-      <guid>/post/c&#43;&#43;/c&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</guid>
+      <guid>https://L0phTg.github.io/post/c&#43;&#43;/c&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/</guid>
       <description>&lt;p&gt;初次接触c++是在15年，还蛮早的，但之后的学习中由于使用c++的地方比较少，所以没怎么使用c++开发过项目。然而随着最近学习Art和LLVM的时候，用到了很多c++知识，逐渐发现了自己基础知识的薄弱。遂决定写一个c++系列的语法和编程入门总结。（主要参考 c++ primer 和 effective c++, effective系列没有涉及细节，详细内容可以看书来获得）&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;本文不断更新中。&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>习字：入门</title>
-      <link>/post/handwriting/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/</link>
+      <link>https://L0phTg.github.io/post/handwriting/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/</link>
       <pubDate>Fri, 07 Jun 2019 18:39:03 +0800</pubDate>
       
-      <guid>/post/handwriting/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/</guid>
+      <guid>https://L0phTg.github.io/post/handwriting/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/</guid>
       <description>&lt;p&gt;&lt;strong&gt;本篇是水文!!!&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;从小我爸就一直说我字写得不好，就这么说了二十多年，现在依然写的一般。不过经过断断续续的练字，也有了一丁点的进步。最近学校的事基本忙完了，准备每天抽出一些时间来继续练字。&lt;/p&gt;
 &lt;p&gt;今天看了几节田舍之老师在&lt;strong&gt;网易云课堂&lt;/strong&gt;的&amp;laquo;硬笔书法系列&amp;raquo;教程，发现了自己练字期间一直存在的问题：&lt;/p&gt;
@@ -189,41 +189,41 @@ graph TB
     
     <item>
       <title>Kaleidoscope: 前五章总结</title>
-      <link>/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
       <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
       <description>&lt;p&gt;对前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>书签整理</title>
-      <link>/post/life/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/</link>
+      <link>https://L0phTg.github.io/post/life/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/</link>
       <pubDate>Mon, 15 Apr 2019 10:13:04 +0800</pubDate>
       
-      <guid>/post/life/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/</guid>
+      <guid>https://L0phTg.github.io/post/life/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/</guid>
       <description>&lt;p&gt;昨晚闲得无聊, 整理了一下自己的chrome书签.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Extending the Language Control Flow</title>
-      <link>/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
       <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl05.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl05.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Adding JIT and Optimizer Support</title>
-      <link>/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</link>
       <pubDate>Sat, 13 Apr 2019 15:02:51 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl04.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl04.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.&lt;/p&gt;
 
@@ -281,63 +281,63 @@ graph TB
     
     <item>
       <title>Kaleidoscope: Code Generation to LLVM IR</title>
-      <link>/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</link>
       <pubDate>Fri, 12 Apr 2019 16:55:05 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Implementing a Parser and AST</title>
-      <link>/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</link>
+      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</link>
       <pubDate>Thu, 11 Apr 2019 15:41:17 +0800</pubDate>
       
-      <guid>/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl02.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl02.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/docs-pic/dots/uml/ExprAst-1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/dots/uml/ExprAst-1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;介绍AST(抽象语法树)和Parser.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Tutorial Introduction and Lexer</title>
-      <link>/post/kaleidoscope_tutorial-introduction-and-lexer/</link>
+      <link>https://L0phTg.github.io/post/kaleidoscope_tutorial-introduction-and-lexer/</link>
       <pubDate>Wed, 10 Apr 2019 10:17:08 +0800</pubDate>
       
-      <guid>/post/kaleidoscope_tutorial-introduction-and-lexer/</guid>
+      <guid>https://L0phTg.github.io/post/kaleidoscope_tutorial-introduction-and-lexer/</guid>
       <description>&lt;p&gt;translate from &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl01.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl01.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本tutorial将会介绍一个简单语言的实现.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Static Single Assignment</title>
-      <link>/post/llvm/static-single-assignment/</link>
+      <link>https://L0phTg.github.io/post/llvm/static-single-assignment/</link>
       <pubDate>Tue, 09 Apr 2019 21:54:49 +0800</pubDate>
       
-      <guid>/post/llvm/static-single-assignment/</guid>
+      <guid>https://L0phTg.github.io/post/llvm/static-single-assignment/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;https://en.wikipedia.org/wiki/Static_single_assignment_form&#34;&gt;https://en.wikipedia.org/wiki/Static_single_assignment_form&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;单一变量赋值
-&lt;img src=&#34;/llvm/SSA_example1.2.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;img src=&#34;https://L0phTg.github.io/llvm/SSA_example1.2.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Dominator(graph Theory)</title>
-      <link>/post/dominatorgraph-theory/</link>
+      <link>https://L0phTg.github.io/post/dominatorgraph-theory/</link>
       <pubDate>Sat, 06 Apr 2019 18:00:53 +0800</pubDate>
       
-      <guid>/post/dominatorgraph-theory/</guid>
+      <guid>https://L0phTg.github.io/post/dominatorgraph-theory/</guid>
       <description>&lt;p&gt;translate from : &lt;a href=&#34;https://en.wikipedia.org/wiki/Dominator_(graph_theory)&#34;&gt;https://en.wikipedia.org/wiki/Dominator_(graph_theory)&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>如果你冲动删除了python</title>
-      <link>/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</link>
+      <link>https://L0phTg.github.io/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</link>
       <pubDate>Tue, 02 Apr 2019 21:12:17 +0800</pubDate>
       
-      <guid>/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</guid>
+      <guid>https://L0phTg.github.io/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</guid>
       <description>&lt;p&gt;在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!&lt;/p&gt;
 &lt;p&gt;所以你输入了下面的几行命令&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#hahaha&lt;/span&gt;
@@ -354,10 +354,10 @@ $sudo apt autoremove -f
     
     <item>
       <title>本科应届生安全岗面试总结</title>
-      <link>/post/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</link>
+      <link>https://L0phTg.github.io/post/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</link>
       <pubDate>Tue, 02 Apr 2019 11:24:31 +0800</pubDate>
       
-      <guid>/post/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</guid>
+      <guid>https://L0phTg.github.io/post/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/</guid>
       <description>&lt;p&gt;很久没有更新博客了, 主要原因是因为现在笔记都记在了有道云笔记中. 并且 很多篇文章都只写了一半, 也不想发出来.&lt;/p&gt;
 &lt;p&gt;近期时间充裕, 应该会保持每周一更, 将以前写的或者近期学到的知识总结一下发在博客里.&lt;/p&gt;
 &lt;p&gt;本篇文章是19年春节写的, 主要记录了自己在18年的几次面试记录, 和大学期间的一些学习经历.&lt;/p&gt;</description>
@@ -365,20 +365,20 @@ $sudo apt autoremove -f
     
     <item>
       <title>我的zsh和vim配置</title>
-      <link>/post/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
+      <link>https://L0phTg.github.io/post/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Wed, 24 Oct 2018 00:14:31 +0800</pubDate>
       
-      <guid>/post/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</guid>
+      <guid>https://L0phTg.github.io/post/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</guid>
       <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://l0phtg.github.io/customConfig/myVimPreview.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Pixel1 源码编译</title>
-      <link>/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
+      <link>https://L0phTg.github.io/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
       <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
       
-      <guid>/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
+      <guid>https://L0phTg.github.io/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
       <description>&lt;p&gt;记录自己Pixel1刷机流程.&lt;/p&gt;
 &lt;p&gt;相关网站&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;Requirements
@@ -398,20 +398,20 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>Hugo搭建博客</title>
-      <link>/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
+      <link>https://L0phTg.github.io/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
       <pubDate>Wed, 19 Sep 2018 20:04:10 +0800</pubDate>
       
-      <guid>/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
+      <guid>https://L0phTg.github.io/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
       <description>&lt;p&gt;博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.&lt;/p&gt;
 &lt;p&gt;以前使用hexo搭的, 最近发现了好多人在用&lt;code&gt;hugo&lt;/code&gt;, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Iqiyi开源hook框架XHook分析</title>
-      <link>/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</link>
+      <link>https://L0phTg.github.io/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</link>
       <pubDate>Sun, 19 Aug 2018 02:19:05 +0800</pubDate>
       
-      <guid>/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</guid>
+      <guid>https://L0phTg.github.io/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;Got Hook 可以使用dlsym得到目标函数的地址, 然后遍历got表进行Hook.&lt;/p&gt;
 &lt;p&gt;但是有时候我们不能通过dlsym得到函数地址. 这时我们需要怎么办呢? iqiyi的xhook很好的解决了这个问题, (可以参考linker的实现, &lt;strong&gt;有问题, 看源码&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;通过找到目标函数地址存放在got表中位置, 只要找到了目标symbol在got表中的offset, 想要修改或者得到目标函数的实际地址就轻松多了.&lt;/p&gt;
@@ -420,31 +420,31 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>InlineHook学习分析</title>
-      <link>/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</link>
+      <link>https://L0phTg.github.io/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</link>
       <pubDate>Thu, 05 Apr 2018 02:14:31 +0800</pubDate>
       
-      <guid>/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</guid>
+      <guid>https://L0phTg.github.io/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;分析开源的inlineHook代码, 总结inlineHook的原理与实现.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>装机日志-deepin</title>
-      <link>/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</link>
+      <link>https://L0phTg.github.io/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</link>
       <pubDate>Thu, 28 Dec 2017 11:47:58 +0000</pubDate>
       
-      <guid>/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</guid>
+      <guid>https://L0phTg.github.io/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</guid>
       <description>&lt;p&gt;17年使用了一段时间deepin系统, 这里简单记录一些使用心得(现在已转ubuntu.&lt;/p&gt;
 &lt;p&gt;主要就是&lt;strong&gt;装机的过程&lt;/strong&gt;, 以及&lt;strong&gt;装机后的效果展示&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/deepin/desktop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/deepin/desktop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>thumb指令虚拟化学习(一)</title>
-      <link>/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
+      <link>https://L0phTg.github.io/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
       <pubDate>Tue, 24 Oct 2017 20:23:30 +0800</pubDate>
       
-      <guid>/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;/thumb-vmp/thumb16.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+      <guid>https://L0phTg.github.io/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/thumb-vmp/thumb16.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上半年接触过一些 &lt;strong&gt;app加固&lt;/strong&gt; 的知识, 对 &lt;strong&gt;vm&lt;/strong&gt; 这块一直空有兴趣而没有了解过;  最近, 阅读了几篇文章, &lt;code&gt;有所启发&lt;/code&gt;, 所以决定学习一下 &lt;strong&gt;vm&lt;/strong&gt; 这块的一些操作.&lt;/p&gt;
 &lt;p&gt;主要内容分为:&lt;/p&gt;
 &lt;ul&gt;
@@ -456,10 +456,10 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>elf文件格式和AndroidLinker加载.so的源码分析</title>
-      <link>/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
+      <link>https://L0phTg.github.io/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
       <pubDate>Sun, 19 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
+      <guid>https://L0phTg.github.io/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;最近在学习android应用的加壳和混淆方法, 所以遇到了一些有关.so是如何加载到android中去的问题, 看了一些视频和文章, 所以想在此总结一下.&lt;/p&gt;
 &lt;p&gt;本文主要内容:&lt;/p&gt;
 &lt;ul&gt;
@@ -470,10 +470,10 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>分析Android的JNI编程时所使用的一些函数功能</title>
-      <link>/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</link>
+      <link>https://L0phTg.github.io/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</link>
       <pubDate>Thu, 16 Mar 2017 03:07:59 +0000</pubDate>
       
-      <guid>/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</guid>
+      <guid>https://L0phTg.github.io/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</guid>
       <description>&lt;p&gt;分析&lt;strong&gt;jni调用时&lt;/strong&gt;的一些函数及其函数功能.&lt;/p&gt;
 &lt;p&gt;如 GetEnv &amp;hellip;&lt;/p&gt;
 &lt;p&gt;本文已长草.&lt;/p&gt;</description>
@@ -481,10 +481,10 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>第一篇博文-谈谈CVE-2014-7911</title>
-      <link>/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</link>
+      <link>https://L0phTg.github.io/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</link>
       <pubDate>Wed, 01 Mar 2017 20:20:20 +0000</pubDate>
       
-      <guid>/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</guid>
+      <guid>https://L0phTg.github.io/post/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88cve-2014-7911/</guid>
       <description>&lt;p&gt;分析一个反序列化漏洞, 以及漏洞的产生的利用过程.&lt;/p&gt;
 &lt;p&gt;本文主要内容:&lt;/p&gt;
 &lt;ul&gt;

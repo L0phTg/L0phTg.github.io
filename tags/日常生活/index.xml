@@ -2,24 +2,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>日常生活 on L0phTg&#39;s Blog</title>
-    <link>/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/</link>
+    <link>https://L0phTg.github.io/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/</link>
     <description>Recent content in 日常生活 on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Thu, 28 Dec 2017 11:47:58 +0000</lastBuildDate>
     
-	<atom:link href="/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://L0phTg.github.io/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>装机日志-deepin</title>
-      <link>/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</link>
+      <link>https://L0phTg.github.io/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</link>
       <pubDate>Thu, 28 Dec 2017 11:47:58 +0000</pubDate>
       
-      <guid>/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</guid>
+      <guid>https://L0phTg.github.io/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</guid>
       <description>&lt;p&gt;17年使用了一段时间deepin系统, 这里简单记录一些使用心得(现在已转ubuntu.&lt;/p&gt;
 &lt;p&gt;主要就是&lt;strong&gt;装机的过程&lt;/strong&gt;, 以及&lt;strong&gt;装机后的效果展示&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/deepin/desktop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/deepin/desktop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>
