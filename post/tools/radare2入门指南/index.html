@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Radare2入门指南</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="radare2是一个开源的逆向分析工具, 基于capstone。使用简单方便，是我最喜爱的工具之一。
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Radare2入门指南">
+    <meta name="twitter:description" content="radare2是一个开源的逆向分析工具, 基于capstone。使用简单方便，是我最喜爱的工具之一。
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Radare2入门指南">
+  <meta property="og:description" content="radare2是一个开源的逆向分析工具, 基于capstone。使用简单方便，是我最喜爱的工具之一。
+">
+  <meta property="og:url" content="https://L0phTg.github.io/post/tools/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="https://L0phTg.github.io/post/tools/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+<link rel="stylesheet" href="/css/mermaid.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+  <script src="/js/mermaid.min.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  
+  <header class="site-header">
+  <a href="https://L0phTg.github.io/"><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="https://L0phTg.github.io/">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+ 
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Radare2入门指南</h1>
+      <p class="post-meta">@L0phTg · Jan 10, 2020 · 17 min read</p>
+      
+    </header>
+     
+     
+<div class="post-toc" id="post-toc">
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#heading-1">通用操作</a>
+      <ul>
+        <li><a href="#heading-2">格式转换</a></li>
+        <li><a href="#hash">hash计算</a></li>
+        <li><a href="#heading-3">汇编指令</a></li>
+        <li><a href="#dump">Dump内容</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">文件格式分析</a>
+      <ul>
+        <li><a href="#heading-5">可执行程序分析</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#help-1">工具help</a>
+      <ul>
+        <li><a href="#rax2">rax2</a></li>
+        <li><a href="#rahash2">rahash2</a></li>
+        <li><a href="#rasm2">rasm2</a></li>
+        <li><a href="#rabin2">rabin2</a></li>
+      </ul>
+    </li>
+    <li><a href="#help-2">命令help</a>
+      <ul>
+        <li><a href="#w">w</a></li>
+        <li><a href="#a">a</a></li>
+        <li><a href="#s">s</a></li>
+        <li><a href="#p">p</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+     
+    <article class="post-content"><p>radare2是一个开源的逆向分析工具, 基于capstone。使用简单方便，是我最喜爱的工具之一。</p>
+<p>官网：
+<a href="https://rada.re/n/">https://rada.re/n/</a></p>
+<p>官方文档：
+<a href="https://radare.gitbooks.io/radare2book/">https://radare.gitbooks.io/radare2book/</a></p>
+<p>安装：
+<a href="https://radare.mikelloc.com/list">https://radare.mikelloc.com/list</a></p>
+<p>TODO: 加入radare2分析脚本的编写</p>
+<p>TODO: 完善静态分析指令的介绍内容</p>
+<h1 id="heading">静态分析</h1>
+<ol>
+<li>分析文件格式(可执行程序、文档类文件、配置文件、资源文件)</li>
+<li>分析文件内容</li>
+</ol>
+<h2 id="heading-1">通用操作</h2>
+<h3 id="heading-2">格式转换</h3>
+<p><a href="https://radare.gitbooks.io/radare2book/tools/rax2/intro.html">https://radare.gitbooks.io/radare2book/tools/rax2/intro.html</a></p>
+<p><code>rax2</code>：radare2自带的一个格式转换工具, 使用简单。我们可以方便的进行进制转换、编码转换等操作。
+例如：</p>
+<ol>
+<li>进制转换。</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rax2 <span style="color:#ae81ff">10</span>  <span style="color:#75715e"># 10进制转16进制</span>
+0xa
+$ rax2 0xa <span style="color:#75715e"># 16进制转10进制</span>
+10
+$ rax2 b30 <span style="color:#75715e"># 10进制转2进制</span>
+11110b
+</code></pre></div><ol start="2">
+<li>编码转换: base64加解码。</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rax2 -E <span style="color:#ae81ff">1291029019234</span>  <span style="color:#75715e"># base64编码</span>
+MTI5MTAyOTAxOTIzNA<span style="color:#f92672">=</span><span style="color:#f92672">=</span>
+$ rax2 -D MTI5MTAyOTAxOTIzNA<span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#75715e"># base64解码</span>
+1291029019234
+$
+</code></pre></div><h3 id="hash">hash计算</h3>
+<p><a href="https://radare.gitbooks.io/radare2book/tools/rahash2/intro.html">https://radare.gitbooks.io/radare2book/tools/rahash2/intro.html</a></p>
+<p><code>rahash2</code>是一个进行加解密算法计算的工具，使用简单方便。</p>
+<p>例：</p>
+<ol>
+<li>计算文件的hash(sha256/md5):</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#计算文件sha256</span>
+$ rahash2.exe -a sha256 .<span style="color:#ae81ff">\W</span>eiyunInstall_Beta_1_3.9.0.2340_20191024_160241_r0.exe
+.<span style="color:#ae81ff">\W</span>eiyunInstall_Beta_1_3.9.0.2340_20191024_160241_r0.exe: 0x00000000-0x03f126cf sha256: 343c1653de94ddd4822e12b2373e48a3748d574083e8f7c82471669746cd0afe
+<span style="color:#75715e">#计算文件md5</span>
+$ rahash2.exe -a md5 .<span style="color:#ae81ff">\W</span>eiyunInstall_Beta_1_3.9.0.2340_20191024_160241_r0.exe
+.<span style="color:#ae81ff">\W</span>eiyunInstall_Beta_1_3.9.0.2340_20191024_160241_r0.exe: 0x00000000-0x03f126cf md5: a3a30a5f5ae641f30e50aaf75dee7028  
+$
+</code></pre></div><ol start="2">
+<li>查看支持的算法：</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rahash2.exe -L
+Available Hashes:
+h  md5
+h  sha1
+h  sha256
+h  sha384
+h  sha512
+h  md4
+h  xor
+h  xorpair
+h  parity
+h  entropy
+h  hamdist
+h  pcprint
+h  mod255
+h  xxhash
+h  adler32
+h  luhn
+h  crc8smbus
+h  crc15can
+h  crc16
+h  crc16hdlc
+h  crc16usb
+h  crc16citt
+h  crc24
+h  crc32
+h  crc32c
+h  crc32ecma267
+h  crc32bzip2
+h  crc32d
+h  crc32mpeg2
+h  crc32posix
+h  crc32q
+h  crc32jamcrc
+h  crc32xfer
+h  crc64
+h  crc64ecma
+h  crc64we
+h  crc64xz
+h  crc64iso
+h  fletcher8
+h  fletcher16
+h  fletcher32
+h  fletcher64
+
+Available Encoders/Decoders:
+e  base64
+e  base91
+e  punycode
+
+Available Crypto Algos:
+c  rc2
+c  rc4
+c  rc6
+c  aes-ecb
+c  aes-cbc
+c  ror
+c  rol
+c  rot
+c  blowfish
+c  cps2
+c  des-ecb
+c  xor
+c  serpent-ecb
+$
+</code></pre></div><h3 id="heading-3">汇编指令</h3>
+<p><a href="https://radare.gitbooks.io/radare2book/content/tools/rasm2/intro.html">https://radare.gitbooks.io/radare2book/content/tools/rasm2/intro.html</a></p>
+<p><code>rasm2</code>：我们可以使用该工具来对汇编指令进行反汇编和汇编。</p>
+<p>例如：</p>
+<ol>
+<li>操作x86指令, <code>-a</code>指定指令架构，<code>-b</code>指令指令集位数</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#a6e22e">$</span> <span style="color:#66d9ef">rasm2.exe</span> -<span style="color:#66d9ef">a</span> <span style="color:#66d9ef">x86</span> -<span style="color:#66d9ef">b</span> <span style="color:#ae81ff">32</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#66d9ef">push</span> <span style="color:#66d9ef">ebp</span><span style="color:#960050;background-color:#1e0010">&#39;</span>
+<span style="color:#960050;background-color:#1e0010">5</span><span style="color:#960050;background-color:#1e0010">5</span>
+<span style="color:#a6e22e">$</span> <span style="color:#66d9ef">rasm2.exe</span> -<span style="color:#66d9ef">a</span> <span style="color:#66d9ef">x86</span> -<span style="color:#66d9ef">b</span> <span style="color:#ae81ff">32</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#66d9ef">mov</span> <span style="color:#66d9ef">ebp</span>, <span style="color:#66d9ef">esp</span><span style="color:#960050;background-color:#1e0010">&#39;</span>
+<span style="color:#960050;background-color:#1e0010">8</span><span style="color:#960050;background-color:#1e0010">9</span><span style="color:#a6e22e">e5</span>
+<span style="color:#a6e22e">$</span>
+</code></pre></div><ol start="2">
+<li>操作x64指令, <code>-D</code>表示反汇编</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rasm2.exe -a x86 -b <span style="color:#ae81ff">64</span> -D 89e5
+0x00000000   <span style="color:#ae81ff">2</span>                     89e5  mov ebp, esp
+$ rasm2.exe -a x86 -b <span style="color:#ae81ff">64</span> <span style="color:#e6db74">&#39;mov rbp, rsp&#39;</span>
+4889e5
+$
+</code></pre></div><ol start="3">
+<li>操作arm指令</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rasm2.exe -a arm -b <span style="color:#ae81ff">32</span> <span style="color:#e6db74">&#39;push LR&#39;</span>
+00002de9
+$
+</code></pre></div><ol start="4">
+<li>操作thumb指令(16bit arm指令)</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rasm2.exe -a arm -b <span style="color:#ae81ff">16</span> <span style="color:#e6db74">&#39;B 0x10&#39;</span>
+06e0
+$
+</code></pre></div><ol start="5">
+<li>查看支持的架构:</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rasm2.exe -L
+_dAe  <span style="color:#ae81ff">8</span> <span style="color:#ae81ff">16</span>       <span style="color:#ae81ff">6502</span>        LGPL3   6502/NES/C64/Tamagotchi/T-1000 CPU
+_dAe  <span style="color:#ae81ff">8</span>          <span style="color:#ae81ff">8051</span>        PD      <span style="color:#ae81ff">8051</span> Intel CPU
+_dA_  <span style="color:#ae81ff">32</span>         amd29k      LGPL3   AMD 29k RISC CPU <span style="color:#f92672">(</span>by deroad<span style="color:#f92672">)</span>
+_dA_  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span>      arc         GPL3    Argonaut RISC Core
+a___  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   arm.as      LGPL3   as ARM Assembler <span style="color:#f92672">(</span>use ARM_AS environment<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>by pancake<span style="color:#f92672">)</span>
+adAe  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   arm         BSD     Capstone ARM disassembler
+_dA_  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   arm.gnu     GPL3    Acorn RISC Machine CPU
+_d__  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span>      arm.winedbg LGPL2   WineDBG<span style="color:#e6db74">&#39;s ARM disassembler
+</span><span style="color:#e6db74">adAe  8 16       avr         GPL     AVR Atmel
+</span><span style="color:#e6db74">adAe  16 32 64   bf          LGPL3   Brainfuck (by pancake, nibble) v4.0.0
+</span><span style="color:#e6db74">_dA_  32         chip8       LGPL3   Chip8 disassembler
+</span><span style="color:#e6db74">_dA_  16         cr16        LGPL3   cr16 disassembly plugin
+</span><span style="color:#e6db74">_dA_  32         cris        GPL3    Axis Communications 32-bit embedded processor (by pancake)
+</span><span style="color:#e6db74">adA_  32 64      dalvik      LGPL3   AndroidVM Dalvik
+</span><span style="color:#e6db74">ad__  16         dcpu16      PD      Mojang&#39;</span>s DCPU-16
+_dA_  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      ebc         LGPL3   EFI Bytecode <span style="color:#f92672">(</span>by Fedor Sakharov<span style="color:#f92672">)</span>
+adAe  <span style="color:#ae81ff">16</span>         gb          LGPL3   GameBoy<span style="color:#f92672">(</span>TM<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>z80-like<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>by condret<span style="color:#f92672">)</span>
+_dAe  <span style="color:#ae81ff">16</span>         h8300       LGPL3   H8/300 disassembly plugin
+_dAe  <span style="color:#ae81ff">32</span>         hexagon     LGPL3   Qualcomm Hexagon <span style="color:#f92672">(</span>QDSP6<span style="color:#f92672">)</span> V6 <span style="color:#f92672">(</span>by xvilka<span style="color:#f92672">)</span>
+_d__  <span style="color:#ae81ff">32</span>         hppa        GPL3    HP PA-RISC
+_dAe             i4004       LGPL3   Intel <span style="color:#ae81ff">4004</span> microprocessor
+_dA_  <span style="color:#ae81ff">8</span>          i8080       BSD     Intel <span style="color:#ae81ff">8080</span> CPU
+adA_  <span style="color:#ae81ff">32</span>         java        Apache  Java bytecode
+_d__  <span style="color:#ae81ff">32</span>         lanai       GPL3    LANAI
+_d__  <span style="color:#ae81ff">8</span>          lh5801      LGPL3   SHARP LH5801 disassembler
+_d__  <span style="color:#ae81ff">32</span>         lm32        BSD     disassembly plugin <span style="color:#66d9ef">for</span> Lattice Micro <span style="color:#ae81ff">32</span> ISA <span style="color:#f92672">(</span>by Felix Held<span style="color:#f92672">)</span>
+_dA_  <span style="color:#ae81ff">32</span>         m68k        BSD     Capstone M68K disassembler
+_dA_  <span style="color:#ae81ff">8</span> <span style="color:#ae81ff">32</span>       m680x       BSD     Capstone M680X Disassembler
+_dA_  <span style="color:#ae81ff">32</span>         malbolge    LGPL3   Malbolge Ternary VM <span style="color:#f92672">(</span>by condret<span style="color:#f92672">)</span>
+_dA_  <span style="color:#ae81ff">32</span>         mcore       LGPL3   Motorola MCORE disassembler
+_d__  <span style="color:#ae81ff">16</span>         mcs96       LGPL3   condrets car
+adAe  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   mips        BSD     Capstone MIPS disassembler
+adAe  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      mips.gnu    GPL3    MIPS CPU
+_dA_  <span style="color:#ae81ff">16</span>         msp430      LGPL3   msp430 disassembly plugin
+_dA_  <span style="color:#ae81ff">32</span>         nios2       GPL3    NIOS II Embedded Processor
+_dAe  <span style="color:#ae81ff">8</span>          pic         LGPL3   PIC disassembler
+_dAe  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      ppc         BSD     Capstone PowerPC disassembler <span style="color:#f92672">(</span>by pancake<span style="color:#f92672">)</span>
+_dA_  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      ppc.gnu     GPL3    PowerPC
+_dA_  <span style="color:#ae81ff">32</span>         propeller   LGPL3   propeller disassembly plugin
+_dA_  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      riscv       GPL     RISC-V
+_dAe  <span style="color:#ae81ff">32</span>         rsp         LGPL3   Reality Signal Processor
+_dAe  <span style="color:#ae81ff">32</span>         sh          GPL3    SuperH-4 CPU
+_dA_  <span style="color:#ae81ff">8</span> <span style="color:#ae81ff">16</span>       snes        LGPL3   SuperNES CPU
+_dAe  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      sparc       BSD     Capstone SPARC disassembler
+_dA_  <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>      sparc.gnu   GPL3    Scalable Processor Architecture
+_d__  <span style="color:#ae81ff">16</span>         spc700      LGPL3   spc700, snes<span style="color:#960050;background-color:#1e0010">&#39;</span> sound-chip
+_d__  <span style="color:#ae81ff">32</span>         sysz        BSD     SystemZ CPU disassembler
+_dA_  <span style="color:#ae81ff">32</span>         tms320      LGPLv3  TMS320 DSP family <span style="color:#f92672">(</span>c54x,c55x,c55x+,c64x<span style="color:#f92672">)</span>
+_d__  <span style="color:#ae81ff">32</span>         tms320c64x  BSD     Capstone TMS320c64x disassembler
+_d__  <span style="color:#ae81ff">32</span>         tricore     GPL3    Siemens TriCore CPU
+_dAe  <span style="color:#ae81ff">32</span>         v810        LGPL3   v810 disassembly plugin <span style="color:#f92672">(</span>by pancake<span style="color:#f92672">)</span>
+_dAe  <span style="color:#ae81ff">32</span>         v850        LGPL3   v850 disassembly plugin
+_dAe  <span style="color:#ae81ff">8</span> <span style="color:#ae81ff">32</span>       vax         GPL     VAX
+adAe  <span style="color:#ae81ff">32</span>         wasm        MIT     WebAssembly <span style="color:#f92672">(</span>by cgvwzq<span style="color:#f92672">)</span> v0.1.0
+_dA_  <span style="color:#ae81ff">32</span>         ws          LGPL3   Whitespace esotheric VM
+a___  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   x86.as      LGPL3   Intel X86 GNU Assembler
+_dAe  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   x86         BSD     Capstone X86 disassembler
+a___  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   x86.nasm    LGPL3   X86 nasm assembler
+a___  <span style="color:#ae81ff">16</span> <span style="color:#ae81ff">32</span> <span style="color:#ae81ff">64</span>   x86.nz      LGPL3   x86 handmade assembler
+_dA_  <span style="color:#ae81ff">16</span>         xap         PD      XAP4 RISC <span style="color:#f92672">(</span>CSR<span style="color:#f92672">)</span>
+_dA_  <span style="color:#ae81ff">32</span>         xcore       BSD     Capstone XCore disassembler <span style="color:#f92672">(</span>by pancake<span style="color:#f92672">)</span>
+_dAe  <span style="color:#ae81ff">32</span>         xtensa      GPL3    XTensa CPU
+adA_  <span style="color:#ae81ff">8</span>          z80         GPL     Zilog Z80 <span style="color:#f92672">(</span>by condret<span style="color:#f92672">)</span>
+$
+</code></pre></div><h3 id="dump">Dump内容</h3>
+<p><code>w</code>命令可以写内容</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># wtf 写内容到文件中</span>
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt; wtf hi.bin 0x1000
+Dumped <span style="color:#ae81ff">4096</span> bytes from 0x0040225a into hi.bin
+<span style="color:#75715e"># wtf! 写当前位置到eof的所有数据到文件中</span>
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt; wtf! hi.bin 
+</code></pre></div><h2 id="heading-4">文件格式分析</h2>
+<p><a href="https://radare.gitbooks.io/radare2book/tools/rabin2/intro.html">https://radare.gitbooks.io/radare2book/tools/rabin2/intro.html</a></p>
+<p>拿到一个文件，我们首先要做的就是分析文件格式，了解文件大致信息。
+我们可以使用工具<code>rabin2</code>。</p>
+<ol>
+<li>文件属性识别, <code>-I</code></li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rabin2.exe -I .<span style="color:#ae81ff">\r</span>adare2_installer-msvc_64-4.0.0.exe
+arch     x86
+baddr    0x400000
+binsz    20660224
+bintype  pe
+bits     32
+canary   false
+retguard false
+class    PE32
+cmp.csum 0x013b6631
+compiled Wed Apr  <span style="color:#ae81ff">6</span> 22:39:04 2016
+crypto   false
+endian   little
+havecode true
+hdr.csum 0x00000000
+laddr    0x0
+lang     c
+linenum  true
+lsyms    true
+machine  i386
+maxopsz  16
+minopsz  1
+nx       true
+os       windows
+overlay  true
+pcalign  0
+pic      true
+relocs   true
+signed   false
+sanitiz  false
+static   false
+stripped false
+subsys   Windows GUI
+va       true
+$
+</code></pre></div><ol start="2">
+<li>程序段分析。<code>-S</code></li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rabin2.exe -S .<span style="color:#ae81ff">\r</span>adare2_installer-msvc_64-4.0.0.exe
+<span style="color:#f92672">[</span>Sections<span style="color:#f92672">]</span>
+Nm Paddr       Size Vaddr      Memsz Perms Name
+<span style="color:#ae81ff">00</span> 0x00000400 <span style="color:#ae81ff">62464</span> 0x00401000 <span style="color:#ae81ff">65536</span> -r-x .text
+<span style="color:#ae81ff">01</span> 0x0000f800  <span style="color:#ae81ff">4096</span> 0x00411000  <span style="color:#ae81ff">4096</span> -r-x .itext
+<span style="color:#ae81ff">02</span> 0x00010800  <span style="color:#ae81ff">3584</span> 0x00412000  <span style="color:#ae81ff">4096</span> -rw- .data
+<span style="color:#ae81ff">03</span> 0x00011600     <span style="color:#ae81ff">0</span> 0x00413000 <span style="color:#ae81ff">24576</span> -rw- .bss
+<span style="color:#ae81ff">04</span> 0x00011600  <span style="color:#ae81ff">4096</span> 0x00419000  <span style="color:#ae81ff">4096</span> -rw- .idata
+<span style="color:#ae81ff">05</span> 0x00012600     <span style="color:#ae81ff">0</span> 0x0041a000  <span style="color:#ae81ff">4096</span> -rw- .tls
+<span style="color:#ae81ff">06</span> 0x00012600   <span style="color:#ae81ff">512</span> 0x0041b000  <span style="color:#ae81ff">4096</span> -r-- .rdata
+<span style="color:#ae81ff">07</span> 0x00012800 <span style="color:#ae81ff">43008</span> 0x0041c000 <span style="color:#ae81ff">45056</span> -r-- .rsrc
+$
+</code></pre></div><ol start="3">
+<li>程序入口点分析, <code>-e</code>。</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rabin2.exe -e .<span style="color:#ae81ff">\r</span>adare2_installer-msvc_64-4.0.0.exe
+<span style="color:#f92672">[</span>Entrypoints<span style="color:#f92672">]</span>
+vaddr<span style="color:#f92672">=</span>0x004117dc paddr<span style="color:#f92672">=</span>0x0000ffdc haddr<span style="color:#f92672">=</span>0x00000128 type<span style="color:#f92672">=</span>program
+
+<span style="color:#ae81ff">1</span> entrypoints
+$
+</code></pre></div><ol start="4">
+<li>导入表、导出表分析。<code>-e</code>, <code>-E</code></li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 导入表分析</span>
+$ rabin2.exe -i .<span style="color:#ae81ff">\r</span>adare2_installer-msvc_64-4.0.0.exe
+<span style="color:#f92672">[</span>Imports<span style="color:#f92672">]</span>
+Num  Vaddr       Bind      Type Name
+   <span style="color:#ae81ff">1</span> 0x00419304    NONE    FUNC oleaut32.dll_SysFreeString
+   <span style="color:#ae81ff">2</span> 0x00419308    NONE    FUNC oleaut32.dll_SysReAllocStringLen
+   <span style="color:#ae81ff">3</span> 0x0041930c    NONE    FUNC oleaut32.dll_SysAllocStringLen
+   <span style="color:#ae81ff">1</span> 0x00419314    NONE    FUNC advapi32.dll_RegQueryValueExW
+   <span style="color:#ae81ff">2</span> 0x00419318    NONE    FUNC advapi32.dll_RegOpenKeyExW
+   <span style="color:#ae81ff">3</span> 0x0041931c    NONE    FUNC advapi32.dll_RegCloseKey
+   <span style="color:#ae81ff">1</span> 0x00419324    NONE    FUNC user32.dll_GetKeyboardType
+   <span style="color:#ae81ff">2</span> 0x00419328    NONE    FUNC user32.dll_LoadStringW
+   <span style="color:#ae81ff">3</span> 0x0041932c    NONE    FUNC user32.dll_MessageBoxA
+   <span style="color:#ae81ff">4</span> 0x00419330    NONE    FUNC user32.dll_CharNextW
+   <span style="color:#ae81ff">1</span> 0x00419338    NONE    FUNC kernel32.dll_GetACP
+  .........
+<span style="color:#75715e"># 导出表分析</span>
+$ rabin2.exe -E .<span style="color:#ae81ff">\r</span>adare2_installer-msvc_64-4.0.0.exe
+<span style="color:#f92672">[</span>Exports<span style="color:#f92672">]</span>
+Num Paddr      Vaddr      Bind     Type Size Name
+$
+</code></pre></div><h3 id="heading-5">可执行程序分析</h3>
+<ol>
+<li><code>a</code>分析</li>
+</ol>
+<p><code>aa</code>分析入口函数,<code>aaa</code>分析所有的函数调用, <code>afl</code>列出分析后的函数</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ radare2 .<span style="color:#ae81ff">\C</span>hromeSetup.exe
+ -- Control the signal handlers of the child process with the <span style="color:#e6db74">&#39;dk&#39;</span> command
+<span style="color:#f92672">[</span>0x00404eb3<span style="color:#f92672">]</span>&gt; aa
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Analyze all flags starting with sym. and entry0 <span style="color:#f92672">(</span>aa<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>0x00404eb3<span style="color:#f92672">]</span>&gt; afl
+0x00404eb3   <span style="color:#ae81ff">21</span> <span style="color:#ae81ff">390</span>  -&gt; <span style="color:#ae81ff">337</span>  entry0
+0x0040225a   <span style="color:#ae81ff">12</span> <span style="color:#ae81ff">203</span>          main
+<span style="color:#f92672">[</span>0x00404eb3<span style="color:#f92672">]</span>&gt; aaa
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Analyze all flags starting with sym. and entry0 <span style="color:#f92672">(</span>aa<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Analyze <span style="color:#66d9ef">function</span> calls <span style="color:#f92672">(</span>aac<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Analyze len bytes of instructions <span style="color:#66d9ef">for</span> references <span style="color:#f92672">(</span>aar<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Check <span style="color:#66d9ef">for</span> objc references
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Check <span style="color:#66d9ef">for</span> vtables
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Type matching analysis <span style="color:#66d9ef">for</span> all functions <span style="color:#f92672">(</span>aaft<span style="color:#f92672">)</span>
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Propagate noreturn information
+<span style="color:#f92672">[</span>x<span style="color:#f92672">]</span> Use -AA or aaaa to perform additional experimental analysis.
+<span style="color:#f92672">[</span>0x00404eb3<span style="color:#f92672">]</span>&gt; afl
+0x00404eb3   <span style="color:#ae81ff">21</span> <span style="color:#ae81ff">390</span>  -&gt; <span style="color:#ae81ff">337</span>  entry0
+0x0040225a   <span style="color:#ae81ff">12</span> <span style="color:#ae81ff">203</span>          main
+0x00413932    <span style="color:#ae81ff">5</span> <span style="color:#ae81ff">83</span>           fcn.00413932
+0x00413985    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">35</span>           fcn.00413985
+0x004059c0   <span style="color:#ae81ff">24</span> <span style="color:#ae81ff">346</span>          fcn.004059c0
+0x00401097    <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">40</span>           fcn.00401097
+0x00405139    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">21</span>           fcn.00405139
+0x004050fe    <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">59</span>           fcn.004050fe
+0x00401026    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">19</span>           fcn.00401026
+0x0040103b    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">33</span>           fcn.0040103b
+0x0040111c    <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">28</span>           fcn.0040111c
+0x00413c28    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">14</span>           fcn.00413c28
+0x00413f1d    <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">48599</span> -&gt; <span style="color:#ae81ff">68</span>   fcn.00413f1d
+0x0040a7b9    <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">19</span>           fcn.0040a7b9
+0x0040a468   <span style="color:#ae81ff">11</span> <span style="color:#ae81ff">133</span>          fcn.0040a468
+0x0040a740    <span style="color:#ae81ff">7</span> <span style="color:#ae81ff">67</span>           fcn.0040a740
+0x00401168    <span style="color:#ae81ff">6</span> <span style="color:#ae81ff">65</span>           fcn.00401168
+0x0040569e    <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">17</span>   -&gt; <span style="color:#ae81ff">266</span>  fcn.0040569e
+0x004056d7    <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">249</span>          loc.004056d7
+0x0041392c    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">6</span>            sub.KERNEL32.dll_IsProcessorFeaturePresent
+0x004056af    <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">40</span>           fcn.004056af
+...
+</code></pre></div><ol start="2">
+<li><code>s</code>定位</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># ~: 与grep类似</span>
+<span style="color:#f92672">[</span>0x00404eb3<span style="color:#f92672">]</span>&gt; afl~main
+0x0040225a   <span style="color:#ae81ff">12</span> <span style="color:#ae81ff">203</span>          main
+<span style="color:#75715e"># s 定义到目标地址, 此处定位到main函数地址</span>
+<span style="color:#f92672">[</span>0x00404eb3<span style="color:#f92672">]</span>&gt; s main
+<span style="color:#75715e"># pdf, 反汇编当前函数</span>
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt; pdf
+            ;-- eip:
+┌ <span style="color:#f92672">(</span>fcn<span style="color:#f92672">)</span> main 203
+│   int main <span style="color:#f92672">(</span>int argc, char **argv, char **envp<span style="color:#f92672">)</span>;
+│           ; var int32_t var_24h @ ebp-0x24
+│           ; var int32_t var_20h @ ebp-0x20
+│           ; var int32_t var_1ch @ ebp-0x1c
+│           ; var int32_t var_18h @ ebp-0x18
+│           ; var int32_t var_14h @ ebp-0x14
+│           ; var int32_t var_10h @ ebp-0x10
+│           ; var int32_t var_ch @ ebp-0xc
+│           ; var int32_t var_8h @ ebp-0x8
+│           ; var int32_t var_4h @ ebp-0x4
+│           ; arg int32_t arg_8h @ ebp+0x8
+│           ; arg int32_t arg_10h @ ebp+0x10
+│           ; CALL XREF from entry0 @ 0x404e2a
+│           0x0040225a      <span style="color:#ae81ff">55</span>             push ebp
+│           0x0040225b      8bec           mov ebp, esp
+│           0x0040225d      83ec24         sub esp, 0x24
+│           0x00402260      685cb94100     push str.SetDefaultDllDirectories ; 0x41b95c ; <span style="color:#e6db74">&#34;SetDefaultDllDirectories&#34;</span>
+│           0x00402265      68f4b84100     push str.kernel32.dll       ; 0x41b8f4 ; u<span style="color:#e6db74">&#34;kernel32.dll&#34;</span> ; HMODULE hModule
+│           0x0040226a      ff1528604100   call dword <span style="color:#f92672">[</span>sym.imp.KERNEL32.dll_GetModuleHandleW<span style="color:#f92672">]</span> ; 0x416028 ; <span style="color:#e6db74">&#34;R\xc7\x01&#34;</span> ; HMODULE GetModuleHandleW<span style="color:#f92672">(</span>LPCWSTR lpModuleName<span style="color:#f92672">)</span>
+│           0x00402270      <span style="color:#ae81ff">50</span>             push eax                    ; LPCSTR lpProcName
+│           0x00402271      ff1564604100   call dword <span style="color:#f92672">[</span>sym.imp.KERNEL32.dll_GetProcAddress<span style="color:#f92672">]</span> ; 0x416064 ; <span style="color:#e6db74">&#34;j\xc8\x01&#34;</span> ; FARPROC GetProcAddress<span style="color:#f92672">(</span>HMODULE hModule, LPCSTR lpProcName<span style="color:#f92672">)</span>
+│           0x00402277      85c0           test eax, eax
+│       ┌─&lt; 0x00402279      <span style="color:#ae81ff">7407</span>           je 0x402282
+│       │   0x0040227b      <span style="color:#ae81ff">6800080000</span>     push 0x800                  ; 2048
+│       │   0x00402280      ffd0           call eax
+│       │   ; CODE XREF from main @ 0x402279
+│       └─&gt; 0x00402282      <span style="color:#ae81ff">56</span>             push esi
+│           0x00402283      <span style="color:#ae81ff">57</span>             push edi
+│           0x00402284      6a02           push <span style="color:#ae81ff">2</span>                      ; <span style="color:#ae81ff">2</span> ; LPVOID pvReserved
+│           0x00402286      33ff           xor edi, edi
+│           0x00402288      <span style="color:#ae81ff">57</span>             push edi                    ; DWORD dwCoInit
+│           0x00402289      ff1598614100   call dword <span style="color:#f92672">[</span>sym.imp.ole32.dll_CoInitializeEx<span style="color:#f92672">]</span> ; 0x416198 ; <span style="color:#e6db74">&#34;</span>$<span style="color:#e6db74">\xcd\x01</span><span style="color:#e6db74">&#34;</span> ; HRESULT CoInitializeEx<span style="color:#f92672">(</span>LPVOID pvReserved, DWORD dwCoInit<span style="color:#f92672">)</span>
+│           0x0040228f      8bf0           mov esi, eax
+│           0x00402291      85f6           test esi, esi
+│       ┌─&lt; 0x00402293      <span style="color:#ae81ff">7904</span>           jns 0x402299
+│       │   0x00402295      8bce           mov ecx, esi
+│      ┌──&lt; 0x00402297      eb10           jmp 0x4022a9
+│      ││   ; CODE XREF from main @ 0x402293
+│      │└─&gt; 0x00402299      <span style="color:#ae81ff">51</span>             push ecx
+│      │    0x0040229a      e8e3f0ffff     call fcn.00401382
+│      │    0x0040229f      <span style="color:#ae81ff">59</span>             pop ecx
+│      │    0x004022a0      84c0           test al, al
+│      │┌─&lt; 0x004022a2      750e           jne 0x4022b2
+│      ││   0x004022a4      b903070480     mov ecx, 0x80040703
+│      ││   ; CODE XREF from main @ 0x402297
+│      └──&gt; 0x004022a9      e805ffffff     call fcn.004021b3
+│       │   0x004022ae      8bf8           mov edi, eax
+│      ┌──&lt; 0x004022b0      eb59           jmp 0x40230b
+│      ││   ; CODE XREF from main @ 0x4022a2
+│      │└─&gt; 0x004022b2      8b4508         mov eax, dword <span style="color:#f92672">[</span>arg_8h<span style="color:#f92672">]</span>
+│      │    0x004022b5      8d4de0         lea ecx, <span style="color:#f92672">[</span>var_20h<span style="color:#f92672">]</span>
+│      │    0x004022b8      ff7510         push dword <span style="color:#f92672">[</span>arg_10h<span style="color:#f92672">]</span>
+│      │    0x004022bb      8945dc         mov dword <span style="color:#f92672">[</span>var_24h<span style="color:#f92672">]</span>, eax
+│      │    0x004022be      e82d020000     call fcn.004024f0
+│      │    0x004022c3      e818efffff     call fcn.004011e0
+│      │    0x004022c8      <span style="color:#ae81ff">50</span>             push eax
+│      │    0x004022c9      8d4de4         lea ecx, <span style="color:#f92672">[</span>var_1ch<span style="color:#f92672">]</span>
+│      │    0x004022cc      e836060000     call fcn.00402907
+│      │    0x004022d1      897de8         mov dword <span style="color:#f92672">[</span>var_18h<span style="color:#f92672">]</span>, edi
+│      │    0x004022d4      897dec         mov dword <span style="color:#f92672">[</span>var_14h<span style="color:#f92672">]</span>, edi
+│      │    0x004022d7      897df0         mov dword <span style="color:#f92672">[</span>var_10h<span style="color:#f92672">]</span>, edi
+│      │    0x004022da      897df4         mov dword <span style="color:#f92672">[</span>var_ch<span style="color:#f92672">]</span>, edi
+│      │    0x004022dd      e8feeeffff     call fcn.004011e0
+│      │    0x004022e2      <span style="color:#ae81ff">50</span>             push eax
+│      │    0x004022e3      8d4df8         lea ecx, <span style="color:#f92672">[</span>var_8h<span style="color:#f92672">]</span>
+│      │    0x004022e6      e81c060000     call fcn.00402907
+│      │    0x004022eb      e8f0eeffff     call fcn.004011e0
+│      │    0x004022f0      <span style="color:#ae81ff">50</span>             push eax
+│      │    0x004022f1      8d4dfc         lea ecx, <span style="color:#f92672">[</span>var_4h<span style="color:#f92672">]</span>
+│      │    0x004022f4      e80e060000     call fcn.00402907
+│      │    0x004022f9      8d4ddc         lea ecx, <span style="color:#f92672">[</span>var_24h<span style="color:#f92672">]</span>
+│      │    0x004022fc      e804f3ffff     call fcn.00401605
+│      │    0x00402301      8d4ddc         lea ecx, <span style="color:#f92672">[</span>var_24h<span style="color:#f92672">]</span>
+│      │    0x00402304      8bf8           mov edi, eax
+│      │    0x00402306      e885f2ffff     call fcn.00401590
+│      │    ; CODE XREF from main @ 0x4022b0
+│      └──&gt; 0x0040230b      81fef0010480   cmp esi, 0x800401f0
+│       ┌─&lt; 0x00402311      740a           je 0x40231d
+│       │   0x00402313      85f6           test esi, esi
+│      ┌──&lt; 0x00402315      <span style="color:#ae81ff">7806</span>           js 0x40231d
+│      ││   0x00402317      ff1594614100   call dword <span style="color:#f92672">[</span>sym.imp.ole32.dll_CoUninitialize<span style="color:#f92672">]</span> ; 0x416194 ; void CoUninitialize<span style="color:#f92672">(</span>void<span style="color:#f92672">)</span>
+│      ││   ; CODE XREFS from main @ 0x402311, 0x402315
+│      └└─&gt; 0x0040231d      8bc7           mov eax, edi
+│           0x0040231f      5f             pop edi
+│           0x00402320      5e             pop esi
+│           0x00402321      c9             leave
+└           0x00402322      c21000         ret 0x10
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt;
+</code></pre></div><ol start="3">
+<li>高级分析<code>af</code>
+<code>afi</code>: 分析当前函数, 得到stackframe, 指令bits, 基本块, 交叉引用等信息</li>
+</ol>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt; afi
+#
+offset: 0x0040225a
+name: main
+size: 203
+is-pure: false
+realsz: 203
+stackframe: 84
+call-convention: cdecl
+cyclomatic-cost : 114
+cyclomatic-complexity: 6
+bits: 32
+type: sym <span style="color:#f92672">[</span>NEW<span style="color:#f92672">]</span>
+num-bbs: 12
+edges: 16
+end-bbs: 1
+call-refs: 0x00416028 C 0x00416064 C 0x00402282 J 0x00416198 C 0x00402299 J 0x004022a9 J 0x00401382 C 0x004022b2 J 0x004021b3 C 0x0040230b J 0x004024f0 C 0x004011e0 C 0x00402907 C 0x004011e0 C 0x00402907 C 0x004011e0 C 0x00402907 C 0x00401605 C 0x00401590 C 0x0040231d J 0x0040231d J 0x00416194 C
+data-refs: 0x0041b95c 0x0041b8f4
+code-xrefs: 0x00404e2a C 0x00402279 J 0x00402293 J 0x00402297 J 0x004022a2 J 0x004022b0 J 0x00402311 J 0x00402315 J
+in-degree: 8
+out-degree: 15
+data-xrefs:
+locals: 9
+args: 2
+var int32_t var_24h @ ebp-0x24
+var int32_t var_20h @ ebp-0x20
+var int32_t var_1ch @ ebp-0x1c
+var int32_t var_18h @ ebp-0x18
+var int32_t var_14h @ ebp-0x14
+var int32_t var_10h @ ebp-0x10
+var int32_t var_ch @ ebp-0xc
+var int32_t var_8h @ ebp-0x8
+var int32_t var_4h @ ebp-0x4
+arg int32_t arg_8h @ ebp+0x8
+arg int32_t arg_10h @ ebp+0x10
+diff: type: new
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt;
+</code></pre></div><p><code>afb</code>:列出当前函数所有的基本块</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt; afb
+0x0040225a 0x0040227b 01:53E7 <span style="color:#ae81ff">33</span> j 0x00402282 f 0x0040227b
+0x0040227b 0x00402282 01:53EE <span style="color:#ae81ff">7</span> j 0x00402282
+0x00402282 0x00402295 01:53EF <span style="color:#ae81ff">19</span> j 0x00402299 f 0x00402295
+0x00402295 0x00402299 01:53F6 <span style="color:#ae81ff">4</span> j 0x004022a9
+0x00402299 0x004022a4 01:53F7 <span style="color:#ae81ff">11</span> j 0x004022b2 f 0x004022a4
+0x004022a4 0x004022a9 01:53FA <span style="color:#ae81ff">5</span> j 0x004022a9
+0x004022a9 0x004022b2 00:0000 <span style="color:#ae81ff">9</span> j 0x0040230b
+0x004022b2 0x0040230b 01:53FC <span style="color:#ae81ff">89</span> j 0x0040230b
+0x0040230b 0x00402313 01:540D <span style="color:#ae81ff">8</span> j 0x0040231d f 0x00402313
+0x00402313 0x00402317 01:540E <span style="color:#ae81ff">4</span> j 0x0040231d f 0x00402317
+0x00402317 0x0040231d 00:0000 <span style="color:#ae81ff">6</span> j 0x0040231d
+0x0040231d 0x00402325 01:540F 8
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt;
+</code></pre></div><p><code>afx</code>:列出当前函数所有的交叉引用</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt; afx
+d 0x00402260 -&gt; 0x0041b95c
+d 0x00402265 -&gt; 0x0041b8f4
+C 0x0040226a -&gt; 0x00416028
+C 0x00402271 -&gt; 0x00416064
+c 0x00402279 -&gt; 0x00402282
+C 0x00402289 -&gt; 0x00416198
+c 0x00402293 -&gt; 0x00402299
+c 0x00402297 -&gt; 0x004022a9
+C 0x0040229a -&gt; 0x00401382
+c 0x004022a2 -&gt; 0x004022b2
+C 0x004022a9 -&gt; 0x004021b3
+c 0x004022b0 -&gt; 0x0040230b
+C 0x004022be -&gt; 0x004024f0
+C 0x004022c3 -&gt; 0x004011e0
+C 0x004022cc -&gt; 0x00402907
+C 0x004022dd -&gt; 0x004011e0
+C 0x004022e6 -&gt; 0x00402907
+C 0x004022eb -&gt; 0x004011e0
+C 0x004022f4 -&gt; 0x00402907
+C 0x004022fc -&gt; 0x00401605
+C 0x00402306 -&gt; 0x00401590
+c 0x00402311 -&gt; 0x0040231d
+c 0x00402315 -&gt; 0x0040231d
+C 0x00402317 -&gt; 0x00416194
+<span style="color:#f92672">[</span>0x0040225a<span style="color:#f92672">]</span>&gt;
+</code></pre></div><h1 id="help">help</h1>
+<h2 id="help-1">工具help</h2>
+<h3 id="rax2">rax2</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">PS C:<span style="color:#ae81ff">\U</span>sers<span style="color:#ae81ff">\L</span>0phTg&gt; rax2 --help
+Usage: rax2 <span style="color:#f92672">[</span>options<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>expr ...<span style="color:#f92672">]</span>
+  <span style="color:#f92672">=</span><span style="color:#f92672">[</span>base<span style="color:#f92672">]</span>                      ;  rax2 <span style="color:#f92672">=</span><span style="color:#ae81ff">10</span> 0x46 -&gt; output in base 10
+  int     -&gt;  hex              ;  rax2 10
+  hex     -&gt;  int              ;  rax2 0xa
+  -int    -&gt;  hex              ;  rax2 -77
+  -hex    -&gt;  int              ;  rax2 0xffffffb3
+  int     -&gt;  bin              ;  rax2 b30
+  int     -&gt;  ternary          ;  rax2 t42
+  bin     -&gt;  int              ;  rax2 1010d
+  ternary -&gt;  int              ;  rax2 1010dt
+  float   -&gt;  hex              ;  rax2 3.33f
+  hex     -&gt;  float            ;  rax2 Fx40551ed8
+  oct     -&gt;  hex              ;  rax2 35o
+  hex     -&gt;  oct              ;  rax2 Ox12 <span style="color:#f92672">(</span>O is a letter<span style="color:#f92672">)</span>
+  bin     -&gt;  hex              ;  rax2 1100011b
+  hex     -&gt;  bin              ;  rax2 Bx63
+  ternary -&gt;  hex              ;  rax2 212t
+  hex     -&gt;  ternary          ;  rax2 Tx23
+  raw     -&gt;  hex              ;  rax2 -S &lt; /binfile
+  hex     -&gt;  raw              ;  rax2 -s 414141
+  -l                           ;  append newline to output <span style="color:#f92672">(</span><span style="color:#66d9ef">for</span> -E/-D/-r/..
+  -a      show ascii table     ;  rax2 -a
+  -b      bin -&gt; str           ;  rax2 -b <span style="color:#ae81ff">01000101</span> 01110110
+  -B      str -&gt; bin           ;  rax2 -B hello
+  -d      force integer        ;  rax2 -d <span style="color:#ae81ff">3</span> -&gt; <span style="color:#ae81ff">3</span> instead of 0x3
+  -e      swap endianness      ;  rax2 -e 0x33
+  -D      base64 decode        ;
+  -E      base64 encode        ;
+  -f      floating point       ;  rax2 -f 6.3+2.1
+  -F      stdin slurp code hex ;  rax2 -F &lt; shellcode.<span style="color:#f92672">[</span>c/py/js<span style="color:#f92672">]</span>
+  -h      help                 ;  rax2 -h
+  -i      dump as C byte array ;  rax2 -i &lt; bytes
+  -k      keep base            ;  rax2 -k 33+3 -&gt; 36
+  -K      randomart            ;  rax2 -K 0x34 1020304050
+  -L      bin -&gt; hex<span style="color:#f92672">(</span>bignum<span style="color:#f92672">)</span>   ;  rax2 -L <span style="color:#ae81ff">111111111</span> <span style="color:#75715e"># 0x1ff</span>
+  -n      binary number        ;  rax2 -n 0x1234 <span style="color:#75715e"># 34120000</span>
+  -o      octalstr -&gt; raw      ;  rax2 -o <span style="color:#ae81ff">\1</span><span style="color:#ae81ff">62</span> <span style="color:#ae81ff">\6</span><span style="color:#ae81ff">2</span> <span style="color:#75715e"># r2</span>
+  -N      binary number        ;  rax2 -N 0x1234 <span style="color:#75715e"># \x34\x12\x00\x00</span>
+  -r      r2 style output      ;  rax2 -r 0x1234
+  -s      hexstr -&gt; raw        ;  rax2 -s <span style="color:#ae81ff">43</span> 4a 50
+  -S      raw -&gt; hexstr        ;  rax2 -S &lt; /bin/ls &gt; ls.hex
+  -t      tstamp -&gt; str        ;  rax2 -t 1234567890
+  -x      hash string          ;  rax2 -x linux osx
+  -u      units                ;  rax2 -u <span style="color:#ae81ff">389289238</span> <span style="color:#75715e"># 317.0M</span>
+  -w      signed word          ;  rax2 -w <span style="color:#ae81ff">16</span> 0xffff
+  -v      version              ;  rax2 -v
+</code></pre></div><h3 id="rahash2">rahash2</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rahash2.exe -h
+Usage: rahash2 <span style="color:#f92672">[</span>-rBhLkv<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-b S<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-a A<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-c H<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-E A<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-s S<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-f O<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-t O<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>file<span style="color:#f92672">]</span> ...
+ -a algo     comma separated list of algorithms <span style="color:#f92672">(</span>default is <span style="color:#e6db74">&#39;sha256&#39;</span><span style="color:#f92672">)</span>
+ -b bsize    specify the size of the block <span style="color:#f92672">(</span>instead of full file<span style="color:#f92672">)</span>
+ -B          show per-block hash
+ -c hash     compare with this hash
+ -e          swap endian <span style="color:#f92672">(</span>use little endian<span style="color:#f92672">)</span>
+ -E algo     encrypt. Use -S to set key and -I to set IV
+ -D algo     decrypt. Use -S to set key and -I to set IV
+ -f from     start hashing at given address
+ -i num      repeat hash N iterations
+ -I iv       use give initialization vector <span style="color:#f92672">(</span>IV<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>hexa or s:string<span style="color:#f92672">)</span>
+ -S seed     use given seed <span style="color:#f92672">(</span>hexa or s:string<span style="color:#f92672">)</span> use ^ to prefix <span style="color:#f92672">(</span>key <span style="color:#66d9ef">for</span> -E<span style="color:#f92672">)</span>
+             <span style="color:#f92672">(</span>- will slurp the key from stdin, the @ prefix points to a file
+ -k          show hash using the openssh<span style="color:#960050;background-color:#1e0010">&#39;</span>s randomkey algorithm
+ -q          run in quiet mode <span style="color:#f92672">(</span>-qq to show only the hash<span style="color:#f92672">)</span>
+ -L          list all available algorithms <span style="color:#f92672">(</span>see -a<span style="color:#f92672">)</span>
+ -r          output radare commands
+ -s string   hash this string instead of files
+ -t to       stop hashing at given address
+ -x hexstr   hash this hexpair string instead of files
+ -v          show version information
+$
+</code></pre></div><h3 id="rasm2">rasm2</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rasm2.exe -h
+Usage: rasm2 <span style="color:#f92672">[</span>-ACdDehLBvw<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-a arch<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-b bits<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-o addr<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-s syntax<span style="color:#f92672">]</span>
+             <span style="color:#f92672">[</span>-f file<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-F fil:ter<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-i skip<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-l len<span style="color:#f92672">]</span> <span style="color:#e6db74">&#39;code&#39;</span>|hex|-
+ -a <span style="color:#f92672">[</span>arch<span style="color:#f92672">]</span>    Set architecture to assemble/disassemble <span style="color:#f92672">(</span>see -L<span style="color:#f92672">)</span>
+ -A           Show Analysis information from given hexpairs
+ -b <span style="color:#f92672">[</span>bits<span style="color:#f92672">]</span>    Set cpu register size <span style="color:#f92672">(</span>8, 16, 32, 64<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>RASM2_BITS<span style="color:#f92672">)</span>
+ -B           Binary input/output <span style="color:#f92672">(</span>-l is mandatory <span style="color:#66d9ef">for</span> binary input<span style="color:#f92672">)</span>
+ -c <span style="color:#f92672">[</span>cpu<span style="color:#f92672">]</span>     Select specific CPU <span style="color:#f92672">(</span>depends on arch<span style="color:#f92672">)</span>
+ -C           Output in C format
+ -d, -D       Disassemble from hexpair bytes <span style="color:#f92672">(</span>-D show hexpairs<span style="color:#f92672">)</span>
+ -e           Use big endian instead of little endian
+ -E           Display ESIL expression <span style="color:#f92672">(</span>same input as in -d<span style="color:#f92672">)</span>
+ -f <span style="color:#f92672">[</span>file<span style="color:#f92672">]</span>    Read data from file
+ -F <span style="color:#f92672">[</span>in:out<span style="color:#f92672">]</span>  Specify input and/or output filters <span style="color:#f92672">(</span>att2intel, x86.pseudo, ...<span style="color:#f92672">)</span>
+ -h, -hh      Show this help, -hh <span style="color:#66d9ef">for</span> long
+ -i <span style="color:#f92672">[</span>len<span style="color:#f92672">]</span>     ignore/skip N bytes of the input buffer
+ -j           output in json format
+ -k <span style="color:#f92672">[</span>kernel<span style="color:#f92672">]</span>  Select operating system <span style="color:#f92672">(</span>linux, windows, darwin, ..<span style="color:#f92672">)</span>
+ -l <span style="color:#f92672">[</span>len<span style="color:#f92672">]</span>     Input/Output length
+ -L           List Asm plugins: <span style="color:#f92672">(</span>a<span style="color:#f92672">=</span>asm, d<span style="color:#f92672">=</span>disasm, A<span style="color:#f92672">=</span>analyze, e<span style="color:#f92672">=</span>ESIL<span style="color:#f92672">)</span>
+ -o,-@ <span style="color:#f92672">[</span>addr<span style="color:#f92672">]</span> Set start address <span style="color:#66d9ef">for</span> code <span style="color:#f92672">(</span>default 0<span style="color:#f92672">)</span>
+ -O <span style="color:#f92672">[</span>file<span style="color:#f92672">]</span>    Output file name <span style="color:#f92672">(</span>rasm2 -Bf a.asm -O a<span style="color:#f92672">)</span>
+ -p           Run SPP over input <span style="color:#66d9ef">for</span> assembly
+ -q           quiet mode
+ -r           output in radare commands
+ -s <span style="color:#f92672">[</span>syntax<span style="color:#f92672">]</span>  Select syntax <span style="color:#f92672">(</span>intel, att<span style="color:#f92672">)</span>
+ -v           Show version information
+ -x           Use hex dwords instead of hex pairs when assembling.
+ -w           What<span style="color:#e6db74">&#39;s this instruction for? describe opcode
+</span><span style="color:#e6db74"> If &#39;</span>-l<span style="color:#e6db74">&#39; value is greater than output length, output is padded with nops
+</span><span style="color:#e6db74"> If the last argument is &#39;</span>-<span style="color:#960050;background-color:#1e0010">&#39;</span> reads from stdin
+Environment:
+ RASM2_NOPLUGINS  <span style="color:#66d9ef">do</span> not load shared plugins <span style="color:#f92672">(</span>speedup loading<span style="color:#f92672">)</span>
+ RASM2_ARCH       same as rasm2 -a
+ RASM2_BITS       same as rasm2 -b
+ R_DEBUG          <span style="color:#66d9ef">if</span> defined, show error messages and crash signal
+$
+</code></pre></div><h3 id="rabin2">rabin2</h3>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ rabin2.exe -h
+Usage: rabin2 <span style="color:#f92672">[</span>-AcdeEghHiIjlLMqrRsSUvVxzZ<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-@ at<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-a arch<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-b bits<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-B addr<span style="color:#f92672">]</span>
+              <span style="color:#f92672">[</span>-C F:C:D<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-f str<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-m addr<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-n str<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-N m:M<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-P<span style="color:#f92672">[</span>-P<span style="color:#f92672">]</span> pdb<span style="color:#f92672">]</span>
+              <span style="color:#f92672">[</span>-o str<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-O str<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-k query<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-D lang symname<span style="color:#f92672">]</span> file
+ -@ <span style="color:#f92672">[</span>addr<span style="color:#f92672">]</span>       show section, symbol or import at addr
+ -A              list sub-binaries and their arch-bits pairs
+ -a <span style="color:#f92672">[</span>arch<span style="color:#f92672">]</span>       set arch <span style="color:#f92672">(</span>x86, arm, .. or &lt;arch&gt;_&lt;bits&gt;<span style="color:#f92672">)</span>
+ -b <span style="color:#f92672">[</span>bits<span style="color:#f92672">]</span>       set bits <span style="color:#f92672">(</span>32, <span style="color:#ae81ff">64</span> ...<span style="color:#f92672">)</span>
+ -B <span style="color:#f92672">[</span>addr<span style="color:#f92672">]</span>       override base address <span style="color:#f92672">(</span>pie bins<span style="color:#f92672">)</span>
+ -c              list classes
+ -cc             list classes in header format
+ -C <span style="color:#f92672">[</span>fmt:C:D<span style="color:#f92672">]</span>    create <span style="color:#f92672">[</span>elf,mach0,pe<span style="color:#f92672">]</span> with Code and Data hexpairs <span style="color:#f92672">(</span>see -a<span style="color:#f92672">)</span>
+ -d              show debug/dwarf information
+ -D lang name    demangle symbol name <span style="color:#f92672">(</span>-D all <span style="color:#66d9ef">for</span> bin.demangle<span style="color:#f92672">=</span>true<span style="color:#f92672">)</span>
+ -e              entrypoint
+ -ee             constructor/destructor entrypoints
+ -E              globally exportable symbols
+ -f <span style="color:#f92672">[</span>str<span style="color:#f92672">]</span>        <span style="color:#66d9ef">select</span> sub-bin named str
+ -F <span style="color:#f92672">[</span>binfmt<span style="color:#f92672">]</span>     force to use that bin plugin <span style="color:#f92672">(</span>ignore header check<span style="color:#f92672">)</span>
+ -g              same as -SMZIHVResizcld -SS -ee <span style="color:#f92672">(</span>show all info<span style="color:#f92672">)</span>
+ -G <span style="color:#f92672">[</span>addr<span style="color:#f92672">]</span>       load address . offset to header
+ -h              this help message
+ -H              header fields
+ -i              imports <span style="color:#f92672">(</span>symbols imported from libraries<span style="color:#f92672">)</span>
+ -I              binary info
+ -j              output in json
+ -k <span style="color:#f92672">[</span>sdb-query<span style="color:#f92672">]</span>  run sdb query. <span style="color:#66d9ef">for</span> example: <span style="color:#e6db74">&#39;*&#39;</span>
+ -K <span style="color:#f92672">[</span>algo<span style="color:#f92672">]</span>       calculate checksums <span style="color:#f92672">(</span>md5, sha1, ..<span style="color:#f92672">)</span>
+ -l              linked libraries
+ -L <span style="color:#f92672">[</span>plugin<span style="color:#f92672">]</span>     list supported bin plugins or plugin details
+ -m <span style="color:#f92672">[</span>addr<span style="color:#f92672">]</span>       show source line at addr
+ -M              main <span style="color:#f92672">(</span>show address of main symbol<span style="color:#f92672">)</span>
+ -n <span style="color:#f92672">[</span>str<span style="color:#f92672">]</span>        show section, symbol or import named str
+ -N <span style="color:#f92672">[</span>min:max<span style="color:#f92672">]</span>    force min:max number of chars per string <span style="color:#f92672">(</span>see -z and -zz<span style="color:#f92672">)</span>
+ -o <span style="color:#f92672">[</span>str<span style="color:#f92672">]</span>        output file/folder <span style="color:#66d9ef">for</span> write operations <span style="color:#f92672">(</span>out by default<span style="color:#f92672">)</span>
+ -O <span style="color:#f92672">[</span>str<span style="color:#f92672">]</span>        write/extract operations <span style="color:#f92672">(</span>-O help<span style="color:#f92672">)</span>
+ -p              show physical addresses
+ -P              show debug/pdb information
+ -PP             download pdb file <span style="color:#66d9ef">for</span> binary
+ -q              be quiet, just show fewer data
+ -qq             show less info <span style="color:#f92672">(</span>no offset/size <span style="color:#66d9ef">for</span> -z <span style="color:#66d9ef">for</span> ex.<span style="color:#f92672">)</span>
+ -Q              show load address used by dlopen <span style="color:#f92672">(</span>non-aslr libs<span style="color:#f92672">)</span>
+ -r              radare output
+ -R              relocations
+ -s              symbols
+ -S              sections
+ -SS             segments
+ -t              display file hashes
+ -T              display file signature
+ -u              unfiltered <span style="color:#f92672">(</span>no rename duplicated symbols/sections<span style="color:#f92672">)</span>
+ -U              resoUrces
+ -v              display version and quit
+ -V              Show binary version information
+ -w              display try/catch blocks
+ -x              extract bins contained in file
+ -X <span style="color:#f92672">[</span>fmt<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>f<span style="color:#f92672">]</span> .. package in fat or zip the given files and bins contained in file
+ -z              strings <span style="color:#f92672">(</span>from data section<span style="color:#f92672">)</span>
+ -zz             strings <span style="color:#f92672">(</span>from raw bins <span style="color:#f92672">[</span>e bin.rawstr<span style="color:#f92672">=</span>1<span style="color:#f92672">]</span><span style="color:#f92672">)</span>
+ -zzz            dump raw strings to stdout <span style="color:#f92672">(</span><span style="color:#66d9ef">for</span> huge files<span style="color:#f92672">)</span>
+ -Z              guess size of binary program
+Environment:
+ RABIN2_LANG:      e bin.lang         <span style="color:#75715e"># assume lang for demangling</span>
+ RABIN2_NOPLUGINS: <span style="color:#75715e"># do not load shared plugins (speedup loading)</span>
+ RABIN2_DEMANGLE<span style="color:#f92672">=</span>0:e bin.demangle     <span style="color:#75715e"># do not demangle symbols</span>
+ RABIN2_MAXSTRBUF: e bin.maxstrbuf    <span style="color:#75715e"># specify maximum buffer size</span>
+ RABIN2_STRFILTER: e bin.str.filter   <span style="color:#75715e">#  r2 -qc &#39;e bin.str.filter=??&#39; -</span>
+ RABIN2_STRPURGE:  e bin.str.purge    <span style="color:#75715e"># try to purge false positives</span>
+ RABIN2_DEBASE64:  e bin.debase64     <span style="color:#75715e"># try to debase64 all strings</span>
+ RABIN2_DMNGLRCMD: e bin.demanglercmd <span style="color:#75715e"># try to purge false positives</span>
+ RABIN2_PDBSERVER: e pdb.server       <span style="color:#75715e"># use alternative PDB server</span>
+ RABIN2_SYMSTORE:  e pdb.symstore     <span style="color:#75715e"># path to downstream symbol store</span>
+ RABIN2_PREFIX:    e bin.prefix       <span style="color:#75715e"># prefix symbols/sections/relocs with a specific string</span>
+$
+</code></pre></div><h2 id="help-2">命令help</h2>
+<h3 id="w">w</h3>
+<h3 id="a">a</h3>
+<h3 id="s">s</h3>
+<h3 id="p">p</h3></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/radare2"><span class="tag">Radare2</span></a></li>
+        
+          <li><a href="/tags/%E9%80%86%E5%90%91"><span class="tag">逆向</span></a></li>
+        
+          <li><a href="/tags/%E5%B7%A5%E5%85%B7"><span class="tag">工具</span></a></li>
+        
+      </ul>
+      
+      
+      
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">L0phTg</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-01-10</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">原创文章，如需转载请注明文章作者和出处。谢谢！</span>
+  </p>
+</div>
+    </footer>
+    
+      
+    
+  </section>
+  
+  
+
+  
+  
+  
+<footer class="site-footer">
+  <p>© 2017-2020 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

@@ -6,7 +6,7 @@
     <description>Recent content on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Sun, 05 Jan 2020 17:44:55 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 10 Jan 2020 23:54:22 +0800</lastBuildDate>
     
 	<atom:link href="https://L0phTg.github.io/index.xml" rel="self" type="application/rss+xml" />
     
@@ -18,6 +18,15 @@
       
       <guid>https://L0phTg.github.io/about/</guid>
       <description>。。。</description>
+    </item>
+    
+    <item>
+      <title>Radare2入门指南</title>
+      <link>https://L0phTg.github.io/post/tools/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</link>
+      <pubDate>Fri, 10 Jan 2020 23:54:22 +0800</pubDate>
+      
+      <guid>https://L0phTg.github.io/post/tools/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</guid>
+      <description>&lt;p&gt;radare2是一个开源的逆向分析工具, 基于capstone。使用简单方便，是我最喜爱的工具之一。&lt;/p&gt;</description>
     </item>
     
     <item>

@@ -166,6 +166,7 @@
     
     
     
+  
   <header class="site-header">
   <a href="https://L0phTg.github.io/"><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
   
@@ -213,6 +214,7 @@
       
     </ul>
   </nav>
+ 
   <nav class="social-menu collapsed">
     <h2 class="offscreen">Social Networks</h2>
     <ul class="social-list"></ul>
@@ -225,6 +227,32 @@
       <p class="post-meta">@L0phTg · Apr 14, 2019 · 9 min read</p>
       
     </header>
+     
+     
+<div class="post-toc" id="post-toc">
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ifthenelselexer">if/then/else的Lexer扩展</a></li>
+    <li><a href="#ifthenelseast-">if/then/else的AST 扩展</a></li>
+    <li><a href="#ifthenelseparser">if/then/else的parser扩展</a></li>
+    <li><a href="#ifthenelsellvm-ir">if/then/else的LLVM IR</a></li>
+    <li><a href="#ifthenelse-">if/then/else 的代码产生</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#lexer-extensions-for-the-for-loop">Lexer Extensions for the &lsquo;for&rsquo; Loop</a></li>
+    <li><a href="#ast-extensions-for-the-for-loop">AST Extensions for the &lsquo;for&rsquo; Loop</a></li>
+    <li><a href="#parser-extensions-for-the-for-loop">Parser Extensions for the &lsquo;for&rsquo; Loop</a></li>
+    <li><a href="#llvm-ir-for-the-for-loop">LLVM IR for the &lsquo;for&rsquo; loop</a></li>
+    <li><a href="#code-generation-for-the-for-loop">Code Generation for the &lsquo;for&rsquo; Loop</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+     
     <article class="post-content"><p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl05.html">http://llvm.org/docs/tutorial/LangImpl05.html</a></p>
 <p>本文为Kaleidoscope添加条件判断控制流和循环控制流.</p>
 <p>注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.</p>

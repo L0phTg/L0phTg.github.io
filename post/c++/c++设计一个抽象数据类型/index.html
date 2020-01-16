@@ -160,6 +160,7 @@
     
     
     
+  
   <header class="site-header">
   <a href="https://L0phTg.github.io/"><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
   
@@ -207,6 +208,7 @@
       
     </ul>
   </nav>
+ 
   <nav class="social-menu collapsed">
     <h2 class="offscreen">Social Networks</h2>
     <ul class="social-list"></ul>
@@ -219,6 +221,70 @@
       <p class="post-meta">@L0phTg · Jun 8, 2019 · 3 min read</p>
       
     </header>
+     
+     
+<div class="post-toc" id="post-toc">
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#struct">struct</a></li>
+    <li><a href="#class">class</a></li>
+    <li><a href="#structclass">struct和class的区别</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#heading-2">类型成员</a></li>
+    <li><a href="#heading-3">数据成员</a>
+      <ul>
+        <li><a href="#mutable">可变变量（mutable)</a></li>
+        <li><a href="#static">静态变量（static）</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-4">构造函数和析构函数</a>
+      <ul>
+        <li><a href="#heading-5">构造函数分类</a></li>
+        <li><a href="#heading-10">构造函数组成</a></li>
+        <li><a href="#heading-12">虚析构函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-13">成员函数</a>
+      <ul>
+        <li><a href="#virtual">virtual属性</a></li>
+        <li><a href="#inline">inline属性</a></li>
+        <li><a href="#static-1">static成员函数</a></li>
+        <li><a href="#const">const成员函数</a></li>
+        <li><a href="#heading-14">组成</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-15">友元</a></li>
+    <li><a href="#heading-16">运算符</a>
+      <ul>
+        <li><a href="#heading-17">拷贝赋值运算符</a></li>
+        <li><a href="#heading-18">移动赋值运算符</a></li>
+        <li><a href="#heading-19">函数调用运算符</a></li>
+      </ul>
+    </li>
+    <li><a href="#this-">this 指针</a></li>
+    <li><a href="#heading-20">作用域</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#heading-23">访问控制属性（封装性）</a></li>
+    <li><a href="#heading-24">继承属性</a>
+      <ul>
+        <li><a href="#heading-25">基类和派生类</a></li>
+        <li><a href="#heading-28">单继承</a></li>
+        <li><a href="#heading-30">多重继承</a></li>
+      </ul>
+    </li>
+    <li><a href="#heading-31">多态属性</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+     
     <article class="post-content"><p>初次接触c++是在15年，还蛮早的，但之后的学习中由于使用c++的地方比较少，所以没怎么使用c++开发过项目。然而随着最近学习Art和LLVM的时候，用到了很多c++知识，逐渐发现了自己基础知识的薄弱。遂决定写一个c++系列的语法和编程入门总结。（主要参考 c++ primer 和 effective c++, effective系列没有涉及细节，详细内容可以看书来获得）</p>
 <p><strong>本文不断更新中。</strong></p>
 <p>设计class犹如设计type。<em>&mdash;- effective c++ 19</em></p>

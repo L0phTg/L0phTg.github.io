@@ -166,6 +166,7 @@ symbol -&amp;gt; symid -&amp;gt; 在got表中的offset -&amp;gt; 目标函数实
     
     
     
+  
   <header class="site-header">
   <a href="https://L0phTg.github.io/"><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
   
@@ -213,6 +214,7 @@ symbol -&amp;gt; symid -&amp;gt; 在got表中的offset -&amp;gt; 目标函数实
       
     </ul>
   </nav>
+ 
   <nav class="social-menu collapsed">
     <h2 class="offscreen">Social Networks</h2>
     <ul class="social-list"></ul>
@@ -225,6 +227,30 @@ symbol -&amp;gt; symid -&amp;gt; 在got表中的offset -&amp;gt; 目标函数实
       <p class="post-meta">@ · Aug 19, 2018 · 5 min read</p>
       
     </header>
+     
+     
+<div class="post-toc" id="post-toc">
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#xhook-register-hook">xhook_register Hook函数注册</a>
+      <ul>
+        <li><a href="#heading-1">函数申明</a></li>
+        <li><a href="#heading-2">函数实现分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#xh-refresh">xh_refresh</a>
+      <ul>
+        <li><a href="#xh-elf-hook">xh_elf_hook</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+     
     <article class="post-content"><p>Got Hook 可以使用dlsym得到目标函数的地址, 然后遍历got表进行Hook.</p>
 <p>但是有时候我们不能通过dlsym得到函数地址. 这时我们需要怎么办呢? iqiyi的xhook很好的解决了这个问题, (可以参考linker的实现, <strong>有问题, 看源码</strong>.</p>
 <p>通过找到目标函数地址存放在got表中位置, 只要找到了目标symbol在got表中的offset, 想要修改或者得到目标函数的实际地址就轻松多了.</p>
