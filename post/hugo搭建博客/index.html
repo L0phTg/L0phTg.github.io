@@ -370,48 +370,48 @@ mathjax: false
 </code></pre></div><h3 id="heading-6">插入图片</h3>
 <p>图片放在static目录下</p>
 <p>例如</p>
-<pre><code>目录下的文件:
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">目录下的文件:
 - static
    - deepin
       - desktop.png
       - splitScreen.png
       - vimMarkdownPreview.png
-</code></pre><p>使用的时候:</p>
-<pre><code>![desktop](/deepin/desktop.png)
-</code></pre><h3 id="heading-7">文章摘要</h3>
+</code></pre></div><p>使用的时候:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">!<span style="color:#f92672">[</span>desktop<span style="color:#f92672">]</span><span style="color:#f92672">(</span>/deepin/desktop.png<span style="color:#f92672">)</span>
+</code></pre></div><h3 id="heading-7">文章摘要</h3>
 <p><code>&lt;!--more--&gt;</code>前面的会成为文章的摘要, 在首页显示.</p>
-<pre><code>---
-title : &quot;hihi&quot;
-tags :  &quot;blog&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">---
+title : &#34;hihi&#34;
+tags :  &#34;blog&#34;
 ---
 
 &lt;!--more--&gt;
 
 正文
-</code></pre><h3 id="toc">显示toc</h3>
+</code></pre></div><h3 id="toc">显示toc</h3>
 <p>toc : true</p>
-<pre><code>---
-title: &quot;Iqiyi开源hook框架XHook分析&quot;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">---
+title: &#34;Iqiyi开源hook框架XHook分析&#34;
 date: 2018-09-19T02:19:05+08:00
 lastmod: 2018-09-19T02:19:05+08:00
 draft: false
 keywords: []
-description: &quot;&quot;
-tags: [&quot;hook&quot;]
-categories: [&quot;hook&quot;]
-author: &quot;&quot;
+description: &#34;&#34;
+tags: [&#34;hook&#34;]
+categories: [&#34;hook&#34;]
+author: &#34;&#34;
 
 # You can also close(false) or open(true) something for this content.
 # P.S. comment can only be closed
 comment: false
 toc: true
 autoCollapseToc: false
-# You can also define another contentCopyright. e.g. contentCopyright: &quot;This is another copyright.&quot;
+# You can also define another contentCopyright. e.g. contentCopyright: &#34;This is another copyright.&#34;
 contentCopyright: false
 reward: false
 mathjax: false
 ---
-</code></pre><h3 id="heading-8">语法高亮</h3>
+</code></pre></div><h3 id="heading-8">语法高亮</h3>
 <h4 id="chroma">Chroma</h4>
 <p>hugo <strong>使用chroma默认进行语法高亮, 垃圾, 不好用, 推荐highlight.js</strong></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pygmentsCodefences <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown的代码块</span>
@@ -431,14 +431,14 @@ pygmentsStyle <span style="color:#f92672">=</span> <span style="color:#e6db74">&
 </code></pre></div><p><strong>body</strong>中添加<strong>script</strong>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">hljs</span>.<span style="color:#a6e22e">initHighlightingOnLoad</span>();<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
 </code></pre></div><h3 id="heading-9">显示最后更新日期</h3>
-<pre><code>enableGitInfo = true    # 开启gitinfo
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">enableGitInfo = true    # 开启gitinfo
 
 [frontmatter]
-date = [&quot;date&quot;, &quot;publishDate&quot;, &quot;lastmod&quot;]
-lastmod = [&quot;:git&quot;, &quot;lastmod&quot;, &quot;date&quot;, &quot;publishDate&quot;]
-publishDate = [&quot;publishDate&quot;, &quot;date&quot;]
-expiryDate = [&quot;expiryDate&quot;]
-</code></pre><p>要实现该功能需要有<strong>commit记录</strong> , 所以需要<strong>添加我们的.md到git版本控制工具</strong> 中. 请阅读下面的<strong>博客搭建心得</strong>.</p>
+date = [&#34;date&#34;, &#34;publishDate&#34;, &#34;lastmod&#34;]
+lastmod = [&#34;:git&#34;, &#34;lastmod&#34;, &#34;date&#34;, &#34;publishDate&#34;]
+publishDate = [&#34;publishDate&#34;, &#34;date&#34;]
+expiryDate = [&#34;expiryDate&#34;]
+</code></pre></div><p>要实现该功能需要有<strong>commit记录</strong> , 所以需要<strong>添加我们的.md到git版本控制工具</strong> 中. 请阅读下面的<strong>博客搭建心得</strong>.</p>
 <h3 id="heading-10">数学公式</h3>
 <h4 id="mathjax">如何开启mathjax</h4>
 <p><code>/layout/partical</code>目录下创建<code>mathjax_support.html</code>, 写入:</p>
@@ -476,15 +476,15 @@ expiryDate = [&quot;expiryDate&quot;]
 </code></pre></div><p><code>script.html</code>中添加</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span>&gt; <span style="color:#a6e22e">mermaid</span>.<span style="color:#a6e22e">initialize</span>({ <span style="color:#a6e22e">startOnLoad</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> });&lt;/<span style="color:#f92672">script</span>&gt;
 </code></pre></div><p>除此之外，还需要在主题的shortcodes目录下创建mermaid.html, 参考:<a href="https://kentxxq.com/contents/%E6%8B%93%E5%B1%95hugo%E7%9A%84markdown_%E6%B5%81%E7%A8%8B%E5%9B%BEmermaid/">mermaid笔记</a></p>
-<pre><code>&lt;!--mermaid.html--&gt;
-&lt;div class=&quot;mermaid&quot; align=&quot;{{ if .Get &quot;align&quot; }}
-                            {{ .Get &quot;align&quot; }}
-                        {{ else }} 
-                            center
-                        {{ end }}&quot;&gt; 
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#75715e">&lt;!--</span><span style="color:#75715e">mermaid.html</span><span style="color:#75715e">--&gt;</span>
+&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mermaid&#34;</span> <span style="color:#a6e22e">align</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ if .Get &#34;</span><span style="color:#a6e22e">align</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span>
+                            <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">.</span><span style="color:#a6e22e">Get</span> <span style="color:#960050;background-color:#1e0010">&#34;</span><span style="color:#a6e22e">align</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span>
+                        <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#a6e22e">else</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span> 
+                            <span style="color:#a6e22e">center</span>
+                        <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#a6e22e">end</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">&#34;</span>&gt; 
 {{ safeHTML .Inner }}
-&lt;/div&gt;
-</code></pre><h5 id="heading-12">使用</h5>
+&lt;/<span style="color:#f92672">div</span>&gt;
+</code></pre></div><h5 id="heading-12">使用</h5>
 <p>要被<code>{{ xxx}}</code>, <code>{{ xxx }}</code>,  括起来, xxx为<code>&lt;mermaid&gt;</code>和<code>&lt;/mermaid&gt;</code></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">graph TD
     Start <span style="color:#f92672">-</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span> Stop

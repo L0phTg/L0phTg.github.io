@@ -246,13 +246,11 @@
 <p>最近在面试某大厂的安全岗位时，面试官问到了一些有关hook的知识, 在简单分析了下F8大牛的开源代码之后, 有了这篇文章.</p>
 <h2 id="heading-1">参考文章和项目代码</h2>
 <p>文章:</p>
-<pre><code>http://ele7enxxh.com/Android-Arm-Inline-Hook.html
-http://gslab.qq.com/portal.php?mod=view&amp;aid=168
-</code></pre>
+<p><a href="http://ele7enxxh.com/Android-Arm-Inline-Hook.html">http://ele7enxxh.com/Android-Arm-Inline-Hook.html</a></p>
+<p><a href="http://gslab.qq.com/portal.php?mod=view&amp;aid=168">http://gslab.qq.com/portal.php?mod=view&amp;aid=168</a></p>
 <p>项目:</p>
-<pre><code>https://github.com/ele7enxxh/Android-Inline-Hook
-https://github.com/F8LEFT/FAInHook
-</code></pre>
+<p><a href="https://github.com/ele7enxxh/Android-Inline-Hook">https://github.com/ele7enxxh/Android-Inline-Hook</a></p>
+<p><a href="https://github.com/F8LEFT/FAInHook">https://github.com/F8LEFT/FAInHook</a></p>
 <h2 id="heading-2">使用方法</h2>
 <p>MainActivity:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">static</span> <span style="color:#f92672">{</span>
@@ -314,26 +312,26 @@ FAInHook <span style="color:#f92672">*</span>FAInHook<span style="color:#f92672"
 }
 
 </code></pre></div><p>我们在使用是还会用到的<code>doInHook</code>:</p>
-<pre><code>bool doInHook() {
-    static bool isHooked = false;
-    if (isHooked) {
-        isHooked = false;
-        FAInHook::instance()-&gt;unhookAll();
-    } else {
-        isHooked = true;
-        FAInHook::instance()-&gt;hookAll();
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">doInHook</span>() {
+    <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">bool</span> isHooked <span style="color:#f92672">=</span> false;
+    <span style="color:#66d9ef">if</span> (isHooked) {
+        isHooked <span style="color:#f92672">=</span> false;
+        FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>instance()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>unhookAll();
+    } <span style="color:#66d9ef">else</span> {
+        isHooked <span style="color:#f92672">=</span> true;
+        FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>instance()<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>hookAll();
     }
-    return true;
+    <span style="color:#66d9ef">return</span> true;
 }
-</code></pre><p><strong>现在可以看到, 我们主要的任务就是分析<code>registerHook</code>和<code>doInHook</code>这两个函数的实现.</strong></p>
+</code></pre></div><p><strong>现在可以看到, 我们主要的任务就是分析<code>registerHook</code>和<code>doInHook</code>这两个函数的实现.</strong></p>
 <h4 id="registerhook">registerHook函数</h4>
 <p>我们现在主要分析<code>registerHook</code>函数.</p>
 <p>先来分析参数:
 在Hook之前我们首先要注册这个函数</p>
 <p>函数申明:</p>
-<pre><code>    HOOK_STATUS registerHook(Elf_Addr orginalFunAddr, Elf_Addr newFunAddr,
-                             Elf_Addr* callOrigin);
-</code></pre><p>参数(原始函数地址, 新函数地址, 调用原始函数).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">    HOOK_STATUS <span style="color:#a6e22e">registerHook</span>(Elf_Addr orginalFunAddr, Elf_Addr newFunAddr,
+                             Elf_Addr<span style="color:#f92672">*</span> callOrigin);
+</code></pre></div><p>参数(原始函数地址, 新函数地址, 调用原始函数).</p>
 <p>函数主要流程:</p>
 <ol>
 <li>
@@ -439,37 +437,37 @@ FAInHook <span style="color:#f92672">*</span>FAInHook<span style="color:#f92672"
 <li>打开<code>/proc/self/maps</code>， 读取每行的信息, 用strstr根据权限做出判断.(r-x, 表示可读可执行, 即为code)()</li>
 <li>addr &gt;= startAddr &amp;&amp; addr &lt;= endAddr</li>
 </ol>
-<pre><code>bool FAHook::MemHelper::isFunctionAddr(void *addr) {
-    char buf[MAX_BUF];
-    auto fp = fopen(maps, &quot;r&quot;);
-    if(nullptr == fp) {
-        return false;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">bool</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>isFunctionAddr(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>addr) {
+    <span style="color:#66d9ef">char</span> buf[MAX_BUF];
+    <span style="color:#66d9ef">auto</span> fp <span style="color:#f92672">=</span> fopen(maps, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#66d9ef">if</span>(nullptr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> fp) {
+        <span style="color:#66d9ef">return</span> false;
     }
 
-    while(fgets(buf, MAX_BUF, fp)) {
-        if(strstr(buf, &quot;r-xp&quot;) != nullptr) {
-            void* startAddr = (void*)strtoul(strtok(buf, &quot;-&quot;), nullptr, 16);
-            void* endAddr = (void*)strtoul(strtok(nullptr, &quot; &quot;), nullptr, 16);
-            if(addr &gt;= startAddr &amp;&amp; addr &lt;= endAddr) {
+    <span style="color:#66d9ef">while</span>(fgets(buf, MAX_BUF, fp)) {
+        <span style="color:#66d9ef">if</span>(strstr(buf, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">r-xp</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">!</span><span style="color:#f92672">=</span> nullptr) {
+            <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> startAddr <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)strtoul(strtok(buf, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#34;</span>), nullptr, <span style="color:#ae81ff">16</span>);
+            <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> endAddr <span style="color:#f92672">=</span> (<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>)strtoul(strtok(nullptr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span>), nullptr, <span style="color:#ae81ff">16</span>);
+            <span style="color:#66d9ef">if</span>(addr <span style="color:#f92672">&gt;</span><span style="color:#f92672">=</span> startAddr <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> addr <span style="color:#f92672">&lt;</span><span style="color:#f92672">=</span> endAddr) {
                 fclose(fp);
-                return true;
+                <span style="color:#66d9ef">return</span> true;
             }
         }
     }
     fclose(fp);
-    FLOGE(this functionAddr is not a function!);
-    return false;
+    FLOGE(this functionAddr is not a function<span style="color:#f92672">!</span>);
+    <span style="color:#66d9ef">return</span> false;
 }
-</code></pre><h5 id="hook-hook">得到Hook地址的信息, 是否已经Hook.</h5>
+</code></pre></div><h5 id="hook-hook">得到Hook地址的信息, 是否已经Hook.</h5>
 <p>hook_map是一个std::map&lt;Elf_Addr, FAInHook::HookInfo*&gt;的map类型. find函数会返回返回一个迭代器, 可以用<code>it-&gt;first</code>和<code>it-&gt;second</code>来访问它的成员(key和value). 这个过程其实对已经注册过的hook函数的处理.</p>
-<pre><code>FAHook::HookInfo *FAInHook::getHookInfo(Elf_Addr origFunAddr) {
-    auto it = hook_map.find(origFunAddr);
-    if(it == hook_map.end()) {
-        return nullptr;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo <span style="color:#f92672">*</span>FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getHookInfo(Elf_Addr origFunAddr) {
+    <span style="color:#66d9ef">auto</span> it <span style="color:#f92672">=</span> hook_map.find(origFunAddr);
+    <span style="color:#66d9ef">if</span>(it <span style="color:#f92672">=</span><span style="color:#f92672">=</span> hook_map.end()) {
+        <span style="color:#66d9ef">return</span> nullptr;
     }
-    return it-&gt;second;
+    <span style="color:#66d9ef">return</span> it<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>second;
 }
-</code></pre><h5 id="originlfunaddr">得到originlFunAddr的指令类型,</h5>
+</code></pre></div><h5 id="originlfunaddr">得到originlFunAddr的指令类型,</h5>
 <p>auto type = FAHook::Instruction::getFunctionType(orginalFunAddr);</p>
 <p>下面是<code>getFunctionAddr</code>的实现, 可以看到. 判断指令类型的方式, 是通过自己定义宏来实现的. 当然, 在Arm指令中, 我们还要是否该指令为thumb指令.</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">static</span> FunctionType <span style="color:#a6e22e">getFunctionType</span>(Elf_Addr functionAddr) {
@@ -504,42 +502,42 @@ FAInHook <span style="color:#f92672">*</span>FAInHook<span style="color:#f92672"
 <p>在看<code>HookInfo.h</code>时, 我们可以看到<code>FAHook</code>是一个<code>namespace</code>, 而里面主要包含了一个<code>HookInfo</code>的类:</p>
 <p>我们先来分析它的构造函数:</p>
 <p>这里运用了c++中的构造函数初始化列表来初始化类成员.</p>
-<pre><code>        HookInfo(void* originalAddr, void* hookAddr)
-            : original_addr_(originalAddr), hook_addr_(hookAddr),
-              original_stub_back_(nullptr), back_len_(0), call_original_ins_(nullptr),
-              hook_status_(ERRSTATUS),
-              original_function_type_(ERRTYPE), hook_function_type_(ERRTYPE){}
-              
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">HookInfo(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> originalAddr, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> hookAddr)
+    <span style="color:#f92672">:</span> original_addr_(originalAddr), hook_addr_(hookAddr),
+        original_stub_back_(nullptr), back_len_(<span style="color:#ae81ff">0</span>), call_original_ins_(nullptr),
+        hook_status_(ERRSTATUS),
+        original_function_type_(ERRTYPE), hook_function_type_(ERRTYPE){}
+        
 
-</code></pre><p>分析<code>createStub(info)</code>
+</code></pre></div><p>分析<code>createStub(info)</code>
 我们这里分析<code>FAHook::ThumbInstrution::createStub(FAHook::HookInfo *info)</code>:</p>
 <ol>
 <li>将地址按4字节对齐.</li>
 <li>保存我们的stub指令, (方便之后path)指令为: <code>LDR.W PC, [PC]</code>. 可参考(<a href="http://ele7enxxh.com/Android-Arm-Inline-Hook.html)">http://ele7enxxh.com/Android-Arm-Inline-Hook.html)</a>.</li>
 </ol>
-<pre><code>bool FAHook::ThumbInstruction::createStub(FAHook::HookInfo *info) {
-    auto stubSize = 0;
-    uint8_t *stub = nullptr;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">bool</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ThumbInstruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>createStub(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo <span style="color:#f92672">*</span>info) {
+    <span style="color:#66d9ef">auto</span> stubSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    uint8_t <span style="color:#f92672">*</span>stub <span style="color:#f92672">=</span> nullptr;
 
-    uint32_t addr = (uint32_t)info-&gt;getOriginalAddr();
-    auto clearBit0 = addr &amp; 0xFFFFFFFE;
+    uint32_t addr <span style="color:#f92672">=</span> (uint32_t)info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getOriginalAddr();
+    <span style="color:#66d9ef">auto</span> clearBit0 <span style="color:#f92672">=</span> addr <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xFFFFFFFE</span>;
 
-    if (clearBit0 % 4 != 0) {                       // need to align 4, just patch with nop
-        stub = new uint8_t[10];
-        ((uint16_t*)stub)[stubSize++] = 0xBF00;     //NOP
-    } else {
-        stub = new uint8_t[8];
+    <span style="color:#66d9ef">if</span> (clearBit0 <span style="color:#f92672">%</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {                       <span style="color:#75715e">// need to align 4, just patch with nop
+</span><span style="color:#75715e"></span>        stub <span style="color:#f92672">=</span> new uint8_t[<span style="color:#ae81ff">10</span>];
+        ((uint16_t<span style="color:#f92672">*</span>)stub)[stubSize<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xBF00</span>;     <span style="color:#75715e">//NOP
+</span><span style="color:#75715e"></span>    } <span style="color:#66d9ef">else</span> {
+        stub <span style="color:#f92672">=</span> new uint8_t[<span style="color:#ae81ff">8</span>];
     }
-    ((uint16_t*)stub)[stubSize++] = 0xF8DF;
-    ((uint16_t*)stub)[stubSize++] = 0xF000; // LDR.W PC, [PC]
-    ((uint16_t*)stub)[stubSize++] = (uint32_t)info-&gt;getHookAddr() &amp; 0xFFFF;
-    ((uint16_t*)stub)[stubSize++] = (uint32_t)info-&gt;getHookAddr() &gt;&gt; 16;
+    ((uint16_t<span style="color:#f92672">*</span>)stub)[stubSize<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF8DF</span>;
+    ((uint16_t<span style="color:#f92672">*</span>)stub)[stubSize<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF000</span>; <span style="color:#75715e">// LDR.W PC, [PC]
+</span><span style="color:#75715e"></span>    ((uint16_t<span style="color:#f92672">*</span>)stub)[stubSize<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> (uint32_t)info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getHookAddr() <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xFFFF</span>;
+    ((uint16_t<span style="color:#f92672">*</span>)stub)[stubSize<span style="color:#f92672">+</span><span style="color:#f92672">+</span>] <span style="color:#f92672">=</span> (uint32_t)info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getHookAddr() <span style="color:#f92672">&gt;</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">16</span>;
 
-    info-&gt;setJumpStubLen(stubSize * 2);
-    info-&gt;setJumpStubBack(stub);
-    return true;
+    info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setJumpStubLen(stubSize <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>);
+    info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setJumpStubBack(stub);
+    <span style="color:#66d9ef">return</span> true;
 }
-</code></pre><h5 id="-createcalloriginalstubhookinfo-info">下面分析 <code>createCallOriginalStub(HookInfo *info)</code>:</h5>
+</code></pre></div><h5 id="-createcalloriginalstubhookinfo-info">下面分析 <code>createCallOriginalStub(HookInfo *info)</code>:</h5>
 <p>thumbInstruction.cpp的实现:</p>
 <p>基础知识:</p>
 <p>reinterpret_cast&lt;uint16_t*&gt;   为类型转换</p>
@@ -549,13 +547,19 @@ FAInHook <span style="color:#f92672">*</span>FAInHook<span style="color:#f92672"
 <li>修正pc相关指令. (ldr liternal.  b.  b.  bl.  cbz. ldrw. add)</li>
 </ol>
 <p><code>为什么要修正pc相关指令?</code></p>
-<pre><code>举例分析: b &lt;label&gt;:
-指令编码分析: [15:12] 1101 [11:8] cond [7:0] imm8
-解析时: imm32 = ZeroExtend(imm8:'0', 32); 
-        BranchWritePC(PC+imm32)
-可以看到, b指令的指令编码中, 存放的立即数为imm8, 而真实的跳转地址为(pc + imm32).
-由于我们是要inlineHook, 所以我们的hook函数执行完成之后还有继续执行我们原来的函数,那么我们就要执行被patch掉的那些指令（我们已经将这些指令保存了下来），但由于存放这些指令的内存是我们mmap出来的,所以我们 要想能够在这里成功运行pc相关指令的话, 我们需要将pc相关的指令转换为其它pc无关的指令。
-</code></pre>
+<p>举例分析: b <!-- raw HTML omitted -->:</p>
+<p>指令编码分析: [15:12] 1101 [11:8] cond [7:0] imm8</p>
+<p>解析时:</p>
+<ul>
+<li>
+<p>imm32 = ZeroExtend(imm8:&lsquo;0&rsquo;, 32);</p>
+</li>
+<li>
+<p>BranchWritePC(PC+imm32)</p>
+</li>
+</ul>
+<p>可以看到, b指令的指令编码中, 存放的立即数为imm8, 而真实的跳转地址为(pc + imm32).
+由于我们是要inlineHook, 所以我们的hook函数执行完成之后还有继续执行我们原来的函数,那么我们就要执行被patch掉的那些指令（我们已经将这些指令保存了下来），但由于存放这些指令的内存是我们mmap出来的,所以我们 要想能够在这里成功运行pc相关指令的话, 我们需要将pc相关的指令转换为其它pc无关的指令。</p>
 <p>inlineHook原理图, 来源于gslab.</p>
 <p><img src="http://gslab.qq.com/data/attachment/portal/201605/04/165921tz43a3sm4vi2s4s4.png" alt="inlineHook原理图 &mdash;  来源于gslab"></p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">bool</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ThumbInstruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>createCallOriginalStub(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo <span style="color:#f92672">*</span>info) {
@@ -973,50 +977,50 @@ MSGetInstructionWithThumb: 参数为(uint16_t</em>).
     <span style="color:#66d9ef">return</span> true;
 }
 </code></pre></div><p>hookAll():</p>
-<pre><code>void FAInHook::hookAll() {
-    for(auto it: hook_map) {
-        if(it.second-&gt;getHookStatus() == FAHook::REGISTERED) {
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span> FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>hookAll() {
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">auto</span> it: hook_map) {
+        <span style="color:#66d9ef">if</span>(it.second<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getHookStatus() <span style="color:#f92672">=</span><span style="color:#f92672">=</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>REGISTERED) {
             Hook(it.second);
         }
     }
 }
-</code></pre><p>进而转到Hook函数</p>
+</code></pre></div><p>进而转到Hook函数</p>
 <ol>
 <li>调用`enableJumpStub(info)</li>
 <li>info-&gt;setHookStatus(FAHook::HOOKED)</li>
 </ol>
-<pre><code>bool FAInHook::Hook(FAHook::HookInfo *info) {
-    if(!FAHook::Instruction::enableJumpStub(info)) {
-        return false;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">bool</span> FAInHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Hook(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo <span style="color:#f92672">*</span>info) {
+    <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>enableJumpStub(info)) {
+        <span style="color:#66d9ef">return</span> false;
     }
-    info-&gt;setHookStatus(FAHook::HOOKED);
-    return true;
+    info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setHookStatus(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HOOKED);
+    <span style="color:#66d9ef">return</span> true;
 }
-</code></pre><p>分析<code>enableJumpStub(info)</code>:</p>
-<pre><code>bool FAHook::Instruction::enableJumpStub(FAHook::HookInfo *info) {
-    auto origAddr = getOriginalAddr(info);
-    auto len = info-&gt;getJumpStubLen();
-    auto stubAddr = info-&gt;getJumpStubBack();
-    return patchMemory(origAddr, stubAddr, len);
+</code></pre></div><p>分析<code>enableJumpStub(info)</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">bool</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>enableJumpStub(FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>HookInfo <span style="color:#f92672">*</span>info) {
+    <span style="color:#66d9ef">auto</span> origAddr <span style="color:#f92672">=</span> getOriginalAddr(info);
+    <span style="color:#66d9ef">auto</span> len <span style="color:#f92672">=</span> info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getJumpStubLen();
+    <span style="color:#66d9ef">auto</span> stubAddr <span style="color:#f92672">=</span> info<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getJumpStubBack();
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">patchMemory</span>(origAddr, stubAddr, len);
 }
-</code></pre><p>可以看到, 在得到了<code>origAddr</code>和<code>stubAddr</code>和<code>len</code>之后,我们会进入到patch函数<code>patchMemory</code>, 根据我们前面的分析, 它会patch原函数的入口指令的前(8 or 10?)个字节.</p>
+</code></pre></div><p>可以看到, 在得到了<code>origAddr</code>和<code>stubAddr</code>和<code>len</code>之后,我们会进入到patch函数<code>patchMemory</code>, 根据我们前面的分析, 它会patch原函数的入口指令的前(8 or 10?)个字节.</p>
 <p>patchMemory:</p>
-<pre><code>bool FAHook::Instruction::patchMemory(void *dest, void *src, uint32_t len) {
-    if(dest == nullptr || src == nullptr || len == 0) {
-        return false;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">bool</span> FAHook<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Instruction<span style="color:#f92672">:</span><span style="color:#f92672">:</span>patchMemory(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>dest, <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>src, uint32_t len) {
+    <span style="color:#66d9ef">if</span>(dest <span style="color:#f92672">=</span><span style="color:#f92672">=</span> nullptr <span style="color:#f92672">|</span><span style="color:#f92672">|</span> src <span style="color:#f92672">=</span><span style="color:#f92672">=</span> nullptr <span style="color:#f92672">|</span><span style="color:#f92672">|</span> len <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>) {
+        <span style="color:#66d9ef">return</span> false;
     }
-    if(!MemHelper::unProtectMemory(dest, len)) {
-        return false;
+    <span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unProtectMemory(dest, len)) {
+        <span style="color:#66d9ef">return</span> false;
     }
 
     memcpy(dest, src, len);
-    MemHelper::protectMemory(dest, len);
-#ifdef __arm__
-    cacheflush((Elf_Addr)dest, (Elf_Addr)dest + len, 0);
-#endif
-    return true;
+    MemHelper<span style="color:#f92672">:</span><span style="color:#f92672">:</span>protectMemory(dest, len);
+<span style="color:#75715e">#</span><span style="color:#75715e">ifdef __arm__</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>    cacheflush((Elf_Addr)dest, (Elf_Addr)dest <span style="color:#f92672">+</span> len, <span style="color:#ae81ff">0</span>);
+<span style="color:#75715e">#</span><span style="color:#75715e">endif</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> true;
 }
-</code></pre><p>首先会调用<code>unProtectMemory</code>函数来将对应内存修改为(rwx), 然后调用<code>memcpy</code>来修改内存, 最后调用<code>protectMemory</code>来修改对应内存为(r-x).</p>
+</code></pre></div><p>首先会调用<code>unProtectMemory</code>函数来将对应内存修改为(rwx), 然后调用<code>memcpy</code>来修改内存, 最后调用<code>protectMemory</code>来修改对应内存为(r-x).</p>
 <h2 id="heading-6">总结</h2>
 <p>现在我们就基本对该项目进行了简单的分析, 我这里总结一下:</p>
 <ol>
