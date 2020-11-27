@@ -2,43 +2,43 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>llvm on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/tags/llvm/</link>
+    <link>http://L0phTg.top/tags/llvm/</link>
     <description>Recent content in llvm on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Mon, 15 Apr 2019 17:58:13 +0800</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/tags/llvm/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/tags/llvm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Kaleidoscope: 前五章总结</title>
-      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
+      <link>http://L0phTg.top/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
       <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
+      <guid>http://L0phTg.top/post/llvm/kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
       <description>&lt;p&gt;对前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Extending the Language Control Flow</title>
-      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
+      <link>http://L0phTg.top/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
       <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
+      <guid>http://L0phTg.top/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl05.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl05.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Adding JIT and Optimizer Support</title>
-      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</link>
+      <link>http://L0phTg.top/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</link>
       <pubDate>Sat, 13 Apr 2019 15:02:51 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</guid>
+      <guid>http://L0phTg.top/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl04.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl04.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.&lt;/p&gt;
 
@@ -96,45 +96,45 @@ graph TB
     
     <item>
       <title>Kaleidoscope: Code Generation to LLVM IR</title>
-      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</link>
+      <link>http://L0phTg.top/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</link>
       <pubDate>Fri, 12 Apr 2019 16:55:05 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
+      <guid>http://L0phTg.top/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Implementing a Parser and AST</title>
-      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</link>
+      <link>http://L0phTg.top/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</link>
       <pubDate>Thu, 11 Apr 2019 15:41:17 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</guid>
+      <guid>http://L0phTg.top/post/llvm/kaleidoscope_implementing-a-parser-and-ast/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl02.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl02.html&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/dots/uml/ExprAst-1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/dots/uml/ExprAst-1.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;介绍AST(抽象语法树)和Parser.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Kaleidoscope: Tutorial Introduction and Lexer</title>
-      <link>https://L0phTg.github.io/post/kaleidoscope_tutorial-introduction-and-lexer/</link>
+      <link>http://L0phTg.top/post/kaleidoscope_tutorial-introduction-and-lexer/</link>
       <pubDate>Wed, 10 Apr 2019 10:17:08 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/kaleidoscope_tutorial-introduction-and-lexer/</guid>
+      <guid>http://L0phTg.top/post/kaleidoscope_tutorial-introduction-and-lexer/</guid>
       <description>&lt;p&gt;translate from &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl01.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl01.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本tutorial将会介绍一个简单语言的实现.&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Static Single Assignment</title>
-      <link>https://L0phTg.github.io/post/llvm/static-single-assignment/</link>
+      <link>http://L0phTg.top/post/llvm/static-single-assignment/</link>
       <pubDate>Tue, 09 Apr 2019 21:54:49 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/static-single-assignment/</guid>
+      <guid>http://L0phTg.top/post/llvm/static-single-assignment/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;https://en.wikipedia.org/wiki/Static_single_assignment_form&#34;&gt;https://en.wikipedia.org/wiki/Static_single_assignment_form&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;单一变量赋值
-&lt;img src=&#34;https://L0phTg.github.io/llvm/SSA_example1.2.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;img src=&#34;http://L0phTg.top/llvm/SSA_example1.2.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

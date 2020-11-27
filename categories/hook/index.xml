@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>hook on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/categories/hook/</link>
+    <link>http://L0phTg.top/categories/hook/</link>
     <description>Recent content in hook on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Sun, 19 Aug 2018 02:19:05 +0800</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/categories/hook/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/categories/hook/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Iqiyi开源hook框架XHook分析</title>
-      <link>https://L0phTg.github.io/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</link>
+      <link>http://L0phTg.top/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</link>
       <pubDate>Sun, 19 Aug 2018 02:19:05 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</guid>
+      <guid>http://L0phTg.top/post/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6xhook%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;Got Hook 可以使用dlsym得到目标函数的地址, 然后遍历got表进行Hook.&lt;/p&gt;
 &lt;p&gt;但是有时候我们不能通过dlsym得到函数地址. 这时我们需要怎么办呢? iqiyi的xhook很好的解决了这个问题, (可以参考linker的实现, &lt;strong&gt;有问题, 看源码&lt;/strong&gt;.&lt;/p&gt;
 &lt;p&gt;通过找到目标函数地址存放在got表中位置, 只要找到了目标symbol在got表中的offset, 想要修改或者得到目标函数的实际地址就轻松多了.&lt;/p&gt;
@@ -25,10 +25,10 @@
     
     <item>
       <title>InlineHook学习分析</title>
-      <link>https://L0phTg.github.io/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</link>
+      <link>http://L0phTg.top/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</link>
       <pubDate>Thu, 05 Apr 2018 02:14:31 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</guid>
+      <guid>http://L0phTg.top/post/inlinehook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;分析开源的inlineHook代码, 总结inlineHook的原理与实现.&lt;/p&gt;</description>
     </item>
     

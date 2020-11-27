@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>JNI on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/tags/jni/</link>
+    <link>http://L0phTg.top/tags/jni/</link>
     <description>Recent content in JNI on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Thu, 16 Mar 2017 03:07:59 +0000</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/tags/jni/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/tags/jni/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>分析Android的JNI编程时所使用的一些函数功能</title>
-      <link>https://L0phTg.github.io/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</link>
+      <link>http://L0phTg.top/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</link>
       <pubDate>Thu, 16 Mar 2017 03:07:59 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</guid>
+      <guid>http://L0phTg.top/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</guid>
       <description>&lt;p&gt;分析&lt;strong&gt;jni调用时&lt;/strong&gt;的一些函数及其函数功能.&lt;/p&gt;
 &lt;p&gt;如 GetEnv &amp;hellip;&lt;/p&gt;
 &lt;p&gt;本文已长草.&lt;/p&gt;</description>

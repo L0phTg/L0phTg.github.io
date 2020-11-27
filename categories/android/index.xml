@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Android on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/categories/android/</link>
+    <link>http://L0phTg.top/categories/android/</link>
     <description>Recent content in Android on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Tue, 02 Oct 2018 15:38:56 +0800</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/categories/android/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/categories/android/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Pixel1 源码编译</title>
-      <link>https://L0phTg.github.io/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
+      <link>http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
       <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
+      <guid>http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
       <description>&lt;p&gt;记录自己Pixel1刷机流程.&lt;/p&gt;
 &lt;p&gt;相关网站&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;Requirements
@@ -36,11 +36,11 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>thumb指令虚拟化学习(一)</title>
-      <link>https://L0phTg.github.io/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
+      <link>http://L0phTg.top/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</link>
       <pubDate>Tue, 24 Oct 2017 20:23:30 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
-      <description>&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/thumb-vmp/thumb16.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+      <guid>http://L0phTg.top/post/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/</guid>
+      <description>&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/thumb-vmp/thumb16.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
 &lt;p&gt;上半年接触过一些 &lt;strong&gt;app加固&lt;/strong&gt; 的知识, 对 &lt;strong&gt;vm&lt;/strong&gt; 这块一直空有兴趣而没有了解过;  最近, 阅读了几篇文章, &lt;code&gt;有所启发&lt;/code&gt;, 所以决定学习一下 &lt;strong&gt;vm&lt;/strong&gt; 这块的一些操作.&lt;/p&gt;
 &lt;p&gt;主要内容分为:&lt;/p&gt;
 &lt;ul&gt;
@@ -52,10 +52,10 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>elf文件格式和AndroidLinker加载.so的源码分析</title>
-      <link>https://L0phTg.github.io/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
+      <link>http://L0phTg.top/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
       <pubDate>Sun, 19 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
+      <guid>http://L0phTg.top/post/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8Candroidlinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;最近在学习android应用的加壳和混淆方法, 所以遇到了一些有关.so是如何加载到android中去的问题, 看了一些视频和文章, 所以想在此总结一下.&lt;/p&gt;
 &lt;p&gt;本文主要内容:&lt;/p&gt;
 &lt;ul&gt;
@@ -66,10 +66,10 @@ https://developers.google.com/android/drivers
     
     <item>
       <title>分析Android的JNI编程时所使用的一些函数功能</title>
-      <link>https://L0phTg.github.io/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</link>
+      <link>http://L0phTg.top/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</link>
       <pubDate>Thu, 16 Mar 2017 03:07:59 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</guid>
+      <guid>http://L0phTg.top/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/</guid>
       <description>&lt;p&gt;分析&lt;strong&gt;jni调用时&lt;/strong&gt;的一些函数及其函数功能.&lt;/p&gt;
 &lt;p&gt;如 GetEnv &amp;hellip;&lt;/p&gt;
 &lt;p&gt;本文已长草.&lt;/p&gt;</description>

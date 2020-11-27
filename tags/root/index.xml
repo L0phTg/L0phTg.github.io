@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Root on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/tags/root/</link>
+    <link>http://L0phTg.top/tags/root/</link>
     <description>Recent content in Root on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Tue, 02 Oct 2018 15:38:56 +0800</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/tags/root/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/tags/root/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Pixel1 源码编译</title>
-      <link>https://L0phTg.github.io/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
+      <link>http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
       <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
+      <guid>http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
       <description>&lt;p&gt;记录自己Pixel1刷机流程.&lt;/p&gt;
 &lt;p&gt;相关网站&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;Requirements

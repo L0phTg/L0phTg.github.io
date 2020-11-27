@@ -2,26 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>control flow on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/tags/control-flow/</link>
+    <link>http://L0phTg.top/tags/control-flow/</link>
     <description>Recent content in control flow on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
     <lastBuildDate>Sun, 14 Apr 2019 14:43:17 +0800</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/tags/control-flow/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/tags/control-flow/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Kaleidoscope: Extending the Language Control Flow</title>
-      <link>https://L0phTg.github.io/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
+      <link>http://L0phTg.top/post/llvm/kaleidoscope_extending-the-language-control-flow/</link>
       <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
+      <guid>http://L0phTg.top/post/llvm/kaleidoscope_extending-the-language-control-flow/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl05.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl05.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://L0phTg.github.io/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

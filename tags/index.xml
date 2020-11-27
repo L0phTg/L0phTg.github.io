@@ -2,273 +2,291 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on L0phTg&#39;s Blog</title>
-    <link>https://L0phTg.github.io/tags/</link>
+    <link>http://L0phTg.top/tags/</link>
     <description>Recent content in Tags on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Mon, 27 Jan 2020 11:18:49 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 30 Jan 2020 21:12:15 +0800</lastBuildDate>
     
-	<atom:link href="https://L0phTg.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://L0phTg.top/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>排序</title>
+      <link>http://L0phTg.top/tags/%E6%8E%92%E5%BA%8F/</link>
+      <pubDate>Thu, 30 Jan 2020 21:12:15 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/tags/%E6%8E%92%E5%BA%8F/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>算法</title>
+      <link>http://L0phTg.top/tags/%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Thu, 30 Jan 2020 21:12:15 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/tags/%E7%AE%97%E6%B3%95/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>左传</title>
-      <link>https://L0phTg.github.io/tags/%E5%B7%A6%E4%BC%A0/</link>
+      <link>http://L0phTg.top/tags/%E5%B7%A6%E4%BC%A0/</link>
       <pubDate>Mon, 27 Jan 2020 11:18:49 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E5%B7%A6%E4%BC%A0/</guid>
+      <guid>http://L0phTg.top/tags/%E5%B7%A6%E4%BC%A0/</guid>
       <description></description>
     </item>
     
     <item>
       <title>文学</title>
-      <link>https://L0phTg.github.io/tags/%E6%96%87%E5%AD%A6/</link>
+      <link>http://L0phTg.top/tags/%E6%96%87%E5%AD%A6/</link>
       <pubDate>Mon, 27 Jan 2020 11:18:49 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E6%96%87%E5%AD%A6/</guid>
+      <guid>http://L0phTg.top/tags/%E6%96%87%E5%AD%A6/</guid>
       <description></description>
     </item>
     
     <item>
       <title>radare2</title>
-      <link>https://L0phTg.github.io/tags/radare2/</link>
+      <link>http://L0phTg.top/tags/radare2/</link>
       <pubDate>Fri, 10 Jan 2020 23:54:22 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/radare2/</guid>
+      <guid>http://L0phTg.top/tags/radare2/</guid>
       <description></description>
     </item>
     
     <item>
       <title>工具</title>
-      <link>https://L0phTg.github.io/tags/%E5%B7%A5%E5%85%B7/</link>
+      <link>http://L0phTg.top/tags/%E5%B7%A5%E5%85%B7/</link>
       <pubDate>Fri, 10 Jan 2020 23:54:22 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E5%B7%A5%E5%85%B7/</guid>
+      <guid>http://L0phTg.top/tags/%E5%B7%A5%E5%85%B7/</guid>
       <description></description>
     </item>
     
     <item>
       <title>逆向</title>
-      <link>https://L0phTg.github.io/tags/%E9%80%86%E5%90%91/</link>
+      <link>http://L0phTg.top/tags/%E9%80%86%E5%90%91/</link>
       <pubDate>Fri, 10 Jan 2020 23:54:22 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E9%80%86%E5%90%91/</guid>
+      <guid>http://L0phTg.top/tags/%E9%80%86%E5%90%91/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Hive</title>
-      <link>https://L0phTg.github.io/tags/hive/</link>
+      <link>http://L0phTg.top/tags/hive/</link>
       <pubDate>Sun, 05 Jan 2020 17:44:55 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/hive/</guid>
+      <guid>http://L0phTg.top/tags/hive/</guid>
       <description></description>
     </item>
     
     <item>
       <title>信号与系统</title>
-      <link>https://L0phTg.github.io/tags/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F/</link>
+      <link>http://L0phTg.top/tags/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F/</link>
       <pubDate>Tue, 11 Jun 2019 16:32:00 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F/</guid>
+      <guid>http://L0phTg.top/tags/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Kaleidoscope</title>
-      <link>https://L0phTg.github.io/tags/kaleidoscope/</link>
+      <link>http://L0phTg.top/tags/kaleidoscope/</link>
       <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/kaleidoscope/</guid>
+      <guid>http://L0phTg.top/tags/kaleidoscope/</guid>
       <description></description>
     </item>
     
     <item>
       <title>llvm</title>
-      <link>https://L0phTg.github.io/tags/llvm/</link>
+      <link>http://L0phTg.top/tags/llvm/</link>
       <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/llvm/</guid>
+      <guid>http://L0phTg.top/tags/llvm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>life</title>
-      <link>https://L0phTg.github.io/tags/life/</link>
+      <link>http://L0phTg.top/tags/life/</link>
       <pubDate>Mon, 15 Apr 2019 10:13:04 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/life/</guid>
+      <guid>http://L0phTg.top/tags/life/</guid>
       <description></description>
     </item>
     
     <item>
       <title>control flow</title>
-      <link>https://L0phTg.github.io/tags/control-flow/</link>
+      <link>http://L0phTg.top/tags/control-flow/</link>
       <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/control-flow/</guid>
+      <guid>http://L0phTg.top/tags/control-flow/</guid>
       <description></description>
     </item>
     
     <item>
       <title>compiler</title>
-      <link>https://L0phTg.github.io/tags/compiler/</link>
+      <link>http://L0phTg.top/tags/compiler/</link>
       <pubDate>Tue, 09 Apr 2019 21:54:49 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/compiler/</guid>
+      <guid>http://L0phTg.top/tags/compiler/</guid>
       <description></description>
     </item>
     
     <item>
       <title>SSA</title>
-      <link>https://L0phTg.github.io/tags/ssa/</link>
+      <link>http://L0phTg.top/tags/ssa/</link>
       <pubDate>Tue, 09 Apr 2019 21:54:49 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/ssa/</guid>
+      <guid>http://L0phTg.top/tags/ssa/</guid>
       <description></description>
     </item>
     
     <item>
       <title>graph theory</title>
-      <link>https://L0phTg.github.io/tags/graph-theory/</link>
+      <link>http://L0phTg.top/tags/graph-theory/</link>
       <pubDate>Sat, 06 Apr 2019 18:00:53 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/graph-theory/</guid>
+      <guid>http://L0phTg.top/tags/graph-theory/</guid>
       <description></description>
     </item>
     
     <item>
       <title>python</title>
-      <link>https://L0phTg.github.io/tags/python/</link>
+      <link>http://L0phTg.top/tags/python/</link>
       <pubDate>Tue, 02 Apr 2019 21:12:17 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/python/</guid>
+      <guid>http://L0phTg.top/tags/python/</guid>
       <description></description>
     </item>
     
     <item>
       <title>ubuntu</title>
-      <link>https://L0phTg.github.io/tags/ubuntu/</link>
+      <link>http://L0phTg.top/tags/ubuntu/</link>
       <pubDate>Tue, 02 Apr 2019 21:12:17 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/ubuntu/</guid>
+      <guid>http://L0phTg.top/tags/ubuntu/</guid>
       <description></description>
     </item>
     
     <item>
       <title>面试</title>
-      <link>https://L0phTg.github.io/tags/%E9%9D%A2%E8%AF%95/</link>
+      <link>http://L0phTg.top/tags/%E9%9D%A2%E8%AF%95/</link>
       <pubDate>Tue, 02 Apr 2019 11:24:31 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E9%9D%A2%E8%AF%95/</guid>
+      <guid>http://L0phTg.top/tags/%E9%9D%A2%E8%AF%95/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Android</title>
-      <link>https://L0phTg.github.io/tags/android/</link>
+      <link>http://L0phTg.top/tags/android/</link>
       <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/android/</guid>
+      <guid>http://L0phTg.top/tags/android/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Pixel1</title>
-      <link>https://L0phTg.github.io/tags/pixel1/</link>
+      <link>http://L0phTg.top/tags/pixel1/</link>
       <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/pixel1/</guid>
+      <guid>http://L0phTg.top/tags/pixel1/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Root</title>
-      <link>https://L0phTg.github.io/tags/root/</link>
+      <link>http://L0phTg.top/tags/root/</link>
       <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/root/</guid>
+      <guid>http://L0phTg.top/tags/root/</guid>
       <description></description>
     </item>
     
     <item>
       <title>blog</title>
-      <link>https://L0phTg.github.io/tags/blog/</link>
+      <link>http://L0phTg.top/tags/blog/</link>
       <pubDate>Wed, 19 Sep 2018 20:04:10 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/blog/</guid>
+      <guid>http://L0phTg.top/tags/blog/</guid>
       <description></description>
     </item>
     
     <item>
       <title>hook</title>
-      <link>https://L0phTg.github.io/tags/hook/</link>
+      <link>http://L0phTg.top/tags/hook/</link>
       <pubDate>Sun, 19 Aug 2018 02:19:05 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/hook/</guid>
+      <guid>http://L0phTg.top/tags/hook/</guid>
       <description></description>
     </item>
     
     <item>
       <title>日常生活</title>
-      <link>https://L0phTg.github.io/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/</link>
+      <link>http://L0phTg.top/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/</link>
       <pubDate>Thu, 28 Dec 2017 11:47:58 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/</guid>
+      <guid>http://L0phTg.top/tags/%E6%97%A5%E5%B8%B8%E7%94%9F%E6%B4%BB/</guid>
       <description></description>
     </item>
     
     <item>
       <title>capstone</title>
-      <link>https://L0phTg.github.io/tags/capstone/</link>
+      <link>http://L0phTg.top/tags/capstone/</link>
       <pubDate>Tue, 24 Oct 2017 20:23:30 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/capstone/</guid>
+      <guid>http://L0phTg.top/tags/capstone/</guid>
       <description></description>
     </item>
     
     <item>
       <title>加固</title>
-      <link>https://L0phTg.github.io/tags/%E5%8A%A0%E5%9B%BA/</link>
+      <link>http://L0phTg.top/tags/%E5%8A%A0%E5%9B%BA/</link>
       <pubDate>Tue, 24 Oct 2017 20:23:30 +0800</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E5%8A%A0%E5%9B%BA/</guid>
+      <guid>http://L0phTg.top/tags/%E5%8A%A0%E5%9B%BA/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Android源码</title>
-      <link>https://L0phTg.github.io/tags/android%E6%BA%90%E7%A0%81/</link>
+      <link>http://L0phTg.top/tags/android%E6%BA%90%E7%A0%81/</link>
       <pubDate>Sun, 19 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/android%E6%BA%90%E7%A0%81/</guid>
+      <guid>http://L0phTg.top/tags/android%E6%BA%90%E7%A0%81/</guid>
       <description></description>
     </item>
     
     <item>
       <title>文件格式</title>
-      <link>https://L0phTg.github.io/tags/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</link>
+      <link>http://L0phTg.top/tags/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</link>
       <pubDate>Sun, 19 Mar 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</guid>
+      <guid>http://L0phTg.top/tags/%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F/</guid>
       <description></description>
     </item>
     
     <item>
       <title>JNI</title>
-      <link>https://L0phTg.github.io/tags/jni/</link>
+      <link>http://L0phTg.top/tags/jni/</link>
       <pubDate>Thu, 16 Mar 2017 03:07:59 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/jni/</guid>
+      <guid>http://L0phTg.top/tags/jni/</guid>
       <description></description>
     </item>
     
     <item>
       <title>漏洞研究</title>
-      <link>https://L0phTg.github.io/tags/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/</link>
+      <link>http://L0phTg.top/tags/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/</link>
       <pubDate>Wed, 01 Mar 2017 20:20:20 +0000</pubDate>
       
-      <guid>https://L0phTg.github.io/tags/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/</guid>
+      <guid>http://L0phTg.top/tags/%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/</guid>
       <description></description>
     </item>
     
