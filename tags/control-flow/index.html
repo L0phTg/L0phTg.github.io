@@ -114,8 +114,6 @@
 
 <link rel="stylesheet" href="/css/styles/dracula.css">
 
-<link rel="stylesheet" href="/css/mermaid.css">
-
 
 
 
@@ -136,10 +134,9 @@
 
   <script src="/js/highlight.pack.js"></script>
 
-  <script src="/js/mermaid.min.js"></script>
-
 
 <script>hljs.initHighlightingOnLoad();</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script> mermaid.initialize({ startOnLoad: true });</script>
 
 </head>
@@ -226,7 +223,10 @@
 <p>本文为Kaleidoscope添加条件判断控制流和循环控制流.</p>
 <p>注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.</p>
 <p>因为这个系列主要是翻译, 所以基本没有涉及自己的理解. <strong>之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结</strong>.</p>
-<p><img src="/docs-pic/llvm/loop.png" alt=""></p>
+<!-- raw HTML omitted -->
+<figure>
+    <img src="/docs-pic/llvm/loop.png" width="50%" height="50%"/> 
+</figure>
   </p>
   <footer class="post-footer">
     <a class="read-more" href="http://L0phTg.top/post/llvm/kaleidoscope_extending-the-language-control-flow/">Read More →</a>

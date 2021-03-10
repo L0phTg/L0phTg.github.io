@@ -21,7 +21,10 @@
 &lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;!-- raw HTML omitted --&gt;
+&lt;figure&gt;
+    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;/&gt; 
+&lt;/figure&gt;</description>
     </item>
     
   </channel>

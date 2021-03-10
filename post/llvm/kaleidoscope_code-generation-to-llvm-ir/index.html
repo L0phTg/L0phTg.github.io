@@ -28,7 +28,7 @@
   <meta name="author" content="L0phTg">
   <meta name="description" content="translate from: http://llvm.org/docs/tutorial/LangImpl03.html
 介绍四个基本表达式和函数申明与定义的Codegen.
-">
+ ">
 
   
   
@@ -37,7 +37,7 @@
     <meta name="twitter:title" content="Kaleidoscope: Code Generation to LLVM IR">
     <meta name="twitter:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl03.html
 介绍四个基本表达式和函数申明与定义的Codegen.
-">
+ ">
     <meta name="twitter:image" content="/images/avatar.png">
   
 
@@ -46,7 +46,7 @@
   <meta property="og:title" content="Kaleidoscope: Code Generation to LLVM IR">
   <meta property="og:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl03.html
 介绍四个基本表达式和函数申明与定义的Codegen.
-">
+ ">
   <meta property="og:url" content="http://L0phTg.top/post/llvm/kaleidoscope_code-generation-to-llvm-ir/">
   <meta property="og:image" content="/images/avatar.png">
 
@@ -121,8 +121,6 @@
 
 <link rel="stylesheet" href="/css/styles/dracula.css">
 
-<link rel="stylesheet" href="/css/mermaid.css">
-
 
 
 
@@ -143,10 +141,9 @@
 
   <script src="/js/highlight.pack.js"></script>
 
-  <script src="/js/mermaid.min.js"></script>
-
 
 <script>hljs.initHighlightingOnLoad();</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script> mermaid.initialize({ startOnLoad: true });</script>
 
 </head>
@@ -245,7 +242,11 @@
      
     <article class="post-content"><p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl03.html">http://llvm.org/docs/tutorial/LangImpl03.html</a></p>
 <p>介绍四个基本表达式和函数申明与定义的Codegen.</p>
-<p><img src="/docs-pic/llvm/Codegen.png" alt="codegen .png"></p>
+<!-- raw HTML omitted -->
+<figure>
+    <img src="/docs-pic/llvm/Codegen.png" width="100%&#34;" height="100%"/> 
+</figure>
+
 <h1 id="31-chapter-3-introduction">3.1 Chapter 3 Introduction</h1>
 <p>本章将会向你介绍如何转换为AST. built in Chapter2, into LLVM IR. 这将会教给你a little bit about LLVM是如何做这个的. 以及展示它的实用性. 构建一个词法分析器和解析器要比生成LLVM IR代码的工作多得多.</p>
 <p><strong>please note</strong>: 本章和之后的代码是基于LLVM 3.7 and later. LLVM 3.6 和之前的版本将不会工作for this code. 也要注意, 你需要一个匹配你的LLVM Release版本的tutorial.</p>

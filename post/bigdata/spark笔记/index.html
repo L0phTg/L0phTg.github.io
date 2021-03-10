@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+
+  <meta charset="utf-8" />
+
+  
+  <title>Spark笔记</title>
+
+  
+  
+  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
+  
+  <link href="//at.alicdn.com" rel="dns-prefetch">
+  
+  <link href="//fonts.googleapis.com" rel="dns-prefetch">
+  <link href="//fonts.gstatic.com" rel="dns-prefetch">
+  
+  
+  
+  
+  
+
+  
+
+  
+  <meta name="author" content="L0phTg">
+  <meta name="description" content="在本地环境中, 我们常用pandas来做离线数据分析.
+在集群上, 我们常用Spark来做离线数据分析.用Flink做实时计算.
+本文不断更新中!
+">
+
+  
+  
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:site" content="@gohugoio">
+    <meta name="twitter:title" content="Spark笔记">
+    <meta name="twitter:description" content="在本地环境中, 我们常用pandas来做离线数据分析.
+在集群上, 我们常用Spark来做离线数据分析.用Flink做实时计算.
+本文不断更新中!
+">
+    <meta name="twitter:image" content="/images/avatar.png">
+  
+
+  
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Spark笔记">
+  <meta property="og:description" content="在本地环境中, 我们常用pandas来做离线数据分析.
+在集群上, 我们常用Spark来做离线数据分析.用Flink做实时计算.
+本文不断更新中!
+">
+  <meta property="og:url" content="http://L0phTg.top/post/bigdata/spark%E7%AC%94%E8%AE%B0/">
+  <meta property="og:image" content="/images/avatar.png">
+
+
+
+
+<meta name="generator" content="Hugo 0.61.0">
+
+
+<link rel="canonical" href="http://L0phTg.top/post/bigdata/spark%E7%AC%94%E8%AE%B0/">
+
+<meta name="renderer" content="webkit">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="format-detection" content="telephone=no,email=no,adress=no">
+<meta http-equiv="Cache-Control" content="no-transform">
+
+
+<meta name="robots" content="index,follow">
+<meta name="referrer" content="origin-when-cross-origin">
+
+
+
+
+
+
+
+<meta name="theme-color" content="#02b875">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="L0phTg&#39;s Blog">
+<meta name="msapplication-tooltip" content="L0phTg&#39;s Blog">
+<meta name='msapplication-navbutton-color' content="#02b875">
+<meta name="msapplication-TileColor" content="#02b875">
+<meta name="msapplication-TileImage" content="/icons/icon-144x144.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+<link rel="icon" sizes="192x192" href="/icons/icon-192x192.png">
+<link rel="apple-touch-icon" href="/icons/icon-152x152.png">
+<link rel="manifest" href="/manifest.json">
+
+
+<link rel="preload" href="/styles/main-rendered.min.css" as="style">
+
+
+<link rel="preload" href="https://fonts.googleapis.com/css?family=Lobster" as="style">
+<link rel="preload" href="/images/avatar.png" as="image">
+<link rel="preload" href="/images/grey-prism.svg" as="image">
+
+
+<style>
+  body {
+    background: rgb(244, 243, 241) url('/images/grey-prism.svg') repeat fixed;
+  }
+</style>
+<link rel="stylesheet" href="/styles/main-rendered.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/medium-zoom@1.0.2/dist/medium-zoom.min.js"></script>
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video-js.min.css">
+
+
+
+
+<link rel="stylesheet" href="/css/styles/dracula.css">
+
+
+
+
+  
+  
+<!--[if lte IE 8]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-ie8@1.1.2/dist/videojs-ie8.min.js"></script>
+<![endif]-->
+
+<!--[if lte IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/eligrey-classlist-js-polyfill@1.2.20180112/classList.min.js"></script>
+<![endif]-->
+
+
+  
+
+  <script src="/js/highlight.pack.js"></script>
+
+
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script> mermaid.initialize({ startOnLoad: true });</script>
+
+</head>
+  <body>
+    <div class="suspension">
+      <a role="button" aria-label="Go to top" title="Go to top" class="to-top is-hide"><span class="icon icon-up" aria-hidden="true"></span></a>
+      
+        
+      
+    </div>
+    
+    
+    
+  
+  <header class="site-header">
+  <a href="http://L0phTg.top/"><img class="avatar" src="/images/avatar.png" alt="Avatar"></a>
+  
+  <h2 class="title"><a href="http://L0phTg.top/">L0phTg&#39;s Blog</a></h2>
+  
+  <p class="subtitle">~  读万卷书 &amp; 行万里路 ~</p>
+  <button class="menu-toggle" type="button" aria-label="Main Menu" aria-expanded="false" tab-index="0">
+    <span class="icon icon-menu" aria-hidden="true"></span>
+  </button>
+
+  <nav class="site-menu collapsed">
+    <h2 class="offscreen">Main Menu</h2>
+    <ul class="menu-list">
+      
+      
+      
+      
+        <li class="menu-item
+          
+          
+           is-active">
+          <a href="/">Home</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/post/">Archives</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/tags/">Tags</a>
+        </li>
+      
+        <li class="menu-item
+          
+          
+          ">
+          <a href="/about/">About</a>
+        </li>
+      
+    </ul>
+  </nav>
+ 
+  <nav class="social-menu collapsed">
+    <h2 class="offscreen">Social Networks</h2>
+    <ul class="social-list"></ul>
+  </nav>
+</header>
+
+  <section class="main post-detail">
+    <header class="post-header">
+      <h1 class="post-title">Spark笔记</h1>
+      <p class="post-meta">@L0phTg · Jan 5, 2020 · 4 min read</p>
+      
+    </header>
+     
+     
+<div class="post-toc" id="post-toc">
+  
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#11-">1.1 运行速度快</a></li>
+    <li><a href="#12-">1.2 易用性好</a></li>
+    <li><a href="#13-">1.3 通用性强</a></li>
+    <li><a href="#14-">1.4 随处运行</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#21-sparksession">2.1 SparkSession介绍</a></li>
+    <li><a href="#22-tungsten-phase-2">2.2 Tungsten Phase 2</a></li>
+  </ul>
+
+  <ul>
+    <li><a href="#31-collection">3.1 并行化Collection</a></li>
+    <li><a href="#32-">3.2 外部数据集</a></li>
+    <li><a href="#33-rdd">3.3 RDD操作</a>
+      <ul>
+        <li><a href="#331-">3.3.1 基本操作</a></li>
+        <li><a href="#332-spark">3.3.2 向Spark传递函数</a></li>
+        <li><a href="#333-">3.3.3 理解闭包</a></li>
+        <li><a href="#334-transformation">3.3.4 Transformation</a></li>
+        <li><a href="#335-actions">3.3.5 actions</a></li>
+        <li><a href="#heading">分发操作</a></li>
+      </ul>
+    </li>
+  </ul>
+
+  <ul>
+    <li><a href="#pysparksqlsparksession">pyspark.sql.SparkSession</a></li>
+    <li><a href="#pysparksqldataframe">pyspark.sql.DataFrame</a>
+      <ul>
+        <li><a href="#property">property</a></li>
+        <li><a href="#select--selectexpr">select & selectExpr</a></li>
+        <li><a href="#where--filter">where & filter</a></li>
+        <li><a href="#groupby--agg-udaf--count">groupby & agg UDAF & count</a></li>
+        <li><a href="#crossjoin">crossJoin</a></li>
+        <li><a href="#withcolumn">withColumn</a></li>
+        <li><a href="#collect--take--first--head">collect & take & first & head</a></li>
+        <li><a href="#alias">alias</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+     
+    <article class="post-content"><p>在本地环境中, 我们常用pandas来做离线数据分析.</p>
+<p>在集群上, 我们常用Spark来做离线数据分析.用Flink做实时计算.</p>
+<p><strong>本文不断更新中!</strong></p>
+<p>Apache Spark是一个开源的、强大的分布式查询和处理引擎。</p>
+<p>官网文档：https://spark.apache.org/docs/latest/</p>
+<p>安装pyspark:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$pip install pyspark<span style="color:#f92672">=</span>version --user
+</code></pre></div><h1 id="1-">1. 简介</h1>
+<p>参考自：<code>&lt;&lt;图解Spark 核心技术与案例实战&gt;&gt;</code></p>
+<p>Spark是加州大学伯克利分校AMP实验室(Algorithms、Machines and People Lab)开发的通用大数据处理框架。具有运行速度快、易用性好、通用性强和随处运行等优点。</p>
+<h2 id="11-">1.1 运行速度快</h2>
+<p>官方数据表明, 如果数据由磁盘读取, 速度是Hadoop MapReduce的10倍以上; 如果数据从内存读取, 速度可以高达100多倍。</p>
+<p>Spark相对于Hadoop有如此快的计算速度有<strong>数据本地性</strong>、<strong>调度优化</strong>和<strong>传输优化</strong>等原因，其最主要的原因是<strong>基于内存计算</strong>和<strong>引入DAG执行引擎</strong>。</p>
+<p>1). Spark默认情况下迭代过程的数据保存到内存中，后续的运行作业利用这些结果进行计算，而Hadoop每次计算都直接存储到磁盘中，在随后的计算中需要从磁盘中读取上次计算的结果。由于从内存读取数据时间比磁盘读取时间低两个数量级，这就造成了Hadoop的运行速度较慢，这种情况在迭代计算中尤为明显。</p>
+<p>2). 由于较复杂的数据计算任务需要多个步骤才能实现，且步骤之间具有依赖性。对于这些步骤之间，Hadoop需要借助Oozie等工具进行处理。而Spark在执行任务前，可以将这些步骤根据依赖关系形成DAG图(有向无环图)，任务执行可以按图索骥，不需要人工干预，从而优化了计算路径，大大减少了I/O读取操作。</p>
+<h2 id="12-">1.2 易用性好</h2>
+<p>Spark不仅支持Scala编写应用程序，而且支持Java和Python等语言进行编写。</p>
+<h2 id="13-">1.3 通用性强</h2>
+<p><img src="/docs-pic/bigdata/sparkarch.png" alt=""></p>
+<h2 id="14-">1.4 随处运行</h2>
+<p>Spark有很强的适应性，能够读取HDFS、Cassandra、HBase、S3和Tachyon，为持久层读写原生数据，能够以Mesos、YARN 和自身携带的Standalone作为资源管理器调度作业来完成Spark应用程序计算。</p>
+<h1 id="2-spark-20--spark-10">2. Spark 2.0 与 Spark 1.0</h1>
+<ol>
+<li>引入SparkSession</li>
+<li>解析器 2.0</li>
+</ol>
+<h2 id="21-sparksession">2.1 SparkSession介绍</h2>
+<p>SparkSession本质上是SparkConf、SparkContext、SQLContext和HiveContext的组合，包括StreamingContext。</p>
+<p>例如：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df  <span style="color:#f92672">=</span> SQLContext<span style="color:#f92672">.</span>read \
+		<span style="color:#f92672">.</span>format(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">json</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">.</span>load(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py/test/sql/people.json</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>现在可以这样写：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>format(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">json</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">.</span>load(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py/test/sql/people.json</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>或者：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>json(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py/test/sql/people.json</span><span style="color:#e6db74">&#39;</span>)
+</code></pre></div><p>SparkSessin现在是读取数据、处理元数据、配置会话和管理集群资源的入口。</p>
+<h2 id="22-tungsten-phase-2">2.2 Tungsten Phase 2</h2>
+<p>参考：https://www.slideshare.net/databricks/structuring-spark-dataframes-datasets-and-streaming</p>
+
+<div class="mermaid" align=" 
+                            center
+                        "> 
+
+graph LR
+	sqlAST["SQL AST"] --> logicproblem["Unresolved Logical Plan"]
+	dataframe["DataFrame"] --> logicproblem
+	dataset["Dataset"] -->logicproblem
+	logicproblem -->|Analysis| logicalPlan["Logical Plan"]
+	logicalPlan -->|Logical Optimization| OptimizedLogicalP["Optimized Logical Plan"]
+	OptimizedLogicalP -->|Physical Planning| physicalPlans["Physical Plans"]
+	physicalPlans --> CostModel
+	CostModel --> SelectedPhysicalP["Selected Physical Plan"]
+	SelectedPhysicalP -->|Code generation| RDDs
+
+</div>
+<h1 id="3-rdd">3. RDD介绍</h1>
+<p>参考官方文档：https://spark.apache.org/docs/latest/rdd-programming-guide.html</p>
+<p>RDD解决的问题？</p>
+<blockquote>
+<p>可以令用户直接控制数据的共享，使得用户可以指定数据存储到硬盘还是内存、控制数据的分区方法和数据集上的操作。RDD不仅增加了高效的数据共享元语，而且大大增加了其通用性。</p>
+</blockquote>
+<p>有两种方式创建RDD:</p>
+<ul>
+<li>在你的driver程序中，将已经存在的collection并行化</li>
+<li>引用外部存储的数据集，例如HDFS，HBASE，和其他Hadoop支持的源文件格式</li>
+</ul>
+<h2 id="31-collection">3.1 并行化Collection</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
+distData <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>parallelize(data)
+</code></pre></div><h2 id="32-">3.2 外部数据集</h2>
+<p>Spark支持文本文件（textFiles），sequencesfiles，和其它Hadoop输入格式。</p>
+<p>可以通过<strong>SparkContext</strong>的<strong>textFile</strong>方法创建文本文件的RDDs。（该方法接收一个文件的URI（可以是在机器上的本地路径，或者一个<code>hdfs://</code>，<code>s3a://</code>，etc），可以将它读为collection of lines。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> distFile <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">data.txt</span><span style="color:#e6db74">&#34;</span>)
+</code></pre></div><p>一旦被创建，<code>distFile</code>可以执行数据集操作。例如，我们可以使用map和reduce操作来add up the sizes of all the lines. <code>distFile.map(lambda s: len(s)).reduce(lambda a, b: a + b)</code></p>
+<p>一些关于使用Spark来读文件的注意事项：</p>
+<ul>
+<li>如果使用本地文件路径，要保证文件必须在worker nodes都可以用相同的路径来获得。可以将文件拷贝到workers，也可以通过网络mount共享文件系统。</li>
+<li>所以Spark中文件读取相关的方法，包括<code>textFile</code>，都支持目录，压缩文件，和通配符as well。例如，可以使用<code>textFile(&quot;/my/directory&quot;)</code>，<code>textFile(&quot;/my/dir/*.txt&quot;)</code>和<code>textFile(&quot;/my/dir/*.gz&quot;)</code>。</li>
+<li>textFile方法可以接收额外的第二个参数，用于控制文件分区的数量。默认情况下，Spark为文件的每个block都创建一个分区（block是128MB,默认hdfs），但是你可以要求一个更大的分区数目，通过传递一个更大的值。</li>
+</ul>
+<p>除了文本文件，Spark's python api也支持几个其他的数据格式：</p>
+<ul>
+<li><code>SparkContext.wholeTextFiles</code>允许你读一个包含多个小文件的目录。并返回它们的每一个（filename, content)pairs。而textFile会返回每个文件中的每一行。</li>
+<li><code>RDD.saveAsPickleFile</code>和<code>SparkContext.pickleFile</code>支持将Rdd存为简单的由pickled python对象组成的格式。</li>
+<li>Hadoop input/output格式 和 sequencefile。</li>
+</ul>
+<h2 id="33-rdd">3.3 RDD操作</h2>
+<p>RDD支持两种类型的操作：</p>
+<ul>
+<li>transformation。</li>
+<li>actions。</li>
+</ul>
+<h3 id="331-">3.3.1 基本操作</h3>
+<p>展示一下基本操作：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">lines <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">data.txt</span><span style="color:#e6db74">&#34;</span>)					            <span style="color:#75715e"># 返回RDD对象</span>
+lineLengths <span style="color:#f92672">=</span> lines<span style="color:#f92672">.</span>map(<span style="color:#66d9ef">lambda</span> s: len(s))  <span style="color:#75715e"># 每行的长度 , transformatino操作，返回RDD</span>
+totalLength <span style="color:#f92672">=</span> lineLengths<span style="color:#f92672">.</span>reduce(<span style="color:#66d9ef">lambda</span> a, b: a <span style="color:#f92672">+</span> b)  <span style="color:#75715e"># 所有行的长度, actinos操作，返回int</span>
+</code></pre></div><p>第一行从读取外部文件，作为RDD。</p>
+<p>map：transformatin操作。lineLengths<strong>不会</strong>立即计算。</p>
+<p>reduce：actions操作，此刻Spark会在不同的机器上<strong>执行任务</strong>。</p>
+<h3 id="332-spark">3.3.2 向Spark传递函数</h3>
+<ul>
+<li>lambda表达式</li>
+<li>本地定义的函数</li>
+<li>模块中的顶级函数</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;</span><span style="color:#e6db74">MyScript.py</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#34;</span>:
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">myFunc</span>(s):
+        words <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>split(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span>)
+        <span style="color:#66d9ef">return</span> len(words)
+
+    sc <span style="color:#f92672">=</span> SparkContext(<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>)
+    sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">file.txt</span><span style="color:#e6db74">&#34;</span>)<span style="color:#f92672">.</span>map(myFunc)
+</code></pre></div><h3 id="333-">3.3.3 理解闭包</h3>
+<p>在Spark中一个比较困难的事情是：理解变量和方法的生命周期和作用域（当在集群中执行代码时）。</p>
+<p>RDD操作会在变量的作用域外修改它们，can be frequent source of confusion。在下面的例子中，我们将会看到使用<code>foreach</code>来增加计数，使用其它操作也会出现类似的问题。</p>
+<p><strong>例子</strong>：
+RDD 元素求和，在相同的JVM中可能行为不同。当以local模式运行Spark时（&ndash;master=local[n]），versus部署Spark应用到集群上（e.g. 通过YARN提交应用）</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+rdd <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>parallelize(data)
+
+<span style="color:#75715e"># Wrong: Don&#39;t do this!!</span>
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">increment_counter</span>(x):
+    <span style="color:#66d9ef">global</span> counter
+    counter <span style="color:#f92672">+</span><span style="color:#f92672">=</span> x
+rdd<span style="color:#f92672">.</span>foreach(increment_counter)
+
+<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Counter value: </span><span style="color:#e6db74">&#34;</span>, counter)
+</code></pre></div><p><strong>本地 vs 集群模式</strong>
+上面代码的行为是未定义的，可能是不会工作的。为了执行job，Spark将RDD的操作拆分为tasks，每一个tasks都会被一个executor执行。在执行之前，Spark会计算task's 闭包。闭包是：对executor来说，在RDD上执行它的计算是可见的变量和方法（在这个例子是：foreach()）。闭包是序列化的，会被发送到每一个executor中。</p>
+<p>发送给每个executor的闭包中的变量是副本。因此，当在foreach中引用计数器时，它不再是driver节点上的计数器。driver节点的内存中仍然有一个计数器，但是对于executors来说是不可见的。executors只是看到序列化闭包中的副本。因此，计数器最终的值仍然为0，因为所有计数器上的操作都引用了序列化闭包内的值。</p>
+<p>在本地模式中，在某些情况下，foreach函数实际上将会在driver相同的jvm中运行，并且引用相同的原来的计数器，则计数器可能会更新。</p>
+<p>为了确保在这些场景下能够有不错的行为，应该使用<strong>Accumulator</strong>。在Spark中，Accumulators被用来提供一个机制来安全地更新变量（当execution被分割为跨集群的多个worker node的时候）。</p>
+<p>通常情况下，closures - constructs 像循环或者本地定义变量，不应该被用来mutate一些全局状态。Spark没有定义或者保证从闭包外部引用的对象的behavior of mutations。一些代码可能会在本地模式下工作，但是那知识偶然。使用Accumulator来替代一些全局的aggregation是有必要的。</p>
+<p><strong>打印RDD的值</strong>
+另一个普遍的习惯是：试图使用<code>rdd.foreach(println)</code>或者<code>rdd.map(println)</code>来打印元素。在一个单独的机器上，将会输出你期待的值。然而，在集群模式下，会使用executor的stdout，而不是drive的stdout。所以，想要在driver上打印所有的元素，可以使用collect()方法首先将RDD bring to driver节点，rdd.collect().foreach(println)。这会导致driver内存溢出，因为collect()会fetch整个RDD到一个机器上。如果你需要打印RDD的一些元素，一个安全的方法是使用：<code>take()</code>: <code>rdd.take(100).foreach(println)</code>。</p>
+<h3 id="334-transformation">3.3.4 Transformation</h3>
+<p>下面这个表列出了Spark支持的一些常见的操作。https://spark.apache.org/docs/latest/api/python/pyspark.html#pyspark.RDD</p>
+<table>
+<thead>
+<tr>
+<th>Transformation</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>map(func)</td>
+<td>返回分布式数据集（源文件的每个元素都被func处理）</td>
+</tr>
+<tr>
+<td>filter(func)</td>
+<td>返回新的分布式数据集（func返回true的元素组成新的数据集）</td>
+</tr>
+<tr>
+<td>flatMap(func)</td>
+<td>和map相似，但是每个输入item都被map为0或者更多的items（所以func返回序列而不是单个item）</td>
+</tr>
+<tr>
+<td>mapPartitions(func)</td>
+<td>和map相似，但是是在RDD的每一个分区上运行，所以func一定是type iterator&lt;T&gt; =&gt;iterator&lt;U&gt; 当运行在类型T的RDD上时。</td>
+</tr>
+<tr>
+<td>mapPartitionsWithIndex(func)</td>
+<td>和mapPartitions相似，但是</td>
+</tr>
+<tr>
+<td>sample(<em>withReplacement</em>, <em>fraction</em>, <em>seed</em>)</td>
+<td>使用一个给定的随机数种子，Sample a faction faction of the data, with or without replacement.</td>
+</tr>
+<tr>
+<td>union(<em>otherDataset</em>)</td>
+<td>返回一个新的数据集含源数据集和参数元素的集合）</td>
+</tr>
+<tr>
+<td>intersection(<em>otherDataset</em>)</td>
+<td>返回一个新的RDD（包含源数据集和参数的intersection）</td>
+</tr>
+<tr>
+<td>distinct([<em>numPartitions</em>]))</td>
+<td>返回一个新的数据集（包含源数据集中不同的元素）</td>
+</tr>
+<tr>
+<td>groupByKey([numPartions])</td>
+<td>当在(K, V)pairs上调用时，返回(K, Iterable<!-- raw HTML omitted -->)pairs的一个数据集。注意：如果你分组为了执行聚合（例如求和或者求平均值）over each key，使用reduceByKey或者 aggregateByKey将会有更好的性能。注意：默认情况下，并行输出的级别依赖于父RDD的分区数量。你可以通过传递额外的numPartitions参数来设置不同的tasks的数量。</td>
+</tr>
+<tr>
+<td>reduceByKey(func, [numPartitions])</td>
+<td>当(K, V)pairs的数据集调用时，返回(K, V)的datasets（在这里每一个key都会被func函数聚合，which must type(V, V)=&gt; V. 和groupByKey类似，reduce task的数量是可以通过第二个参数配置的）</td>
+</tr>
+<tr>
+<td>aggregateByKey(zeroValue)(seqOp, combOp, [numPartitinos])</td>
+<td>When called on a dataset of (K, V) pairs, returns a dataset of (K, U) pairs where the values for each key are aggregated using the given combine functions and a neutral &ldquo;zero&rdquo; value. Allows an aggregated value type that is different than the input value type, while avoiding unnecessary allocations. Like in <code>groupByKey</code>, the number of reduce tasks is configurable through an optional second argument.</td>
+</tr>
+<tr>
+<td>sortByKey([ascending], [numPartitions])</td>
+<td>When called on a dataset of (K, V) pairs where K implements Ordered, returns a dataset of (K, V) pairs sorted by keys in ascending or descending order, as specified in the boolean <code>ascending</code> argument.</td>
+</tr>
+<tr>
+<td>join(otherDataset, [numPartitions])</td>
+<td>When called on datasets of type (K, V) and (K, W), returns a dataset of (K, (V, W)) pairs with all pairs of elements for each key. Outer joins are supported through <code>leftOuterJoin</code>, <code>rightOuterJoin</code>, and <code>fullOuterJoin</code>.</td>
+</tr>
+<tr>
+<td>cogroup(otherDataset, [numPartitions])</td>
+<td>When called on datasets of type (K, V) and (K, W), returns a dataset of (K, (Iterable<!-- raw HTML omitted -->, Iterable<!-- raw HTML omitted -->)) tuples. This operation is also called <code>groupWith</code>.</td>
+</tr>
+<tr>
+<td>cartesian(otherDataset)</td>
+<td>When called on datasets of types T and U, returns a dataset of (T, U) pairs (all pairs of elements).</td>
+</tr>
+<tr>
+<td>pipe(command, [envVars])</td>
+<td>Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.</td>
+</tr>
+<tr>
+<td>coalesce(numPartitions)</td>
+<td>Decrease the number of partitions in the RDD to numPartitions. Useful for running operations more efficiently after filtering down a large dataset.</td>
+</tr>
+<tr>
+<td>repartition(numPartitions)</td>
+<td>Reshuffle the data in the RDD randomly to create either more or fewer partitions and balance it across them. This always shuffles all data over the network.</td>
+</tr>
+<tr>
+<td>repartitionAndSortWithinPartions(partitioner)</td>
+<td>Repartition the RDD according to the given partitioner and, within each resulting partition, sort records by their keys. This is more efficient than calling <code>repartition</code> and then sorting within each partition because it can push the sorting down into the shuffle machinery.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="335-actions">3.3.5 actions</h3>
+<p>下面这个列表是Spark支持的常用的Action。</p>
+<table>
+<thead>
+<tr>
+<th>Actions</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>reduce(func)</td>
+<td>使用func来聚合数据集的元素（函数接收两个参数并且返回一个值）。函数应该可以被正确的并行计算</td>
+</tr>
+<tr>
+<td>collect()</td>
+<td>返回数据集的所有元素，以数组的形式at the driver程序。在过滤或者其它操作之后，返回数据集的小的子集是有用的。</td>
+</tr>
+<tr>
+<td>count()</td>
+<td>返回数据集中元素的数量。</td>
+</tr>
+<tr>
+<td>first()</td>
+<td>返回数据集中第一个元素。（和take(1)类似）</td>
+</tr>
+<tr>
+<td>take(n)</td>
+<td>返回一个包含数据集前n个元素的数组。</td>
+</tr>
+<tr>
+<td>takeSample(withReplacement, num, [seed])</td>
+<td>返回数据集中num个随机元素，with or without replacement，optionally pre-specifying a random number generator seed。</td>
+</tr>
+<tr>
+<td>takeOrdered(n, [ordering])</td>
+<td>返回RDD的前N个元素（可以以自然顺序，也可以自定义comparator）</td>
+</tr>
+<tr>
+<td>saveAsTextFile(path)</td>
+<td>写数据集的元素到本地文件系统指定目录的text文件中（或者一组文本文件），hdfs或者任何hadoop支持的文件系统。Spark将会为每个元素调用tostring来转换为文本中的一行。</td>
+</tr>
+<tr>
+<td>saveAsSequenceFile(path) ( java and scala)</td>
+<td></td>
+</tr>
+<tr>
+<td>saveAsObjectFile(path)(Java and Scala)</td>
+<td></td>
+</tr>
+<tr>
+<td>countByKey()</td>
+<td>只适用于类型为(K, V)的RDD。返回一个(K, V)pairs的hashmap，with the count of each key。</td>
+</tr>
+<tr>
+<td>foreach(func)</td>
+<td>对数据集上的每个元素运行func。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="heading">分发操作</h3>
+<h1 id="4-sparksql">4. sparksql使用</h1>
+<p>参考：https://spark.apache.org/docs/latest/api/python/pyspark.sql.html</p>
+<p>描述一些api的使用, 其实和hiveql类似, 不过使用py语法.</p>
+<h2 id="pysparksqlsparksession">pyspark.sql.SparkSession</h2>
+<h2 id="pysparksqldataframe">pyspark.sql.DataFrame</h2>
+<h3 id="property">property</h3>
+<h3 id="select--selectexpr">select &amp; selectExpr</h3>
+<h3 id="where--filter">where &amp; filter</h3>
+<h3 id="groupby--agg-udaf--count">groupby &amp; agg UDAF &amp; count</h3>
+<h3 id="crossjoin">crossJoin</h3>
+<h3 id="withcolumn">withColumn</h3>
+<h3 id="collect--take--first--head">collect &amp; take &amp; first &amp; head</h3>
+<h3 id="alias">alias</h3></article>
+    <footer class="post-footer">
+      
+      <ul class="post-tags">
+        
+          <li><a href="/tags/spark"><span class="tag">Spark</span></a></li>
+        
+          <li><a href="/tags/bigdata"><span class="tag">BigData</span></a></li>
+        
+      </ul>
+      
+      
+      
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">L0phTg</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">2020-01-05</span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">许可协议</span>
+    <span class="item-content">原创文章，如需转载请注明文章作者和出处。谢谢！</span>
+  </p>
+</div>
+    </footer>
+    
+      
+    
+  </section>
+  
+  
+
+  
+  
+  
+<footer class="site-footer">
+  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
+  
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/smooth-scroll@15.0.0/dist/smooth-scroll.min.js"></script>
+
+
+
+<script async src="https://cdn.jsdelivr.net/npm/video.js@7.3.0/dist/video.min.js"></script>
+
+
+
+
+<script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [['$','$'], ['\\(','\\)']],
+      displayMath: [['$$','$$'], ['\\[','\\]']],
+      processEscapes: true,
+      processEnvironments: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+      TeX: { equationNumbers: { autoNumber: "AMS" },
+      extensions: ["AMSmath.js", "AMSsymbols.js"] }
+    },
+  });
+</script>
+<script type="text/x-mathjax-config">
+  // Fix <code> tags after MathJax finishes running. This is a
+  // hack to overcome a shortcoming of Markdown. Discussion at
+  // https://github.com/mojombo/jekyll/issues/199
+  MathJax.Hub.Queue(() => {
+    MathJax.Hub.getAllJax().map(v => v.SourceElement().parentNode.className += ' has-jax');
+  });
+</script>
+
+
+
+<script src="/scripts/index.min.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('\/service-worker.js').then(function() {
+      console.log('[ServiceWorker] Registered');
+    });
+  }
+</script>
+
+
+
+
+
+
+
+
+    
+  </body>
+</html>

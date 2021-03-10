@@ -6,10 +6,64 @@
     <description>Recent content in Posts on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Mon, 27 Jan 2020 11:18:49 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 03 Mar 2021 15:44:43 +0800</lastBuildDate>
     
 	<atom:link href="http://L0phTg.top/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>使用docker搭建spark集群</title>
+      <link>http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 03 Mar 2021 15:44:43 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/</guid>
+      <description>&lt;p&gt;运行环境:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;vmware workstation&lt;/li&gt;
+&lt;li&gt;ubuntu18.04&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;创建了三个docker容器，分别为master、slave1、slave2：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;ip&lt;/th&gt;
+&lt;th&gt;hadoop/spark用户名&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;master&lt;/td&gt;
+&lt;td&gt;172.17.0.2&lt;/td&gt;
+&lt;td&gt;spark&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;slave1&lt;/td&gt;
+&lt;td&gt;172.17.0.3&lt;/td&gt;
+&lt;td&gt;spark&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;slave2&lt;/td&gt;
+&lt;td&gt;172.17.0.4&lt;/td&gt;
+&lt;td&gt;spark&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>二叉树及其推广</title>
+      <link>http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/</link>
+      <pubDate>Tue, 05 Jan 2021 10:40:46 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/</guid>
+      <description>&lt;p&gt;能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？&lt;/p&gt;
+&lt;p&gt;这就是我们的接下来要聊的话题：半线性结构：树。&lt;/p&gt;
+&lt;figure&gt;
+    &lt;img src=&#34;http://L0phTg.top/docs-pic/ds/tree-arch.png&#34; width=&#34;70%&#34; height=&#34;50%&#34;/&gt; 
+&lt;/figure&gt;</description>
+    </item>
     
     <item>
       <title>左传之子鱼论战</title>
@@ -29,6 +83,17 @@
       
       <guid>http://L0phTg.top/post/tools/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/</guid>
       <description>&lt;p&gt;radare2是一个开源的逆向分析工具, 基于capstone。使用简单方便，是我最喜爱的工具之一。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Spark笔记</title>
+      <link>http://L0phTg.top/post/bigdata/spark%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 05 Jan 2020 20:22:22 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/post/bigdata/spark%E7%AC%94%E8%AE%B0/</guid>
+      <description>&lt;p&gt;在本地环境中, 我们常用pandas来做离线数据分析.&lt;/p&gt;
+&lt;p&gt;在集群上, 我们常用Spark来做离线数据分析.用Flink做实时计算.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;本文不断更新中!&lt;/strong&gt;&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -235,7 +300,10 @@ graph TB
 &lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;</description>
+&lt;!-- raw HTML omitted --&gt;
+&lt;figure&gt;
+    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;/&gt; 
+&lt;/figure&gt;</description>
     </item>
     
     <item>
@@ -307,7 +375,10 @@ graph TB
       <guid>http://L0phTg.top/post/llvm/kaleidoscope_code-generation-to-llvm-ir/</guid>
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; alt=&#34;codegen .png&#34;&gt;&lt;/p&gt;</description>
+&lt;!-- raw HTML omitted --&gt;
+&lt;figure&gt;
+    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; width=&#34;100%&amp;#34;&#34; height=&#34;100%&#34;/&gt; 
+&lt;/figure&gt;</description>
     </item>
     
     <item>

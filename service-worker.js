@@ -39,6 +39,7 @@ var filesToCache = [
   // MathJax
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js?V=2.7.5',
+
 ];
 
 // Cache the application assets
