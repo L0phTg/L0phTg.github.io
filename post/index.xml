@@ -314,7 +314,7 @@ graph TB
                         &#34;&gt; 
 
 graph TB
-  subgraph call
+  subgraph CALL
     funcall(&#34;foo(1);&#34;)
   end
   subgraph expr
