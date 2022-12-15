@@ -96,7 +96,7 @@
                             center
                         &#34;&gt; 
 
-graph LR
+graph TD
 
   subgraph 二元运算符
     binaryParser[1. 添加词法分析支持] 
