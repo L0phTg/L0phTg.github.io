@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -53,7 +53,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/c&#43;&#43;/c&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">
@@ -227,55 +226,55 @@
   <ul>
     <li><a href="#struct">struct</a></li>
     <li><a href="#class">class</a></li>
-    <li><a href="#structclass">struct和class的区别</a></li>
+    <li><a href="#struct和class的区别">struct和class的区别</a></li>
   </ul>
 
   <ul>
-    <li><a href="#heading-2">类型成员</a></li>
-    <li><a href="#heading-3">数据成员</a>
+    <li><a href="#类型成员">类型成员</a></li>
+    <li><a href="#数据成员">数据成员</a>
       <ul>
-        <li><a href="#mutable">可变变量（mutable)</a></li>
-        <li><a href="#static">静态变量（static）</a></li>
+        <li><a href="#可变变量mutable">可变变量（mutable)</a></li>
+        <li><a href="#静态变量static">静态变量（static）</a></li>
       </ul>
     </li>
-    <li><a href="#heading-4">构造函数和析构函数</a>
+    <li><a href="#构造函数和析构函数">构造函数和析构函数</a>
       <ul>
-        <li><a href="#heading-5">构造函数分类</a></li>
-        <li><a href="#heading-10">构造函数组成</a></li>
-        <li><a href="#heading-12">虚析构函数</a></li>
+        <li><a href="#构造函数分类">构造函数分类</a></li>
+        <li><a href="#构造函数组成">构造函数组成</a></li>
+        <li><a href="#虚析构函数">虚析构函数</a></li>
       </ul>
     </li>
-    <li><a href="#heading-13">成员函数</a>
+    <li><a href="#成员函数">成员函数</a>
       <ul>
-        <li><a href="#virtual">virtual属性</a></li>
-        <li><a href="#inline">inline属性</a></li>
-        <li><a href="#static-1">static成员函数</a></li>
-        <li><a href="#const">const成员函数</a></li>
-        <li><a href="#heading-14">组成</a></li>
+        <li><a href="#virtual属性">virtual属性</a></li>
+        <li><a href="#inline属性">inline属性</a></li>
+        <li><a href="#static成员函数">static成员函数</a></li>
+        <li><a href="#const成员函数">const成员函数</a></li>
+        <li><a href="#组成-1">组成</a></li>
       </ul>
     </li>
-    <li><a href="#heading-15">友元</a></li>
-    <li><a href="#heading-16">运算符</a>
+    <li><a href="#友元">友元</a></li>
+    <li><a href="#运算符">运算符</a>
       <ul>
-        <li><a href="#heading-17">拷贝赋值运算符</a></li>
-        <li><a href="#heading-18">移动赋值运算符</a></li>
-        <li><a href="#heading-19">函数调用运算符</a></li>
+        <li><a href="#拷贝赋值运算符">拷贝赋值运算符</a></li>
+        <li><a href="#移动赋值运算符">移动赋值运算符</a></li>
+        <li><a href="#函数调用运算符">函数调用运算符</a></li>
       </ul>
     </li>
-    <li><a href="#this-">this 指针</a></li>
-    <li><a href="#heading-20">作用域</a></li>
+    <li><a href="#this-指针">this 指针</a></li>
+    <li><a href="#作用域">作用域</a></li>
   </ul>
 
   <ul>
-    <li><a href="#heading-23">访问控制属性（封装性）</a></li>
-    <li><a href="#heading-24">继承属性</a>
+    <li><a href="#访问控制属性封装性">访问控制属性（封装性）</a></li>
+    <li><a href="#继承属性">继承属性</a>
       <ul>
-        <li><a href="#heading-25">基类和派生类</a></li>
-        <li><a href="#heading-28">单继承</a></li>
-        <li><a href="#heading-30">多重继承</a></li>
+        <li><a href="#基类和派生类">基类和派生类</a></li>
+        <li><a href="#单继承">单继承</a></li>
+        <li><a href="#多重继承">多重继承</a></li>
       </ul>
     </li>
-    <li><a href="#heading-31">多态属性</a></li>
+    <li><a href="#多态属性">多态属性</a></li>
   </ul>
 </nav>
   </div>
@@ -285,67 +284,67 @@
     <article class="post-content"><p>初次接触c++是在15年，还蛮早的，但之后的学习中由于使用c++的地方比较少，所以没怎么使用c++开发过项目。然而随着最近学习Art和LLVM的时候，用到了很多c++知识，逐渐发现了自己基础知识的薄弱。遂决定写一个c++系列的语法和编程入门总结。（主要参考 c++ primer 和 effective c++, effective系列没有涉及细节，详细内容可以看书来获得）</p>
 <p><strong>本文不断更新中。</strong></p>
 <p>设计class犹如设计type。<em>&mdash;- effective c++ 19</em></p>
-<h1 id="heading">定义</h1>
+<h1 id="定义">定义</h1>
 <h2 id="struct">struct</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Screen</span>{
-    
-    
-};
-</code></pre></div><h2 id="class">class</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span>{
-    
-    
-};
-</code></pre></div><h2 id="structclass">struct和class的区别</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">Screen</span>{
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="class">class</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span>{
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="struct和class的区别">struct和class的区别</h2>
 <p>struct: 第一个访问控制说明符之前的成员全部是public的。</p>
 <p>class: 第一个访问控制说明符之前的成员全部是private的。</p>
-<h1 id="heading-1">组成</h1>
+<h1 id="组成">组成</h1>
 <p>当定义一个类时，如果自己没有申明拷贝构造函数，拷贝赋值运算符和析构函数，编译器会为我们默认生成。如果没有构造函数，编译器也会为我们合成默认构造函数。&mdash;- <em>effective c++ 05</em></p>
 <p>我们可以通过=default来表明根据编译器默认合成。</p>
 <p>同样地，如果不使用编译器自动生成的拷贝构造函数和拷贝赋值运算符，应该明确拒绝。 &mdash;- <em>effective c++ 06</em></p>
 <p>我们可以通过在函数第一次声明时添加=delete来阻止编译器合成拷贝构造函数和拷贝赋值运算符。</p>
-<h2 id="heading-2">类型成员</h2>
+<h2 id="类型成员">类型成员</h2>
 <p>我们可以定义一个类型成员，有两种方式来定义：</p>
 <ol>
 <li>
 <p>typedef;</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
- <span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_type pos;
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
- pos cursor <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
- pos height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-};
-</code></pre></div></li>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">::</span>size_type pos;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	pos cursor <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	pos height <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, width <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div></li>
 <li>
 <p>using;类型别名</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
- <span style="color:#66d9ef">using</span> pos <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_type;
-}; 
-</code></pre></div></li>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">using</span> pos <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">::</span>size_type;
+</span></span><span style="display:flex;"><span>}; 
+</span></span></code></pre></div></li>
 </ol>
 <p><strong>注意</strong>: <strong>类型成员定义在类开始的地方，因为之后的成员函数或成员变量会使用到</strong>.</p>
-<h2 id="heading-3">数据成员</h2>
+<h2 id="数据成员">数据成员</h2>
 <p>成员变量应该被声明是private的。<em>&mdash;- effective c++ 22</em></p>
-<h3 id="mutable">可变变量（mutable)</h3>
+<h3 id="可变变量mutable">可变变量（mutable)</h3>
 <p>如果我们希望修改类的某个类型成员，即使在const成员函数内。可以通过在变量的申明中加入 <strong>mutable</strong> 关键字。</p>
 <p><strong>一个可变数据成员永远不会是const的，即使它是const对象的成员</strong>。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">void</span> some_member() <span style="color:#66d9ef">const</span>;
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-	<span style="color:#66d9ef">mutable</span> size_t access_str;
-};
-
-<span style="color:#66d9ef">void</span>  Screen<span style="color:#f92672">:</span><span style="color:#f92672">:</span>some_member() <span style="color:#66d9ef">const</span> 
-{
-	<span style="color:#f92672">+</span><span style="color:#f92672">+</span>access_ctr;
-}
-</code></pre></div><h3 id="static">静态变量（static）</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> some_member() <span style="color:#66d9ef">const</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">mutable</span> size_t access_str;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span>  Screen<span style="color:#f92672">::</span>some_member() <span style="color:#66d9ef">const</span> 
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">++</span>access_ctr;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="静态变量static">静态变量（static）</h3>
 <p>我们可以在成员的申明之前添加关键字“static”使得其与类关联在一起。</p>
 <p>类的静态成员存在于任何对象之外，对象中不包含任何与静态数据成员有关的数据。</p>
-<h2 id="heading-4">构造函数和析构函数</h2>
+<h2 id="构造函数和析构函数">构造函数和析构函数</h2>
 <p><strong>构造函数定义</strong>：类通过一个或几个特殊的成员函数来控制其对象的初始化过程，这些函数叫做<strong>构造函数</strong>。</p>
 <p><strong>构造函数的组成</strong>：没有返回值、构造函数名字与类名相同、包含参数列表和函数体。（多个构造函数的参数数量或参数类型上必须有所区别）</p>
 <p><strong>一些限制</strong>：构造函数不能被申明为const的。（因为常量属性是在对象初始化之后才有的）</p>
@@ -361,19 +360,19 @@
 <li>对于临时对象，当创建它的完整表达式结束时被销毁。</li>
 </ul>
 <p>注意：绝对不要再构造和析构过程中调用virtual函数。<em>&mdash;- effective c++ 09</em></p>
-<h3 id="heading-5">构造函数分类</h3>
-<h4 id="heading-6">默认构造函数</h4>
+<h3 id="构造函数分类">构造函数分类</h3>
+<h4 id="默认构造函数">默认构造函数</h4>
 <p>在用户<strong>未定义任何构造函数</strong>时，编译器会<strong>合成</strong>默认构造函数。</p>
 <p>当然也可以明确申明使用编译器合成的默认构造函数：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Sales_data() <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
-</code></pre></div><p>如果我们不使用默认构造函数的话，要明确指定删除：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Sales_data() <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
-</code></pre></div><p>如果类包含有内置类型或者复合类型的成员，则只有当这些成员全部都被赋予了类内初始值时，这个类才适合于使用合成的默认构造函数。</p>
-<h4 id="heading-7">拷贝构造函数</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Sales_data() <span style="color:#f92672">=</span> <span style="color:#66d9ef">default</span>;
+</span></span></code></pre></div><p>如果我们不使用默认构造函数的话，要明确指定删除：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Sales_data() <span style="color:#f92672">=</span> <span style="color:#66d9ef">delete</span>;
+</span></span></code></pre></div><p>如果类包含有内置类型或者复合类型的成员，则只有当这些成员全部都被赋予了类内初始值时，这个类才适合于使用合成的默认构造函数。</p>
+<h4 id="拷贝构造函数">拷贝构造函数</h4>
 <p><strong>定义</strong>：如果一个构造函数的第一个参数是自身类型的引用，且任何额外参数都有默认值，则此构造函数是<strong>拷贝构造函数</strong>。</p>
 <p>如果我们没有为一个类定义拷贝构造函数，编译器会为我们定义一个，与合成默认构造函数不同，<strong>即使我们定义了其他构造函数，编译器也会为我们合成一个拷贝构造函数</strong>。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Sales_data(<span style="color:#66d9ef">const</span> Sales_data<span style="color:#f92672">&amp;</span>);
-</code></pre></div><p><strong>发生的时机</strong>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Sales_data(<span style="color:#66d9ef">const</span> Sales_data<span style="color:#f92672">&amp;</span>);
+</span></span></code></pre></div><p><strong>发生的时机</strong>：</p>
 <ol>
 <li>将一个对象作为实参传递给一个非引用类型的形参；</li>
 <li>从一个返回类型为非引用类型的函数返回一个对象；</li>
@@ -395,48 +394,48 @@
 </ol>
 <p><strong>实现</strong>: 如果我们要实现自己的拷贝构造函数，注意要拷贝它的每一个成员。（如果我们添加了类成员，相应地，我们也要改变拷贝构造函数）。<em>&mdash;- effective c++ 12</em></p>
 <p><strong>实现派生类的拷贝构造函数</strong>: 我们不仅要赋值派生类的成员，还要复制基类的成员（可以通过调用基类的拷贝构造函数来完成）。&mdash;- effective c++ 12</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">PriorityCustomer<span style="color:#f92672">:</span><span style="color:#f92672">:</span>PriorityCustomer(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs)
-	<span style="color:#f92672">:</span> Customer(rhs), 				<span style="color:#75715e">// 调用基类的拷贝构造函数
-</span><span style="color:#75715e"></span>	  priority(rhs.priority)
-{
-	LogCall(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">PriorityCustomer copy constructor</span><span style="color:#e6db74">&#34;</span>);
-}
-</code></pre></div><h4 id="heading-8">移动构造函数</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>PriorityCustomer<span style="color:#f92672">::</span>PriorityCustomer(<span style="color:#66d9ef">const</span> PriorityCustomer<span style="color:#f92672">&amp;</span> rhs)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">:</span> Customer(rhs), 				<span style="color:#75715e">// 调用基类的拷贝构造函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	  priority(rhs.priority)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	LogCall(<span style="color:#e6db74">&#34;PriorityCustomer copy constructor&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="移动构造函数">移动构造函数</h4>
 <p>在某些情况下，对象拷贝后就立即被销毁了。这这些情况下，移动而非拷贝对象会大幅度提升性能。</p>
 <p>为了让我们的类型支持移动操作，需要为其定义移动构造函数和移动赋值运算符。这两个成员类似对应的拷贝操作，但它们从给定对象“窃取”资源而不是拷贝资源。</p>
 <p><strong>移动构造函数</strong>： 第一个参数是该类类型的一个右值引用。任何额外的参数都必须有默认实参。</p>
 <p><strong>注意</strong>：移动构造函数必须确保移后源对象处于这样一个状态&mdash;-销毁它是无害的。特别是，一旦资源完成移动，源对象必须不再指向被移动的资源&mdash;-这些资源的所有权已经归属新创建的对象。</p>
 <p>移动构造函数不应该抛出异常，且不分配任何新内存。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">StrVec<span style="color:#f92672">:</span><span style="color:#f92672">:</span>StrVec(StrVec <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>s) <span style="color:#66d9ef">noexcept</span>
-	<span style="color:#f92672">:</span> elements(s.elements), first_free(s.first_free), cap(s.cap)
-{
-	s.elements <span style="color:#f92672">=</span> s.first_free <span style="color:#f92672">=</span> s.cap <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;        
-}
-</code></pre></div><h4 id="heading-9">委托构造函数</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>StrVec<span style="color:#f92672">::</span>StrVec(StrVec <span style="color:#f92672">&amp;&amp;</span>s) <span style="color:#66d9ef">noexcept</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">:</span> elements(s.elements), first_free(s.first_free), cap(s.cap)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	s.elements <span style="color:#f92672">=</span> s.first_free <span style="color:#f92672">=</span> s.cap <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;        
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="委托构造函数">委托构造函数</h4>
 <p>很好理解，就是一个委托构造函数使用<strong>它所属类的其他构造函数</strong>执行它自己的初始化过程。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Sales_data</span> {
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-	Sales_data(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string s, <span style="color:#66d9ef">unsigned</span> cnt, <span style="color:#66d9ef">double</span> price) <span style="color:#f92672">:</span>
-			bookNo(s), units_sold(cnt), revenue(cnt<span style="color:#f92672">*</span>price) {}
-	Sales_data() <span style="color:#f92672">:</span> Sales_data(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) {}
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-	...
-};
-</code></pre></div><h3 id="heading-10">构造函数组成</h3>
-<h4 id="explicit">explicit属性</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Sales_data</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	Sales_data(std<span style="color:#f92672">::</span>string s, <span style="color:#66d9ef">unsigned</span> cnt, <span style="color:#66d9ef">double</span> price) <span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>			bookNo(s), units_sold(cnt), revenue(cnt<span style="color:#f92672">*</span>price) {}
+</span></span><span style="display:flex;"><span>	Sales_data() <span style="color:#f92672">:</span> Sales_data(<span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>) {}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h3 id="构造函数组成">构造函数组成</h3>
+<h4 id="explicit属性">explicit属性</h4>
 <p>在要求隐式转换的程序上下文中，我们可以通过将构造函数申明为 <strong>explict</strong> 加以阻止。</p>
 <p>explicit构造函数只能用于直接初始化。</p>
-<h4 id="heading-11">构造函数初始值列表</h4>
+<h4 id="构造函数初始值列表">构造函数初始值列表</h4>
 <p>就对象的数据成员而言，初始化和赋值也有类似的区别。如果没有在构造函数的初始值列表中显式地初始化成员，则该成员将在构造函数体之前执行默认初始化。</p>
 <p>如果成员是const、引用，或者属于某种未提供默认构造函数的类类型，我们必须通过构造函数初始值列表为这些成员提供初值。</p>
 <p>最好令构造函数初始值的顺序与成员声明的顺序保持一致。而且如果可能的话，尽量避免使用某些成员初始化其他成员。</p>
-<h3 id="heading-12">虚析构函数</h3>
+<h3 id="虚析构函数">虚析构函数</h3>
 <p>析构函数添加了virtual属性。所有的基类的析构函数都应该为虚析构函数。&mdash;- <em>effective c++ 07</em></p>
 <p>析构函数决定不应该吐出异常。如果一个被析构函数调用的函数可能抛出异常，析构函数应该捕捉任何异常，然后吞下他们（不传播）或结束程序。<em>&mdash;- effective c++ 08</em></p>
-<h2 id="heading-13">成员函数</h2>
+<h2 id="成员函数">成员函数</h2>
 <p>公有的成员函数即是<strong>接口</strong>。好的接口设计应该很容易被正确使用，不容易被误用。<em>&mdash;- effective c++ 18</em></p>
 <p>宁可拿 non-member non-friend 函数替换 member 函数，这样做可以增加封装性、包裹弹性（packaging flexibility）和机能扩充性。<em>&mdash;- effective c++ 23</em></p>
-<h3 id="virtual">virtual属性</h3>
+<h3 id="virtual属性">virtual属性</h3>
 <p>一个某个函数被声明为virtual属性，那么在所有派生类中它都是虚函数。</p>
 <p><strong>作用</strong>: 实现c++中的多态性，提高代码复用。</p>
 <p><strong>多态</strong>: 即多种形式。我们把具有继承关系的多个类型称为多态类型，因为我们能使用这些类型的“多种形式”而无须在意它们的差异。<strong>引用或指针的静态类型与动态类型不同这一事实正是C++语言支持多态性的根本所在</strong>。</p>
@@ -445,20 +444,20 @@
 <li>对<strong>非虚函数</strong>的调用在编译时进行绑定。类似的，通过<strong>对象</strong>进行的函数（虚函数或非虚函数）调用也在编译时绑定。（对象的类型是确定不变的，我们无论如何都不可能令对象的动态类型与静态类型不一致）</li>
 <li>当且仅当对通过指针或引用调用虚函数时，才会在运行时解析该调用，也只有在这种情况下对象的动态类型才有可能与静态类型不同。</li>
 </ol>
-<h3 id="inline">inline属性</h3>
+<h3 id="inline属性">inline属性</h3>
 <p>声明inline函数的两种方式：</p>
 <ol>
 <li>函数的返回类型前面添加关键字<strong>inline</strong>；</li>
 <li>类内定义的函数默认都是<strong>inline</strong>函数；</li>
 </ol>
 <p>注意：内联说明只是向编译器发出一个请求，编译器可以选择忽略这个请求。</p>
-<h3 id="static-1">static成员函数</h3>
+<h3 id="static成员函数">static成员函数</h3>
 <p>与静态数据成员类似，静态成员函数也不与任何对象绑定在一起，它们<strong>不包含 this 指针</strong>，作为结果，静态成员函数不能申明为const的，而且我们也不能在static函数中使用this指针。</p>
-<h3 id="const">const成员函数</h3>
+<h3 id="const成员函数">const成员函数</h3>
 <p><strong>形式</strong>：在成员函数的参数列表后紧跟const关键字。这里，const的作用是修改隐式this指针的类型。</p>
 <p>默认情况下，this的类型是指向类类型非常量版本的常量指针。</p>
 <p>一个const成员函数如果以引用的形式返回*this，那么它的返回类型将是常量引用。</p>
-<h3 id="heading-14">组成</h3>
+<h3 id="组成-1">组成</h3>
 <p>返回类型、函数名称、参数、函数体。</p>
 <p><strong>返回类型的设计</strong>：</p>
 <ol>
@@ -475,75 +474,75 @@
 <li>只要定义了一个变量而其类型带有一个构造函数或析构函数，那么当程序的控制流到达这个变量定义式时，你便得承受构造成本；当这个变量离开其作用域时，你便得承受析构成本。所以，<strong>尽可能延后变量定义式的出现时间</strong>。<em>&mdash;- effective c++ 26</em></li>
 <li>尽量少做转型动作。<em>&mdash;- effective c++ 27</em></li>
 </ol>
-<h2 id="heading-15">友元</h2>
+<h2 id="友元">友元</h2>
 <p>类可以允许其它类访问它的<strong>非公有成员</strong>，方法是令其它类或函数称为它的友元。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Sales_data</span> {
-<span style="color:#66d9ef">friend</span><span style="color:#f92672">:</span> Sales_data add(<span style="color:#66d9ef">const</span> Sales_data<span style="color:#f92672">&amp;</span>, <span style="color:#66d9ef">const</span> Sales_data<span style="color:#f92672">&amp;</span>);
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-	...
-<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-	...
-};
-</code></pre></div><p>注意：友元的声明仅仅指定了访问的权限，函数的声明需要在类外声明。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Sales_data</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">friend</span><span style="color:#f92672">:</span> Sales_data add(<span style="color:#66d9ef">const</span> Sales_data<span style="color:#f92672">&amp;</span>, <span style="color:#66d9ef">const</span> Sales_data<span style="color:#f92672">&amp;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>	...
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>注意：友元的声明仅仅指定了访问的权限，函数的声明需要在类外声明。</p>
 <p>如果一个类想把一组重载函数声明成它的友元，它需要对这组函数中的每一个分别声明：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">extern</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ostream<span style="color:#f92672">&amp;</span> storeOn(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ostream <span style="color:#f92672">&amp;</span>, Screen <span style="color:#f92672">&amp;</span>);
-<span style="color:#66d9ef">extern</span> BitMap<span style="color:#f92672">&amp;</span> storeOn(BitMap <span style="color:#f92672">&amp;</span>, Screen <span style="color:#f92672">&amp;</span>);
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
-	<span style="color:#66d9ef">friend</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ostream<span style="color:#f92672">&amp;</span> storeOn(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ostream <span style="color:#f92672">&amp;</span>, Screen <span style="color:#f92672">&amp;</span>);
-};
-</code></pre></div><p><strong>声明位置</strong>：一般来说，最好在类的最开始处集中声明友元。</p>
-<h2 id="heading-16">运算符</h2>
-<h3 id="heading-17">拷贝赋值运算符</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> std<span style="color:#f92672">::</span>ostream<span style="color:#f92672">&amp;</span> storeOn(std<span style="color:#f92672">::</span>ostream <span style="color:#f92672">&amp;</span>, Screen <span style="color:#f92672">&amp;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> BitMap<span style="color:#f92672">&amp;</span> storeOn(BitMap <span style="color:#f92672">&amp;</span>, Screen <span style="color:#f92672">&amp;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Screen</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">friend</span> std<span style="color:#f92672">::</span>ostream<span style="color:#f92672">&amp;</span> storeOn(std<span style="color:#f92672">::</span>ostream <span style="color:#f92672">&amp;</span>, Screen <span style="color:#f92672">&amp;</span>);
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p><strong>声明位置</strong>：一般来说，最好在类的最开始处集中声明友元。</p>
+<h2 id="运算符">运算符</h2>
+<h3 id="拷贝赋值运算符">拷贝赋值运算符</h3>
 <p>如果一个类未定义自己的拷贝赋值运算符，编译器会为它生成一个 <strong>合成拷贝赋值运算符</strong>。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Sales_data<span style="color:#f92672">&amp;</span>
-Sales_data<span style="color:#f92672">:</span><span style="color:#f92672">:</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Sales_data <span style="color:#f92672">&amp;</span>rhs)
-{
-...
-    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
-}
-</code></pre></div><p>一定要返回reference to *this。并且要正确处理自赋值。<em>&mdash;- effective c++ 10 11</em></p>
-<h3 id="heading-18">移动赋值运算符</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Sales_data<span style="color:#f92672">&amp;</span>
+</span></span><span style="display:flex;"><span>Sales_data<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Sales_data <span style="color:#f92672">&amp;</span>rhs)
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>一定要返回reference to *this。并且要正确处理自赋值。<em>&mdash;- effective c++ 10 11</em></p>
+<h3 id="移动赋值运算符">移动赋值运算符</h3>
 <p>移动赋值运算符执行与析构函数和移动构造函数相同的工作。另外，移动赋值运算符必须正确处理自赋值：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">StrVec <span style="color:#f92672">&amp;</span>StrVec<span style="color:#f92672">:</span><span style="color:#f92672">:</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(StrVec <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span>rhs) <span style="color:#66d9ef">noexcept</span>
-{
-	<span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span> <span style="color:#f92672">!</span><span style="color:#f92672">=</span> rhs)
-    {
-    	free(); 		<span style="color:#75715e">// 释放已有元素   
-</span><span style="color:#75715e"></span>        elements <span style="color:#f92672">=</span> rhs.elements;
-        first_free <span style="color:#f92672">=</span> rhs.first_free;
-        cap <span style="color:#f92672">=</span> rhs.cap;
-        rhs.elements <span style="color:#f92672">=</span> rhs.first_free <span style="color:#f92672">=</span> rhs.cap <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
-}
-</code></pre></div><p>一定要返回reference to *this。并且要正确处理自赋值。<em>&mdash;- effective c++ 10 11</em></p>
-<h3 id="heading-19">函数调用运算符</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>StrVec <span style="color:#f92672">&amp;</span>StrVec<span style="color:#f92672">::</span><span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(StrVec <span style="color:#f92672">&amp;&amp;</span>rhs) <span style="color:#66d9ef">noexcept</span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">this</span> <span style="color:#f92672">!=</span> rhs)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>    	free(); 		<span style="color:#75715e">// 释放已有元素   
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        elements <span style="color:#f92672">=</span> rhs.elements;
+</span></span><span style="display:flex;"><span>        first_free <span style="color:#f92672">=</span> rhs.first_free;
+</span></span><span style="display:flex;"><span>        cap <span style="color:#f92672">=</span> rhs.cap;
+</span></span><span style="display:flex;"><span>        rhs.elements <span style="color:#f92672">=</span> rhs.first_free <span style="color:#f92672">=</span> rhs.cap <span style="color:#f92672">=</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>一定要返回reference to *this。并且要正确处理自赋值。<em>&mdash;- effective c++ 10 11</em></p>
+<h3 id="函数调用运算符">函数调用运算符</h3>
 <p><strong>作用</strong>：如果类重载了函数调用运算符，则我们可以像使用函数一样使用该类的对象。（因为这样的类同时也能存储状态，所以与普通函数相比它们更加灵活）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">absInt</span> {
-	<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">operator</span>()(<span style="color:#66d9ef">int</span> val) <span style="color:#66d9ef">const</span> {
-		<span style="color:#66d9ef">return</span> val <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">?</span> <span style="color:#f92672">-</span>val : val;
-	}
-}
-</code></pre></div><p>函数调用运算符必须是成员函数。一个类可以定义多个不同版本的调用运算符，相互之间应该在参数数量或类型上有所区别。</p>
-<h2 id="this-">this 指针</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">absInt</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">operator</span>()(<span style="color:#66d9ef">int</span> val) <span style="color:#66d9ef">const</span> {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> val <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">?</span> <span style="color:#f92672">-</span>val : val;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>函数调用运算符必须是成员函数。一个类可以定义多个不同版本的调用运算符，相互之间应该在参数数量或类型上有所区别。</p>
+<h2 id="this-指针">this 指针</h2>
 <p>this总是指向该类实例化出来的对象。另外，this还是一个<strong>常量指针</strong>，我们<strong>不允许改变this中保存的地址</strong>。（Type*const this;）</p>
 <p>this作为非静态成员函数的隐式参数。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">total.isbn(); 
-<span style="color:#f92672">=</span><span style="color:#f92672">=</span> 
-Sales_data<span style="color:#f92672">:</span><span style="color:#f92672">:</span>isbn(<span style="color:#f92672">&amp;</span>total);
-</code></pre></div><h2 id="heading-20">作用域</h2>
-<h1 id="heading-21">类的层次结构</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>total.isbn(); 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">==</span> 
+</span></span><span style="display:flex;"><span>Sales_data<span style="color:#f92672">::</span>isbn(<span style="color:#f92672">&amp;</span>total);
+</span></span></code></pre></div><h2 id="作用域">作用域</h2>
+<h1 id="类的层次结构">类的层次结构</h1>
 <p>基类和派生类。</p>
-<h1 id="heading-22">类的性质</h1>
-<h2 id="heading-23">访问控制属性（封装性）</h2>
-<h2 id="heading-24">继承属性</h2>
-<h3 id="heading-25">基类和派生类</h3>
+<h1 id="类的性质">类的性质</h1>
+<h2 id="访问控制属性封装性">访问控制属性（封装性）</h2>
+<h2 id="继承属性">继承属性</h2>
+<h3 id="基类和派生类">基类和派生类</h3>
 <p>通过<strong>继承</strong>（inheritance)联系在一起的类构成一种层次关系。通常在层次关系的根部有一个<strong>基类</strong>（base class），其他类则直接或间接地从基类继承而来，这些继承得到的类称为<strong>派生类</strong>（derived class）。</p>
 <p><strong>动态绑定</strong>: 在 C++ 语言中，当我们使用<strong>基类的引用（或指针）调用一个虚函数</strong>时将发生动态绑定。</p>
-<h4 id="heading-26">基类</h4>
+<h4 id="基类">基类</h4>
 <p><strong>虚函数</strong>: 所有的子类要覆盖的函数（子类有特定行为）都申明为virtual函数。&mdash;- <em>effective c++</em></p>
 <p>基类通常都应该定义一个<strong>虚析构函数</strong>，即使该函数不执行任何实际操作也是如此。</p>
-<h4 id="heading-27">派生类</h4>
+<h4 id="派生类">派生类</h4>
 <ol>
 <li>
 <p><strong>定义</strong>：派生类必须通过使用<strong>派生类列表</strong>明确指出它是从哪个（或哪些）基类继承而来的。</p>
@@ -561,8 +560,8 @@ Sales_data<span style="color:#f92672">:</span><span style="color:#f92672">:</spa
 <p><strong>派生类到基类的类型转换</strong>: 因为在派生类对象中含有与基类对应的组成部分，所以我们能把派生类的对象当成基类对象来使用，而且我们也能将基类的指针或引用绑定到派生类对象中的基类部分上。</p>
 </li>
 </ol>
-<h3 id="heading-28">单继承</h3>
-<h4 id="is-a">公有继承（is-a关系）</h4>
+<h3 id="单继承">单继承</h3>
+<h4 id="公有继承is-a关系">公有继承（is-a关系）</h4>
 <p>public inheritance意味着 is-a 的关系。</p>
 <p>即：如果class D(&ldquo;Derived&rdquo;) 以 public形式继承 class B(&ldquo;Base&rdquo;)，便意味着每一个类型为D的对象同时也是一个类型为B的对象。使用于 base classes 身上的每一件事一定也适用于derived classes身上，因为每一个derived class对象也都是一个base class对象。<em>&mdash;- effective c++ 32</em></p>
 <ol>
@@ -582,13 +581,15 @@ Sales_data<span style="color:#f92672">:</span><span style="color:#f92672">:</spa
 <p>因为虚函数动态绑定，而默认参数值是静态绑定的。 <em>&mdash;- effective c++ 37</em></p>
 </li>
 </ol>
-<h4 id="heading-29">私有继承</h4>
-<h3 id="heading-30">多重继承</h3>
-<h2 id="heading-31">多态属性</h2>
-<h1 id="heading-32">总结</h1></article>
+<h4 id="私有继承">私有继承</h4>
+<h3 id="多重继承">多重继承</h3>
+<h2 id="多态属性">多态属性</h2>
+<h1 id="总结">总结</h1></article>
     <footer class="post-footer">
       
       <ul class="post-tags">
+        
+          <li><a href="/tags/c&#43;&#43;"><span class="tag">C&#43;&#43;</span></a></li>
         
       </ul>
       
@@ -621,7 +622,7 @@ Sales_data<span style="color:#f92672">:</span><span style="color:#f92672">:</spa
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

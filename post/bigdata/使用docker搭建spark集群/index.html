@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -27,8 +27,8 @@
   
   <meta name="author" content="L0phTg">
   <meta name="description" content="运行环境:
- vmware workstation ubuntu18.04  创建了三个docker容器，分别为master、slave1、slave2：
-   名称 ip hadoop/spark用户名     master 172.17.0.2 spark   slave1 172.17.0.3 spark   slave2 172.17.0.4 spark    三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。
+vmware workstation ubuntu18.04 创建了三个docker容器，分别为master、slave1、slave2：
+名称 ip hadoop/spark用户名 master 172.17.0.2 spark slave1 172.17.0.3 spark slave2 172.17.0.4 spark 三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。
 ">
 
   
@@ -37,8 +37,8 @@
     <meta name="twitter:site" content="@gohugoio">
     <meta name="twitter:title" content="使用docker搭建spark集群">
     <meta name="twitter:description" content="运行环境:
- vmware workstation ubuntu18.04  创建了三个docker容器，分别为master、slave1、slave2：
-   名称 ip hadoop/spark用户名     master 172.17.0.2 spark   slave1 172.17.0.3 spark   slave2 172.17.0.4 spark    三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。
+vmware workstation ubuntu18.04 创建了三个docker容器，分别为master、slave1、slave2：
+名称 ip hadoop/spark用户名 master 172.17.0.2 spark slave1 172.17.0.3 spark slave2 172.17.0.4 spark 三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。
 ">
     <meta name="twitter:image" content="/images/avatar.png">
   
@@ -47,8 +47,8 @@
   <meta property="og:type" content="article">
   <meta property="og:title" content="使用docker搭建spark集群">
   <meta property="og:description" content="运行环境:
- vmware workstation ubuntu18.04  创建了三个docker容器，分别为master、slave1、slave2：
-   名称 ip hadoop/spark用户名     master 172.17.0.2 spark   slave1 172.17.0.3 spark   slave2 172.17.0.4 spark    三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。
+vmware workstation ubuntu18.04 创建了三个docker容器，分别为master、slave1、slave2：
+名称 ip hadoop/spark用户名 master 172.17.0.2 spark slave1 172.17.0.3 spark slave2 172.17.0.4 spark 三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。
 ">
   <meta property="og:url" content="http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/">
   <meta property="og:image" content="/images/avatar.png">
@@ -56,7 +56,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/">
@@ -228,14 +227,14 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#docker-ce">安装docker-ce</a></li>
-    <li><a href="#docker-1">配置docker仓库源</a></li>
-    <li><a href="#ubuntu">获得ubuntu镜像</a></li>
+    <li><a href="#安装docker-ce">安装docker-ce</a></li>
+    <li><a href="#配置docker仓库源">配置docker仓库源</a></li>
+    <li><a href="#获得ubuntu镜像">获得ubuntu镜像</a></li>
   </ul>
 
   <ul>
-    <li><a href="#heading-1">创建并启动容器</a></li>
-    <li><a href="#hadoopspark">容器中安装hadoop、spark</a></li>
+    <li><a href="#创建并启动容器">创建并启动容器</a></li>
+    <li><a href="#容器中安装hadoopspark">容器中安装hadoop、spark</a></li>
   </ul>
 
   <ul>
@@ -245,9 +244,9 @@
   </ul>
 
   <ul>
-    <li><a href="#ubuntu-1">配置ubuntu源</a></li>
-    <li><a href="#docker-2">docker命令</a></li>
-    <li><a href="#linux">linux操作</a></li>
+    <li><a href="#配置ubuntu源">配置ubuntu源</a></li>
+    <li><a href="#docker命令">docker命令</a></li>
+    <li><a href="#linux操作">linux操作</a></li>
   </ul>
 </nav>
   </div>
@@ -287,109 +286,109 @@
 </tbody>
 </table>
 <p>三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。</p>
-<h1 id="docker">Docker安装</h1>
-<h2 id="docker-ce">安装docker-ce</h2>
+<h1 id="docker安装">Docker安装</h1>
+<h2 id="安装docker-ce">安装docker-ce</h2>
 <p>安装docker-ce：参考：https://mirrors.tuna.tsinghua.edu.cn/help/docker-ce/</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#安装依赖</span>
-$sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
-<span style="color:#75715e"># 信任Docker的GPG公钥</span>
-curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
-<span style="color:#75715e"># 添加软件仓库</span>
-sudo add-apt-repository <span style="color:#ae81ff">\</span>
-   <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">deb [arch=amd64] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian \
-</span><span style="color:#e6db74">   </span><span style="color:#66d9ef">$(</span>lsb_release -cs<span style="color:#66d9ef">)</span><span style="color:#e6db74"> \
-</span><span style="color:#e6db74">   stable</span><span style="color:#e6db74">&#34;</span>
-<span style="color:#75715e"># 安装</span>
-sudo apt-get update
-sudo apt-get install docker-ce
-
-sudo systemctl start docker <span style="color:#75715e"># 启动docker服务</span>
-sudo systemctl enable docker <span style="color:#75715e"># 设置开机自启</span>
-</code></pre></div><h2 id="docker-1">配置docker仓库源</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#安装依赖</span>
+</span></span><span style="display:flex;"><span>$sudo apt-get install apt-transport-https ca-certificates curl gnupg2 software-properties-common
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 信任Docker的GPG公钥</span>
+</span></span><span style="display:flex;"><span>curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 添加软件仓库</span>
+</span></span><span style="display:flex;"><span>sudo add-apt-repository <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>   <span style="color:#e6db74">&#34;deb [arch=amd64] https://mirrors.tuna.tsinghua.edu.cn/docker-ce/linux/debian \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   </span><span style="color:#66d9ef">$(</span>lsb_release -cs<span style="color:#66d9ef">)</span><span style="color:#e6db74"> \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">   stable&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 安装</span>
+</span></span><span style="display:flex;"><span>sudo apt-get update
+</span></span><span style="display:flex;"><span>sudo apt-get install docker-ce
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sudo systemctl start docker <span style="color:#75715e"># 启动docker服务</span>
+</span></span><span style="display:flex;"><span>sudo systemctl enable docker <span style="color:#75715e"># 设置开机自启</span>
+</span></span></code></pre></div><h2 id="配置docker仓库源">配置docker仓库源</h2>
 <p><code>/etc/docker/daemon.json</code>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json">{
-    <span style="color:#f92672">&#34;registry-mirrors&#34;</span>: [
-         <span style="color:#e6db74">&#34;https://registry.docker-cn.com&#34;</span>
-    ]
-}
-</code></pre></div><p>之后重新加载daemon和重启docker：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$sudo systemctl daemon-reload
-$sudo systemctl restart docker
-</code></pre></div><h2 id="ubuntu">获得ubuntu镜像</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;registry-mirrors&#34;</span>: [
+</span></span><span style="display:flex;"><span>         <span style="color:#e6db74">&#34;https://registry.docker-cn.com&#34;</span>
+</span></span><span style="display:flex;"><span>    ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>之后重新加载daemon和重启docker：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$sudo systemctl daemon-reload
+</span></span><span style="display:flex;"><span>$sudo systemctl restart docker
+</span></span></code></pre></div><h2 id="获得ubuntu镜像">获得ubuntu镜像</h2>
 <p>因为我的主机系统是ubuntu18.04，所以需要pull ubuntu18.04的镜像</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$sudo docker pull ubuntu:18.04
-18.04: Pulling from library/ubuntu
-d519e2592276: Pull complete 
-d22d2dfcfa9c: Pull complete 
-b3afe92c540b: Pull complete 
-Digest: sha256:ea188fdc5be9b25ca048f1e882b33f1bc763fb976a8a4fea446b38ed0efcbeba
-Status: Downloaded newer image <span style="color:#66d9ef">for</span> ubuntu:18.04
-docker.io/library/ubuntu:18.04
-$ 
-</code></pre></div><h1 id="heading">容器操作</h1>
-<h2 id="heading-1">创建并启动容器</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$sudo docker pull ubuntu:18.04
+</span></span><span style="display:flex;"><span>18.04: Pulling from library/ubuntu
+</span></span><span style="display:flex;"><span>d519e2592276: Pull complete 
+</span></span><span style="display:flex;"><span>d22d2dfcfa9c: Pull complete 
+</span></span><span style="display:flex;"><span>b3afe92c540b: Pull complete 
+</span></span><span style="display:flex;"><span>Digest: sha256:ea188fdc5be9b25ca048f1e882b33f1bc763fb976a8a4fea446b38ed0efcbeba
+</span></span><span style="display:flex;"><span>Status: Downloaded newer image <span style="color:#66d9ef">for</span> ubuntu:18.04
+</span></span><span style="display:flex;"><span>docker.io/library/ubuntu:18.04
+</span></span><span style="display:flex;"><span>$ 
+</span></span></code></pre></div><h1 id="容器操作">容器操作</h1>
+<h2 id="创建并启动容器">创建并启动容器</h2>
 <p><strong>以slave1为例，说明创建容器和配置容器的内容和流程，master和slave2同slave1</strong>。</p>
 <p>根据ubuntu18.04创建容器，并命名为slave1</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ubuntu# docker run -itd --name slave1 ubuntu:18.04       <span style="color:#75715e">#还可以指定很多参数、例如ip、hostname等，参照docker命令语法</span>
-c7f88304681bc8a600091911bd57d5f63f5eb03d8f3baeda464aa2b1d304d8f0
-ubuntu# docker exec -it slave1 bash
-root@c7f88304681b:/# 
-</code></pre></div><p>安装一些必备软件(默认docker容器中没有携带sudo、ifconfig、vim等命令和应用)：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@c7f88304681b:/# passwd                <span style="color:#75715e"># 配置root密码</span>
-Enter new UNIX password:slave1root 
-Retype new UNIX password:slave1root
-passwd: password updated successfully
-root@c7f88304681b:/# apt update
-root@c7f88304681b:/# apt install vim wget net-tools iputils-ping ssh sudo
-</code></pre></div><p>新建用户spark、和用户组spark、并为spark用户添加sudo权限</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@c7f88304681b:/# groupadd -g <span style="color:#ae81ff">1000</span> spark
-root@c7f88304681b:/# useradd -u <span style="color:#ae81ff">2000</span> -g spark -m -s /bin/bash spark <span style="color:#75715e"># -m表示自动创建用户家目录/home/spark、并指定默认的登录shell为bash</span>
-root@c7f88304681b:/# passwd spark                    <span style="color:#75715e">#给spark用户设置密码</span>
-root@c7f88304681b:/# usermod -G sudo spark           <span style="color:#75715e">#为spark用户添加sudo权限</span>
-</code></pre></div><p>之后我们可以<strong>spark用户</strong>登录到slave1容器中：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ubuntu# docker exec -it --user<span style="color:#f92672">=</span>spark slave1 bash
-spark@c7f88304681b:~$
-</code></pre></div><p>开启ssh服务：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">root@c7f88304681b:/# /etc/init.d/ssh start
-</code></pre></div><p>编辑<code>/etc/ssh/sshd_config</code>, 允许公钥登录</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">PubkeyAuthentication yes
-AuthorizedKeysFile      .ssh/authorized_keys 
-</code></pre></div><p>然后将master和slave1、slave2的公钥都放入<code>authorized_keys</code>中，分发到三个系统的~/.ssh/目录下，即可互相之间免密码登录：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#演示免登录</span>
-spark@master $ ssh spark@slave1
-Welcome to Ubuntu 18.04.5 LTS <span style="color:#f92672">(</span>GNU/Linux 5.4.0-62-generic x86_64<span style="color:#f92672">)</span>
-.....
-Last login: Sun Jan <span style="color:#ae81ff">24</span> 09:20:10 <span style="color:#ae81ff">2021</span> from 172.17.0.1
-$ 
-<span style="color:#75715e"># ....</span>
-spark@master $ ssh spark@slave2
-Welcome to Ubuntu 18.04.5 LTS <span style="color:#f92672">(</span>GNU/Linux 5.4.0-62-generic x86_64<span style="color:#f92672">)</span>
-.....
-Last login: Sun Jan <span style="color:#ae81ff">24</span> 09:20:18 <span style="color:#ae81ff">2021</span> from 172.17.0.1
-$ 
-</code></pre></div><p>为了达到上面的登录时，不用输入ip的目的，还需要在<code>/etc/hosts</code>文件中添加以下ip和名称的映射关系</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">172.17.0.2   master
-172.17.0.3   slave1
-172.17.0.4   slave2
-</code></pre></div><h2 id="hadoopspark">容器中安装hadoop、spark</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ubuntu# docker run -itd --name slave1 ubuntu:18.04       <span style="color:#75715e">#还可以指定很多参数、例如ip、hostname等，参照docker命令语法</span>
+</span></span><span style="display:flex;"><span>c7f88304681bc8a600091911bd57d5f63f5eb03d8f3baeda464aa2b1d304d8f0
+</span></span><span style="display:flex;"><span>ubuntu# docker exec -it slave1 bash
+</span></span><span style="display:flex;"><span>root@c7f88304681b:/# 
+</span></span></code></pre></div><p>安装一些必备软件(默认docker容器中没有携带sudo、ifconfig、vim等命令和应用)：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@c7f88304681b:/# passwd                <span style="color:#75715e"># 配置root密码</span>
+</span></span><span style="display:flex;"><span>Enter new UNIX password:slave1root 
+</span></span><span style="display:flex;"><span>Retype new UNIX password:slave1root
+</span></span><span style="display:flex;"><span>passwd: password updated successfully
+</span></span><span style="display:flex;"><span>root@c7f88304681b:/# apt update
+</span></span><span style="display:flex;"><span>root@c7f88304681b:/# apt install vim wget net-tools iputils-ping ssh sudo
+</span></span></code></pre></div><p>新建用户spark、和用户组spark、并为spark用户添加sudo权限</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@c7f88304681b:/# groupadd -g <span style="color:#ae81ff">1000</span> spark
+</span></span><span style="display:flex;"><span>root@c7f88304681b:/# useradd -u <span style="color:#ae81ff">2000</span> -g spark -m -s /bin/bash spark <span style="color:#75715e"># -m表示自动创建用户家目录/home/spark、并指定默认的登录shell为bash</span>
+</span></span><span style="display:flex;"><span>root@c7f88304681b:/# passwd spark                    <span style="color:#75715e">#给spark用户设置密码</span>
+</span></span><span style="display:flex;"><span>root@c7f88304681b:/# usermod -G sudo spark           <span style="color:#75715e">#为spark用户添加sudo权限</span>
+</span></span></code></pre></div><p>之后我们可以<strong>spark用户</strong>登录到slave1容器中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ubuntu# docker exec -it --user<span style="color:#f92672">=</span>spark slave1 bash
+</span></span><span style="display:flex;"><span>spark@c7f88304681b:~$
+</span></span></code></pre></div><p>开启ssh服务：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>root@c7f88304681b:/# /etc/init.d/ssh start
+</span></span></code></pre></div><p>编辑<code>/etc/ssh/sshd_config</code>, 允许公钥登录</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>PubkeyAuthentication yes
+</span></span><span style="display:flex;"><span>AuthorizedKeysFile      .ssh/authorized_keys 
+</span></span></code></pre></div><p>然后将master和slave1、slave2的公钥都放入<code>authorized_keys</code>中，分发到三个系统的~/.ssh/目录下，即可互相之间免密码登录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#演示免登录</span>
+</span></span><span style="display:flex;"><span>spark@master $ ssh spark@slave1
+</span></span><span style="display:flex;"><span>Welcome to Ubuntu 18.04.5 LTS <span style="color:#f92672">(</span>GNU/Linux 5.4.0-62-generic x86_64<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>.....
+</span></span><span style="display:flex;"><span>Last login: Sun Jan <span style="color:#ae81ff">24</span> 09:20:10 <span style="color:#ae81ff">2021</span> from 172.17.0.1
+</span></span><span style="display:flex;"><span>$ 
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ....</span>
+</span></span><span style="display:flex;"><span>spark@master $ ssh spark@slave2
+</span></span><span style="display:flex;"><span>Welcome to Ubuntu 18.04.5 LTS <span style="color:#f92672">(</span>GNU/Linux 5.4.0-62-generic x86_64<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>.....
+</span></span><span style="display:flex;"><span>Last login: Sun Jan <span style="color:#ae81ff">24</span> 09:20:18 <span style="color:#ae81ff">2021</span> from 172.17.0.1
+</span></span><span style="display:flex;"><span>$ 
+</span></span></code></pre></div><p>为了达到上面的登录时，不用输入ip的目的，还需要在<code>/etc/hosts</code>文件中添加以下ip和名称的映射关系</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>172.17.0.2   master
+</span></span><span style="display:flex;"><span>172.17.0.3   slave1
+</span></span><span style="display:flex;"><span>172.17.0.4   slave2
+</span></span></code></pre></div><h2 id="容器中安装hadoopspark">容器中安装hadoop、spark</h2>
 <p>在用户主机上执行（自行下载jdk、maven、scala、hadoop、spark等安装包）：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># 将安装包从用户主机复制到master、slave1和slave2中</span>
-$sudo docker cp ./OpenJDK8U-jdk_x64_linux_hotspot_8u275b01.tar.gz slave1:/app/soft/
-$sudo docker cp ./hadoop-3.3.0.tar.gz slave1:/app/soft/
-$sudo docker cp ./spark-3.0.1.tgz slave1:/app/soft/
-</code></pre></div><p>登录slave1：安装jdk、hadoop、spark</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spark@slave1:/app/soft$ tar -xvzf OpenJDK8U-jdk_x64_linux_hotspot_8u275b01.tar.gz
-spark@slave1:/app/soft$ tar -xvzf hadoop-3.3.0.tar.gz
-spark@slave1:/app/soft$ tar -xvzf spark-3.0.1.tgz
-</code></pre></div><p>配置环境变量，<code>~/.bashrc</code>中添加：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">export JAVA_HOME<span style="color:#f92672">=</span>/app/soft/jdk8u275-b01
-export HADOOP_HOME<span style="color:#f92672">=</span>/app/soft/hadoop-3.3.0
-export YARN_HOME<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>
-export HADOOP_CONF_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>/conf
-export CLASSPATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>JAVA_HOME<span style="color:#e6db74">}</span>/lib/dt.jar:<span style="color:#e6db74">${</span>JAVA_HOME<span style="color:#e6db74">}</span>/lib/tools.jar
-export SPARK_HOME<span style="color:#f92672">=</span>/app/soft/spark-3.0.1
-export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>JAVA_HOME<span style="color:#e6db74">}</span>/bin:<span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>/bin:<span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>/sbin:<span style="color:#e6db74">${</span>SPARK_HOME<span style="color:#e6db74">}</span>/bin:<span style="color:#e6db74">${</span>SPARK_HOME<span style="color:#e6db74">}</span>/sbin:$PATH
-</code></pre></div><h1 id="heading-2">配置文件</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># 将安装包从用户主机复制到master、slave1和slave2中</span>
+</span></span><span style="display:flex;"><span>$sudo docker cp ./OpenJDK8U-jdk_x64_linux_hotspot_8u275b01.tar.gz slave1:/app/soft/
+</span></span><span style="display:flex;"><span>$sudo docker cp ./hadoop-3.3.0.tar.gz slave1:/app/soft/
+</span></span><span style="display:flex;"><span>$sudo docker cp ./spark-3.0.1.tgz slave1:/app/soft/
+</span></span></code></pre></div><p>登录slave1：安装jdk、hadoop、spark</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>spark@slave1:/app/soft$ tar -xvzf OpenJDK8U-jdk_x64_linux_hotspot_8u275b01.tar.gz
+</span></span><span style="display:flex;"><span>spark@slave1:/app/soft$ tar -xvzf hadoop-3.3.0.tar.gz
+</span></span><span style="display:flex;"><span>spark@slave1:/app/soft$ tar -xvzf spark-3.0.1.tgz
+</span></span></code></pre></div><p>配置环境变量，<code>~/.bashrc</code>中添加：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export JAVA_HOME<span style="color:#f92672">=</span>/app/soft/jdk8u275-b01
+</span></span><span style="display:flex;"><span>export HADOOP_HOME<span style="color:#f92672">=</span>/app/soft/hadoop-3.3.0
+</span></span><span style="display:flex;"><span>export YARN_HOME<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>export HADOOP_CONF_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>/conf
+</span></span><span style="display:flex;"><span>export CLASSPATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>JAVA_HOME<span style="color:#e6db74">}</span>/lib/dt.jar:<span style="color:#e6db74">${</span>JAVA_HOME<span style="color:#e6db74">}</span>/lib/tools.jar
+</span></span><span style="display:flex;"><span>export SPARK_HOME<span style="color:#f92672">=</span>/app/soft/spark-3.0.1
+</span></span><span style="display:flex;"><span>export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>JAVA_HOME<span style="color:#e6db74">}</span>/bin:<span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>/bin:<span style="color:#e6db74">${</span>HADOOP_HOME<span style="color:#e6db74">}</span>/sbin:<span style="color:#e6db74">${</span>SPARK_HOME<span style="color:#e6db74">}</span>/bin:<span style="color:#e6db74">${</span>SPARK_HOME<span style="color:#e6db74">}</span>/sbin:$PATH
+</span></span></code></pre></div><h1 id="配置文件">配置文件</h1>
 <ul>
 <li>hadoop-env.sh 环境变量（指定JAVA_HOME）</li>
 <li>core-site.xml、hdfs-site.xml</li>
@@ -397,172 +396,168 @@ export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">${</s
 <li>log4j.properties 日志</li>
 </ul>
 <h2 id="hdfs">hdfs</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># hadoop-env.sh</span>
-export JAVA_HOME<span style="color:#f92672">=</span>/app/soft/jdk8u275-b01
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> core</span><span style="color:#75715e">-</span><span style="color:#75715e">site.xml </span><span style="color:#75715e">--&gt;</span>
-<span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-      <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>fs.defaultFS<span style="color:#f92672">&lt;/name&gt;</span>
-      <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>hdfs://master:9000<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>hadoop.tmp.dir<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>/usr/local/tmp/spark<span style="color:#f92672">&lt;/value&gt;</span>
-    <span style="color:#f92672">&lt;description</span><span style="color:#f92672">&gt;</span>A base for other temporary directories.<span style="color:#f92672">&lt;/description&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-<span style="color:#f92672">&lt;/configuration&gt;</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> hdfs</span><span style="color:#75715e">-</span><span style="color:#75715e">site.xml </span><span style="color:#75715e">--&gt;</span>
-<span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-        <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>dfs.replication<span style="color:#f92672">&lt;/name&gt;</span>
-        <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>3<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>dfs.namenode.name.dir<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>file:/usr/local/tmp/spark/dfs/name<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>dfs.datanode.data.dir<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>file:/usr/local/tmp/spark/dfs/data<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-<span style="color:#f92672">&lt;/configuration&gt;</span>
-</code></pre></div><h2 id="yarn">yarn</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;!--</span><span style="color:#75715e"> yarn</span><span style="color:#75715e">-</span><span style="color:#75715e">site.xml </span><span style="color:#75715e">--&gt;</span>
-<span style="color:#f92672">&lt;configuration</span><span style="color:#f92672">&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.resourcemanager.hostname<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>master<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.nodemanager.aux-services<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>mapreduce_shuffle<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.resourcemanager.address<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>master:8032<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.resourcemanager.scheduler.address<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>master:8030<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.resourcemanager.resource-tracker.address<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>master:8031<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.resourcemanager.scheduler.class<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-  <span style="color:#f92672">&lt;property</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#f92672">&lt;name</span><span style="color:#f92672">&gt;</span>yarn.nodemanager.env-whitelist<span style="color:#f92672">&lt;/name&gt;</span>
-    <span style="color:#f92672">&lt;value</span><span style="color:#f92672">&gt;</span>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME<span style="color:#f92672">&lt;/value&gt;</span>
-  <span style="color:#f92672">&lt;/property&gt;</span>
-<span style="color:#f92672">&lt;/configuration&gt;</span>
-</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># workers</span>
-slave1
-slave2
-</code></pre></div><h2 id="spark">spark</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># hadoop-env.sh</span>
+</span></span><span style="display:flex;"><span>export JAVA_HOME<span style="color:#f92672">=</span>/app/soft/jdk8u275-b01
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- core-site.xml --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;configuration&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;name&gt;</span>fs.defaultFS<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&lt;value&gt;</span>hdfs://master:9000<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>hadoop.tmp.dir<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>/usr/local/tmp/spark<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;description&gt;</span>A base for other temporary directories.<span style="color:#f92672">&lt;/description&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- hdfs-site.xml --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;configuration&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;name&gt;</span>dfs.replication<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&lt;value&gt;</span>3<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>dfs.namenode.name.dir<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>file:/usr/local/tmp/spark/dfs/name<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>dfs.datanode.data.dir<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>file:/usr/local/tmp/spark/dfs/data<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><h2 id="yarn">yarn</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#75715e">&lt;!-- yarn-site.xml --&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;configuration&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.hostname<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>master<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.nodemanager.aux-services<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>mapreduce_shuffle<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.address<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>master:8032<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.scheduler.address<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>master:8030<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.resource-tracker.address<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>master:8031<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.resourcemanager.scheduler.class<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;property&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;name&gt;</span>yarn.nodemanager.env-whitelist<span style="color:#f92672">&lt;/name&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&lt;value&gt;</span>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME<span style="color:#f92672">&lt;/value&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&lt;/property&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># workers</span>
+</span></span><span style="display:flex;"><span>slave1
+</span></span><span style="display:flex;"><span>slave2
+</span></span></code></pre></div><h2 id="spark">spark</h2>
 <p>spark配置较简单，配置两个文件即可使用：<code>spark-env.sh、slaves</code>。</p>
 <p><code>/app/soft/spark-3.0.1/conf/spark-env.sh</code>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">export JAVA_HOME<span style="color:#f92672">=</span>/app/soft/jdk8u275-b01
-export SPARK_HOME<span style="color:#f92672">=</span>/app/soft/spark-3.0.1
-export HADOOP_HOME<span style="color:#f92672">=</span>/app/soft/hadoop-3.3.0
-export HADOOP_CONF_DIR<span style="color:#f92672">=</span>/app/soft/hadoop-3.3.0/conf
-export SPARK_DIST_CLASSPATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>$HADOOP_HOME/bin/hadoop classpath<span style="color:#66d9ef">)</span>
-export SPARK_LOCAL_IP<span style="color:#f92672">=</span>172.17.0.2
-export SPARK_MASTER_IP<span style="color:#f92672">=</span>master
-export SPARK_MASTER_HOST<span style="color:#f92672">=</span>172.17.0.2 <span style="color:#75715e">#  HOST在启动slaves时会用到，不配置会启动不了worker</span>
-export SPARK_MASTER_PORT<span style="color:#f92672">=</span>7077
-export SPARK_EXECUTOR_INSTANCES<span style="color:#f92672">=</span>1
-export SPARK_WORKER_INSTANCES<span style="color:#f92672">=</span>1
-export SPARK_WORKER_CORES<span style="color:#f92672">=</span>1
-export SPARK_WORKER_MEMORY<span style="color:#f92672">=</span>128M    <span style="color:#75715e"># 每个worker的内存配置为128M</span>
-export SPARK_MASTER_WEBUI_PORT<span style="color:#f92672">=</span>8080
-export SPAKR_CONF_DIR<span style="color:#f92672">=</span>/app/soft/spark-3.0.1/conf
-</code></pre></div><p><code>/app/soft/spark-3.0.1/conf/slaves</code>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">master
-slave1
-slave2
-</code></pre></div><h1 id="heading-3">运行启动</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>export JAVA_HOME<span style="color:#f92672">=</span>/app/soft/jdk8u275-b01
+</span></span><span style="display:flex;"><span>export SPARK_HOME<span style="color:#f92672">=</span>/app/soft/spark-3.0.1
+</span></span><span style="display:flex;"><span>export HADOOP_HOME<span style="color:#f92672">=</span>/app/soft/hadoop-3.3.0
+</span></span><span style="display:flex;"><span>export HADOOP_CONF_DIR<span style="color:#f92672">=</span>/app/soft/hadoop-3.3.0/conf
+</span></span><span style="display:flex;"><span>export SPARK_DIST_CLASSPATH<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>$HADOOP_HOME/bin/hadoop classpath<span style="color:#66d9ef">)</span>
+</span></span><span style="display:flex;"><span>export SPARK_LOCAL_IP<span style="color:#f92672">=</span>172.17.0.2
+</span></span><span style="display:flex;"><span>export SPARK_MASTER_IP<span style="color:#f92672">=</span>master
+</span></span><span style="display:flex;"><span>export SPARK_MASTER_HOST<span style="color:#f92672">=</span>172.17.0.2 <span style="color:#75715e">#  HOST在启动slaves时会用到，不配置会启动不了worker</span>
+</span></span><span style="display:flex;"><span>export SPARK_MASTER_PORT<span style="color:#f92672">=</span><span style="color:#ae81ff">7077</span>
+</span></span><span style="display:flex;"><span>export SPARK_EXECUTOR_INSTANCES<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>export SPARK_WORKER_INSTANCES<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>export SPARK_WORKER_CORES<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>export SPARK_WORKER_MEMORY<span style="color:#f92672">=</span>128M    <span style="color:#75715e"># 每个worker的内存配置为128M</span>
+</span></span><span style="display:flex;"><span>export SPARK_MASTER_WEBUI_PORT<span style="color:#f92672">=</span><span style="color:#ae81ff">8080</span>
+</span></span><span style="display:flex;"><span>export SPAKR_CONF_DIR<span style="color:#f92672">=</span>/app/soft/spark-3.0.1/conf
+</span></span></code></pre></div><p><code>/app/soft/spark-3.0.1/conf/slaves</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>master
+</span></span><span style="display:flex;"><span>slave1
+</span></span><span style="display:flex;"><span>slave2
+</span></span></code></pre></div><h1 id="运行启动">运行启动</h1>
 <p>启动hdfs(namenode、datanode)：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spark@4d0d1b1c25a0:~$ start-dfs.sh 
-Starting namenodes on <span style="color:#f92672">[</span>master<span style="color:#f92672">]</span>
-Starting datanodes
-Starting secondary namenodes <span style="color:#f92672">[</span>4d0d1b1c25a0
-</code></pre></div><p>打开浏览器：<code>http://master:9870</code>即可看到：</p>
-<p><figure>
-    <img src="/docs-pic/bigdata/hadoop_namenode.png" width="70%" height="50%"/> 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>spark@4d0d1b1c25a0:~$ start-dfs.sh 
+</span></span><span style="display:flex;"><span>Starting namenodes on <span style="color:#f92672">[</span>master<span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>Starting datanodes
+</span></span><span style="display:flex;"><span>Starting secondary namenodes <span style="color:#f92672">[</span>4d0d1b1c25a0
+</span></span></code></pre></div><p>打开浏览器：<code>http://master:9870</code>即可看到：</p>
+<p><figure><img src="/docs-pic/bigdata/hadoop_namenode.png" width="70%" height="50%"/>
 </figure>
 
-<figure>
-    <img src="/docs-pic/bigdata/hadoop_datanode.png" width="70%" height="50%"/> 
+<figure><img src="/docs-pic/bigdata/hadoop_datanode.png" width="70%" height="50%"/>
 </figure>
 </p>
 <p>启动yarn：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spark@4d0d1b1c25a0:~$ start-yarn.sh 
-Starting resourcemanager
-Starting nodemanagers
-</code></pre></div><figure>
-    <img src="/docs-pic/bigdata/yarn_manager.png" width="70%" height="50%"/> 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>spark@4d0d1b1c25a0:~$ start-yarn.sh 
+</span></span><span style="display:flex;"><span>Starting resourcemanager
+</span></span><span style="display:flex;"><span>Starting nodemanagers
+</span></span></code></pre></div><figure><img src="/docs-pic/bigdata/yarn_manager.png" width="70%" height="50%"/>
 </figure>
 
 <p>启动spark：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spark@4d0d1b1c25a0:~$ start-master.sh 
-starting org.apache.spark.deploy.master.Master, logging to /app/soft/spark-3.0.1/logs/spark--org.apache.spark.deploy.master.Master-1-4d0d1b1c25a0.out
-spark@4d0d1b1c25a0:~$ start-slaves.sh 
-slave1: starting org.apache.spark.deploy.worker.Worker, logging to /app/soft/spark-3.0.1/logs/spark-spark-org.apache.spark.deploy.worker.Worker-1-c7f88304681b.out
-slave2: starting org.apache.spark.deploy.worker.Worker, logging to /app/soft/spark-3.0.1/logs/spark-spark-org.apache.spark.deploy.worker.Worker-1-d2e415d5d1ae.out
-master: starting org.apache.spark.deploy.worker.Worker, logging to /app/soft/spark-3.0.1/logs/spark-spark-org.apache.spark.deploy.worker.Worker-1-4d0d1b1c25a0.out
-</code></pre></div><figure>
-    <img src="/docs-pic/bigdata/spark_master.png" width="70%" height="50%"/> 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>spark@4d0d1b1c25a0:~$ start-master.sh 
+</span></span><span style="display:flex;"><span>starting org.apache.spark.deploy.master.Master, logging to /app/soft/spark-3.0.1/logs/spark--org.apache.spark.deploy.master.Master-1-4d0d1b1c25a0.out
+</span></span><span style="display:flex;"><span>spark@4d0d1b1c25a0:~$ start-slaves.sh 
+</span></span><span style="display:flex;"><span>slave1: starting org.apache.spark.deploy.worker.Worker, logging to /app/soft/spark-3.0.1/logs/spark-spark-org.apache.spark.deploy.worker.Worker-1-c7f88304681b.out
+</span></span><span style="display:flex;"><span>slave2: starting org.apache.spark.deploy.worker.Worker, logging to /app/soft/spark-3.0.1/logs/spark-spark-org.apache.spark.deploy.worker.Worker-1-d2e415d5d1ae.out
+</span></span><span style="display:flex;"><span>master: starting org.apache.spark.deploy.worker.Worker, logging to /app/soft/spark-3.0.1/logs/spark-spark-org.apache.spark.deploy.worker.Worker-1-4d0d1b1c25a0.out
+</span></span></code></pre></div><figure><img src="/docs-pic/bigdata/spark_master.png" width="70%" height="50%"/>
 </figure>
 
 <p>顺便我们也可以在我们的master和slave上运行<code>jps</code>查看jvm中的进程：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># master上运行jps</span>
-spark@4d0d1b1c25a0:~$ jps
-<span style="color:#ae81ff">1648</span> Worker
-<span style="color:#ae81ff">1699</span> Jps
-<span style="color:#ae81ff">1127</span> ResourceManager
-<span style="color:#ae81ff">647</span> NameNode
-<span style="color:#ae81ff">1482</span> Master
-<span style="color:#ae81ff">847</span> SecondaryNameNode
-<span style="color:#75715e"># slave1上运行jps</span>
-spark@c7f88304681b:/$ jps
-<span style="color:#ae81ff">465</span> Worker
-<span style="color:#ae81ff">178</span> DataNode
-<span style="color:#ae81ff">291</span> NodeManager
-<span style="color:#ae81ff">525</span> Jps
-</code></pre></div><h1 id="heading-4">其余参考</h1>
-<h2 id="ubuntu-1">配置ubuntu源</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># master上运行jps</span>
+</span></span><span style="display:flex;"><span>spark@4d0d1b1c25a0:~$ jps
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1648</span> Worker
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1699</span> Jps
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1127</span> ResourceManager
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">647</span> NameNode
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">1482</span> Master
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">847</span> SecondaryNameNode
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># slave1上运行jps</span>
+</span></span><span style="display:flex;"><span>spark@c7f88304681b:/$ jps
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">465</span> Worker
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">178</span> DataNode
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">291</span> NodeManager
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">525</span> Jps
+</span></span></code></pre></div><h1 id="其余参考">其余参考</h1>
+<h2 id="配置ubuntu源">配置ubuntu源</h2>
 <p>ubuntu自带的apt源下载应用速度过慢，可以使用tsinghua、163、或者aliyun的源，这里以aliyun的源为例：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spark$ su
-root# mv /etc/apt/sources.list /etc/apt/sources.list.bak
-root# touch /etc/apt/sources.list
-</code></pre></div><p>编辑sources.list文件内容为：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
-
-deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
-deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
-</code></pre></div><p>之后别忘记<code>apt update</code>以下，就可以使用apt install 愉快的安装应用了。</p>
-<h2 id="docker-2">docker命令</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>spark$ su
+</span></span><span style="display:flex;"><span>root# mv /etc/apt/sources.list /etc/apt/sources.list.bak
+</span></span><span style="display:flex;"><span>root# touch /etc/apt/sources.list
+</span></span></code></pre></div><p>编辑sources.list文件内容为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>deb http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+</span></span><span style="display:flex;"><span>deb-src http://mirrors.aliyun.com/ubuntu/ bionic main restricted universe multiverse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>deb http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+</span></span><span style="display:flex;"><span>deb-src http://mirrors.aliyun.com/ubuntu/ bionic-security main restricted universe multiverse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>deb http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+</span></span><span style="display:flex;"><span>deb-src http://mirrors.aliyun.com/ubuntu/ bionic-updates main restricted universe multiverse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>deb http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+</span></span><span style="display:flex;"><span>deb-src http://mirrors.aliyun.com/ubuntu/ bionic-proposed main restricted universe multiverse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>deb http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+</span></span><span style="display:flex;"><span>deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted universe multiverse
+</span></span></code></pre></div><p>之后别忘记<code>apt update</code>以下，就可以使用apt install 愉快的安装应用了。</p>
+<h2 id="docker命令">docker命令</h2>
 <p>由于docker是运行在用户主机上的，所以用户主机关机后，docker中的容器也会自动关掉。</p>
 <p>可以通过<code>docker container restart slave1</code>命令启动slave1容器</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ sudo docker container restart slave1
-</code></pre></div><h2 id="linux">linux操作</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo docker container restart slave1
+</span></span></code></pre></div><h2 id="linux操作">linux操作</h2>
 <p>查看当前机器名称：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">spark@4d0d1b1c25a0:/$ cat /etc/hostname 
-4d0d1b1c25a0
-</code></pre></div></article>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>spark@4d0d1b1c25a0:/$ cat /etc/hostname 
+</span></span><span style="display:flex;"><span>4d0d1b1c25a0
+</span></span></code></pre></div></article>
     <footer class="post-footer">
       
       <ul class="post-tags">
@@ -572,6 +567,8 @@ deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted unive
           <li><a href="/tags/spark"><span class="tag">Spark</span></a></li>
         
           <li><a href="/tags/docker"><span class="tag">Docker</span></a></li>
+        
+          <li><a href="/tags/bigdata"><span class="tag">Bigdata</span></a></li>
         
       </ul>
       
@@ -604,7 +601,7 @@ deb-src http://mirrors.aliyun.com/ubuntu/ bionic-backports main restricted unive
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

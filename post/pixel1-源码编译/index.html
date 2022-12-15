@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -28,7 +28,7 @@
   <meta name="author" content="L0phTg">
   <meta name="description" content="记录自己Pixel1刷机流程.
 相关网站
-Requirementshttps://source.android.google.cn/setup/build/requirements.html#binarieshttps://source.android.com/setup/build/runningbuile numbershttps://source.android.com/setup/start/build-numbershttps://source.android.com/setup/build/downloading驱动https://developers.google.com/android/drivers">
+Requirements https://source.android.google.cn/setup/build/requirements.html#binaries https://source.android.com/setup/build/running buile numbers https://source.android.com/setup/start/build-numbers https://source.android.com/setup/build/downloading 驱动 https://developers.google.com/android/drivers ">
 
   
   
@@ -37,7 +37,7 @@ Requirementshttps://source.android.google.cn/setup/build/requirements.html#bina
     <meta name="twitter:title" content="Pixel1 源码编译">
     <meta name="twitter:description" content="记录自己Pixel1刷机流程.
 相关网站
-Requirementshttps://source.android.google.cn/setup/build/requirements.html#binarieshttps://source.android.com/setup/build/runningbuile numbershttps://source.android.com/setup/start/build-numbershttps://source.android.com/setup/build/downloading驱动https://developers.google.com/android/drivers">
+Requirements https://source.android.google.cn/setup/build/requirements.html#binaries https://source.android.com/setup/build/running buile numbers https://source.android.com/setup/start/build-numbers https://source.android.com/setup/build/downloading 驱动 https://developers.google.com/android/drivers ">
     <meta name="twitter:image" content="/images/avatar.png">
   
 
@@ -46,14 +46,13 @@ Requirementshttps://source.android.google.cn/setup/build/requirements.html#bina
   <meta property="og:title" content="Pixel1 源码编译">
   <meta property="og:description" content="记录自己Pixel1刷机流程.
 相关网站
-Requirementshttps://source.android.google.cn/setup/build/requirements.html#binarieshttps://source.android.com/setup/build/runningbuile numbershttps://source.android.com/setup/start/build-numbershttps://source.android.com/setup/build/downloading驱动https://developers.google.com/android/drivers">
+Requirements https://source.android.google.cn/setup/build/requirements.html#binaries https://source.android.com/setup/build/running buile numbers https://source.android.com/setup/start/build-numbers https://source.android.com/setup/build/downloading 驱动 https://developers.google.com/android/drivers ">
   <meta property="og:url" content="http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/">
   <meta property="og:image" content="/images/avatar.png">
 
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/">
@@ -226,11 +225,11 @@ Requirementshttps://source.android.google.cn/setup/build/requirements.html#bina
     <nav id="TableOfContents">
   <ul>
     <li><a href="#ota-image">ota, image</a></li>
-    <li><a href="#heading">源码下载</a></li>
-    <li><a href="#heading-1">编译</a></li>
+    <li><a href="#源码下载">源码下载</a></li>
+    <li><a href="#编译">编译</a></li>
     <li><a href="#root">root</a></li>
-    <li><a href="#heading-2">调试</a></li>
-    <li><a href="#emulator">emulator测试</a></li>
+    <li><a href="#调试">调试</a></li>
+    <li><a href="#emulator测试">emulator测试</a></li>
   </ul>
 </nav>
   </div>
@@ -239,7 +238,7 @@ Requirementshttps://source.android.google.cn/setup/build/requirements.html#bina
      
     <article class="post-content"><p>记录自己Pixel1刷机流程.</p>
 <p>相关网站</p>
-<pre><code>Requirements
+<pre tabindex="0"><code>Requirements
 https://source.android.google.cn/setup/build/requirements.html#binaries
 
 https://source.android.com/setup/build/running
@@ -254,34 +253,34 @@ https://developers.google.com/android/drivers
 </code></pre><h2 id="ota-image">ota, image</h2>
 <p>刷机使用. 不需要编译源码, 直接刷机.</p>
 <p>下载刷机包</p>
-<pre><code>https://developers.google.com/android/images
+<pre tabindex="0"><code>https://developers.google.com/android/images
 
 https://developers.google.com/android/ota
 </code></pre><p>刷入:</p>
-<pre><code>$sudo ./flash_all.sh
-</code></pre><h2 id="heading">源码下载</h2>
-<pre><code>repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest -b android-6.0.1_r77
+<pre tabindex="0"><code>$sudo ./flash_all.sh
+</code></pre><h2 id="源码下载">源码下载</h2>
+<pre tabindex="0"><code>repo init -u https://aosp.tuna.tsinghua.edu.cn/platform/manifest -b android-6.0.1_r77
 repo sync -j8
 </code></pre><p>适用于pixel 的:
 NZH54D android-7.1.2_r33
 OPM4.171019.021.P1 android-8.1.0_r38</p>
 <p>repo init -u <a href="https://aosp.tuna.tsinghua.edu.cn/platform/manifest">https://aosp.tuna.tsinghua.edu.cn/platform/manifest</a> -b android-7.1.2_r33</p>
 <p>repo init -u <a href="https://aosp.tuna.tsinghua.edu.cn/platform/manifest">https://aosp.tuna.tsinghua.edu.cn/platform/manifest</a> -b android-8.1.0_r38</p>
-<h2 id="heading-1">编译</h2>
+<h2 id="编译">编译</h2>
 <p>直接编译userdebug版本, 方便我们调试</p>
 <p>安装jdk</p>
-<pre><code>sudo add-apt-repository ppa:openjdk-r/ppa  
+<pre tabindex="0"><code>sudo add-apt-repository ppa:openjdk-r/ppa  
 sudo apt-get update   
 sudo apt-get install openjdk-7-jdk  
 </code></pre><p>编译,<code> 如果要刷真机的话, 需要提前下载驱动到源码目录, 并解压之后运行.sh, ACCEPT后释放出来驱动相关文件.(https://developers.google.com/android/drivers)</code></p>
-<pre><code>$source ./build/envsetup.sh
+<pre tabindex="0"><code>$source ./build/envsetup.sh
 $lunch
 编译全部源码
 $make -j12 
 编译某个module
 $make -j12 libart_32
 </code></pre><p>输入系统</p>
-<pre><code>这里不需要sudo 
+<pre tabindex="0"><code>这里不需要sudo 
 $fastboot flashall -w
 </code></pre><h2 id="root">root</h2>
 <p>root无源码的机型.</p>
@@ -292,7 +291,7 @@ $fastboot flashall -w
 <li>重启</li>
 </ol>
 <p><a href="https://gist.github.com/rhyttr/931f5f14f40793a45170809bec6ca62a">https://gist.github.com/rhyttr/931f5f14f40793a45170809bec6ca62a</a></p>
-<pre><code># Download latest Android image, &quot;hammerhead&quot; for Nexus 5 (GSM/LTE)
+<pre tabindex="0"><code># Download latest Android image, &#34;hammerhead&#34; for Nexus 5 (GSM/LTE)
 https://developers.google.com/android/nexus/images#hammerhead
 
 # Download latest TWRP
@@ -328,39 +327,39 @@ fastboot flash recovery twrp-3.1.1-0-hammerhead.img
 fastboot reboot-bootloader
 # on the screen, Navigate into Recovery mode (Reboot) -&gt; Install -&gt; zip, select SR3-SuperSU-v2.79-SR3-20170114223742.zip -&gt; Swipe to confirm Flash
 # Reboot System
-</code></pre><h2 id="heading-2">调试</h2>
+</code></pre><h2 id="调试">调试</h2>
 <p>更改system分区读写权限</p>
-<pre><code>$adb disable verity
+<pre tabindex="0"><code>$adb disable verity
 $mount -o remount,rw /system
-</code></pre><h2 id="emulator">emulator测试</h2>
+</code></pre><h2 id="emulator测试">emulator测试</h2>
 <ol>
 <li>列出创建avd</li>
 </ol>
-<pre><code>emulator -list-avd
+<pre tabindex="0"><code>emulator -list-avd
 </code></pre><ol start="2">
 <li>emulator 启动avd</li>
 </ol>
-<pre><code>$emulator -avd PixelN
+<pre tabindex="0"><code>$emulator -avd PixelN
 </code></pre><ol start="3">
 <li>使<code>system</code>分区可写</li>
 </ol>
-<pre><code>$emulator -writable-system -avd PixelN
+<pre tabindex="0"><code>$emulator -writable-system -avd PixelN
 启动之后
 $adb remount
 </code></pre><p>n. help</p>
-<pre><code>~$ emulator -help
+<pre tabindex="0"><code>~$ emulator -help
 ndroid Emulator usage: emulator [options] [-qemu args]
  options:
    -list-avds                      list available AVDs
    -sysdir &lt;dir&gt;                   search for system disk images in &lt;dir&gt;
    -system &lt;file&gt;                  read initial system image from &lt;file&gt;
    -vendor &lt;file&gt;                  read initial vendor image from &lt;file&gt;
-   -writable-system                make system &amp; vendor image writable after 'adb remount'
+   -writable-system                make system &amp; vendor image writable after &#39;adb remount&#39;
    -datadir &lt;dir&gt;                  write user data into &lt;dir&gt;
    -kernel &lt;file&gt;                  use specific emulated kernel
    -ramdisk &lt;file&gt;                 ramdisk image (default &lt;system&gt;/ramdisk.img
    -image &lt;file&gt;                   obsolete, use -system &lt;file&gt; instead
-   -initdata &lt;file&gt;                same as '-init-data &lt;file&gt;'
+   -initdata &lt;file&gt;                same as &#39;-init-data &lt;file&gt;&#39;
    -data &lt;file&gt;                    data image (default &lt;datadir&gt;/userdata-qemu.img
    -encryption-key &lt;file&gt;          read initial encryption key image from &lt;file&gt;
    -logcat-output &lt;file&gt;           output file of logcat(default none)
@@ -373,7 +372,7 @@ ndroid Emulator usage: emulator [options] [-qemu args]
    -quit-after-boot &lt;timeout&gt;      qeuit emulator after guest boots completely, or after timeout in seconds
    -snapstorage &lt;file&gt;             file that contains all state snapshots (default &lt;datadir&gt;/snapshots.img)
    -no-snapstorage                 do not mount a snapshot storage file (this disables all snapshot functionality)
-   -snapshot &lt;name&gt;                name of snapshot within storage file for auto-start and auto-save (default 'default-boot')
+   -snapshot &lt;name&gt;                name of snapshot within storage file for auto-start and auto-save (default &#39;default-boot&#39;)
    -no-snapshot                    perform a full boot and do not auto-save, but qemu vmload and vmsave operate on snapstorage
    -no-snapshot-save               do not auto-save to snapshot on exit: abandon changed state
    -no-snapshot-load               do not auto-start from snapshot: perform a full boot
@@ -388,7 +387,7 @@ ndroid Emulator usage: emulator [options] [-qemu args]
    -memory &lt;size&gt;                  physical RAM size in MBs
    -cores &lt;number&gt;                 Set number of CPU cores to emulator
    -accel &lt;mode&gt;                   Configure emulation acceleration
-   -no-accel                       Same as '-accel off'
+   -no-accel                       Same as &#39;-accel off&#39;
    -ranchu                         Use new emulator backend instead of the classic one
    -engine &lt;engine&gt;                Select engine. auto|classic|qemu2
    -netspeed &lt;speed&gt;               maximum network download/upload speeds
@@ -411,10 +410,10 @@ ndroid Emulator usage: emulator [options] [-qemu args]
    -onion &lt;image&gt;                  use overlay PNG image over screen
    -onion-alpha &lt;%age&gt;             specify onion-skin translucency
    -onion-rotation 0|1|2|3         specify onion-skin rotation
-   -dpi-device &lt;dpi&gt;               specify device's resolution in dpi (default 165)
+   -dpi-device &lt;dpi&gt;               specify device&#39;s resolution in dpi (default 165)
    -scale &lt;scale&gt;                  scale emulator window (deprecated)
    -http-proxy &lt;proxy&gt;             make TCP connections through a HTTP/HTTPS proxy
-   -timezone &lt;timezone&gt;            use this timezone instead of the host's default
+   -timezone &lt;timezone&gt;            use this timezone instead of the host&#39;s default
    -dns-server &lt;servers&gt;           use this DNS server(s) in the emulated system
    -net-tap &lt;interface&gt;            use this TAP interface for networking
    -net-tap-script-up &lt;script&gt;     script to run when the TAP interface goes up
@@ -449,12 +448,12 @@ ndroid Emulator usage: emulator [options] [-qemu args]
    -metrics-to-file &lt;file&gt;         Enable usage metrics and write the messages into specified file
    -feature &lt;name|-name&gt;           Force-enable or disable (-name) the features
    -sim-access-rules-file &lt;file&gt;   Use SIM access rules from specified file
-   -phone-number-prefix &lt;string&gt;   Number to use as the emulator's phone number prefix
+   -phone-number-prefix &lt;string&gt;   Number to use as the emulator&#39;s phone number prefix
 
     -qemu args...                  pass arguments to qemu
     -qemu -h                       display qemu help
 
-    -verbose                       same as '-debug-init'
+    -verbose                       same as &#39;-debug-init&#39;
     -debug &lt;tags&gt;                  enable/disable debug messages
     -debug-&lt;tag&gt;                   enable specific debug messages
     -debug-no-&lt;tag&gt;                disable specific debug messages
@@ -512,7 +511,7 @@ ndroid Emulator usage: emulator [options] [-qemu args]
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

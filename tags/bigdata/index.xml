@@ -1,15 +1,52 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>BigData on L0phTg&#39;s Blog</title>
+    <title>Bigdata on L0phTg&#39;s Blog</title>
     <link>http://L0phTg.top/tags/bigdata/</link>
-    <description>Recent content in BigData on L0phTg&#39;s Blog</description>
+    <description>Recent content in Bigdata on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Sun, 05 Jan 2020 20:22:22 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/tags/bigdata/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Wed, 03 Mar 2021 15:44:43 +0800</lastBuildDate><atom:link href="http://L0phTg.top/tags/bigdata/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用docker搭建spark集群</title>
+      <link>http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/</link>
+      <pubDate>Wed, 03 Mar 2021 15:44:43 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/</guid>
+      <description>&lt;p&gt;运行环境:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;vmware workstation&lt;/li&gt;
+&lt;li&gt;ubuntu18.04&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;创建了三个docker容器，分别为master、slave1、slave2：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;名称&lt;/th&gt;
+&lt;th&gt;ip&lt;/th&gt;
+&lt;th&gt;hadoop/spark用户名&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;master&lt;/td&gt;
+&lt;td&gt;172.17.0.2&lt;/td&gt;
+&lt;td&gt;spark&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;slave1&lt;/td&gt;
+&lt;td&gt;172.17.0.3&lt;/td&gt;
+&lt;td&gt;spark&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;slave2&lt;/td&gt;
+&lt;td&gt;172.17.0.4&lt;/td&gt;
+&lt;td&gt;spark&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>Spark笔记</title>
@@ -20,6 +57,17 @@
       <description>&lt;p&gt;在本地环境中, 我们常用pandas来做离线数据分析.&lt;/p&gt;
 &lt;p&gt;在集群上, 我们常用Spark来做离线数据分析.用Flink做实时计算.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;本文不断更新中!&lt;/strong&gt;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Hive笔记</title>
+      <link>http://L0phTg.top/post/bigdata/hive%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Sun, 05 Jan 2020 17:44:55 +0800</pubDate>
+      
+      <guid>http://L0phTg.top/post/bigdata/hive%E7%AC%94%E8%AE%B0/</guid>
+      <description>&lt;p&gt;2020年，新年快乐！
+重新搭建了下博客，开始定期更新模式。&lt;/p&gt;
+&lt;p&gt;本文是前段时间阅读&amp;laquo;hive权威指南&amp;raquo;总结的笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

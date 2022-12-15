@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -28,7 +28,7 @@
   <meta name="author" content="L0phTg">
   <meta name="description" content="能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？
 这就是我们的接下来要聊的话题：半线性结构：树。
- ">
+">
 
   
   
@@ -37,7 +37,7 @@
     <meta name="twitter:title" content="二叉树及其推广">
     <meta name="twitter:description" content="能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？
 这就是我们的接下来要聊的话题：半线性结构：树。
- ">
+">
     <meta name="twitter:image" content="/images/avatar.png">
   
 
@@ -46,14 +46,13 @@
   <meta property="og:title" content="二叉树及其推广">
   <meta property="og:description" content="能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？
 这就是我们的接下来要聊的话题：半线性结构：树。
- ">
+">
   <meta property="og:url" content="http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/">
   <meta property="og:image" content="/images/avatar.png">
 
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/">
@@ -225,9 +224,9 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#call-by-key--call-by-index--call-by-order">call by key 和 call by index 和 call by order</a></li>
-    <li><a href="#heading-1">全序和偏序</a></li>
-    <li><a href="#heading-2">理想平衡与适度平衡</a></li>
+    <li><a href="#call-by-key-和-call-by-index-和-call-by-order">call by key 和 call by index 和 call by order</a></li>
+    <li><a href="#全序和偏序">全序和偏序</a></li>
+    <li><a href="#理想平衡与适度平衡">理想平衡与适度平衡</a></li>
   </ul>
 </nav>
   </div>
@@ -236,8 +235,7 @@
      
     <article class="post-content"><p>能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？</p>
 <p>这就是我们的接下来要聊的话题：半线性结构：树。</p>
-<figure>
-    <img src="/docs-pic/ds/tree-arch.png" width="70%" height="50%"/> 
+<figure><img src="/docs-pic/ds/tree-arch.png" width="70%" height="50%"/>
 </figure>
 
 <p>各数据结构特点：</p>
@@ -333,9 +331,9 @@
 </tbody>
 </table>
 <p>性能差异来源：</p>
-<h1 id="heading">基本概念</h1>
+<h1 id="基本概念">基本概念</h1>
 <p>为什么要引入这些概念？</p>
-<h2 id="call-by-key--call-by-index--call-by-order">call by key 和 call by index 和 call by order</h2>
+<h2 id="call-by-key-和-call-by-index-和-call-by-order">call by key 和 call by index 和 call by order</h2>
 <blockquote>
 <p>循秩访问(call by order)</p>
 </blockquote>
@@ -345,14 +343,14 @@
 <blockquote>
 <p>循关键码访问(call by key)</p>
 </blockquote>
-<h2 id="heading-1">全序和偏序</h2>
+<h2 id="全序和偏序">全序和偏序</h2>
 <blockquote>
 <p>全序：全部元素之间可以相互比较，构成全序关系。例如：二叉树数据结构的key之间可以相互比较，我们<strong>维护全部key</strong>的全序关系，可以通过中序遍历得到单调非降的排序结果。</p>
 </blockquote>
 <blockquote>
 <p>偏序：部分元素在全部元素的位置，构成偏序关系。例如：优先级队列，只需高效地跟踪全局的<strong>极值元素</strong>，其它元素一般无需直接访问。</p>
 </blockquote>
-<h2 id="heading-2">理想平衡与适度平衡</h2>
+<h2 id="理想平衡与适度平衡">理想平衡与适度平衡</h2>
 <p>二叉搜索树的性能主要取决于<strong>高度</strong>，故在节点数据固定的前提下，<strong>应尽可能的降低高度</strong>。
 当然，包含n个节点的二叉树，高度不可能小于$\lfloor log_2{n} \rfloor$</p>
 <blockquote>
@@ -361,7 +359,7 @@
 <blockquote>
 <p>适度平衡：在渐进意义下适当放松标准之后的平衡性（例如：渐进地不超过$O(log{n})$），称作适度平衡。例如：AVL树、伸展树、红黑树、kd-树等。</p>
 </blockquote>
-<h1 id="heading-3">参考资料</h1>
+<h1 id="参考资料">参考资料</h1>
 <ol>
 <li>《数据结构 c++语言版》 邓俊辉</li>
 </ol></article>
@@ -406,7 +404,7 @@
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

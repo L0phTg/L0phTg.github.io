@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>spark on L0phTg&#39;s Blog</title>
+    <title>Spark on L0phTg&#39;s Blog</title>
     <link>http://L0phTg.top/tags/spark/</link>
-    <description>Recent content in spark on L0phTg&#39;s Blog</description>
+    <description>Recent content in Spark on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Wed, 03 Mar 2021 15:44:43 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/tags/spark/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 03 Mar 2021 15:44:43 +0800</lastBuildDate><atom:link href="http://L0phTg.top/tags/spark/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>使用docker搭建spark集群</title>
       <link>http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/</link>

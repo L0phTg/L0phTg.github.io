@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -53,7 +53,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/">
@@ -225,25 +224,25 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#linuxhugo">linux平台安装hugo</a></li>
-    <li><a href="#heading">使用</a>
+    <li><a href="#linux平台安装hugo">linux平台安装hugo</a></li>
+    <li><a href="#使用">使用</a>
       <ul>
-        <li><a href="#new-site">创建New site</a></li>
-        <li><a href="#md">创建md</a></li>
-        <li><a href="#heading-1">预览</a></li>
-        <li><a href="#heading-2">个性化主题</a></li>
+        <li><a href="#创建new-site">创建New site</a></li>
+        <li><a href="#创建md">创建md</a></li>
+        <li><a href="#预览">预览</a></li>
+        <li><a href="#个性化主题">个性化主题</a></li>
       </ul>
     </li>
-    <li><a href="#postgithub-pages">post到github pages上</a></li>
-    <li><a href="#heading-4">内容编写</a>
+    <li><a href="#post到github-pages上">post到github pages上</a></li>
+    <li><a href="#内容编写">内容编写</a>
       <ul>
-        <li><a href="#heading-5">文档模板</a></li>
-        <li><a href="#heading-6">插入图片</a></li>
-        <li><a href="#heading-7">文章摘要</a></li>
-        <li><a href="#toc">显示toc</a></li>
-        <li><a href="#heading-8">语法高亮</a></li>
-        <li><a href="#heading-9">显示最后更新日期</a></li>
-        <li><a href="#heading-10">数学公式</a></li>
+        <li><a href="#文档模板">文档模板</a></li>
+        <li><a href="#插入图片">插入图片</a></li>
+        <li><a href="#文章摘要">文章摘要</a></li>
+        <li><a href="#显示toc">显示toc</a></li>
+        <li><a href="#语法高亮">语法高亮</a></li>
+        <li><a href="#显示最后更新日期">显示最后更新日期</a></li>
+        <li><a href="#数学公式">数学公式</a></li>
         <li><a href="#mermaid">mermaid</a></li>
       </ul>
     </li>
@@ -257,235 +256,231 @@
 <p>以前使用hexo搭的, 最近发现了好多人在用<code>hugo</code>, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.</p>
 <p><a href="https://gohugo.io/getting-started/quick-start/">https://gohugo.io/getting-started/quick-start/</a></p>
 <p>hugo 搭建</p>
-<h2 id="linuxhugo">linux平台安装hugo</h2>
+<h2 id="linux平台安装hugo">linux平台安装hugo</h2>
 <ol>
 <li>源码安装</li>
 </ol>
 <p>安装go:</p>
 <p><a href="https://golang.org/doc/install?download=go1.11.linux-amd64.tar.gz">https://golang.org/doc/install?download=go1.11.linux-amd64.tar.gz</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$tar -C /usr/local -xzf go1.11.linux-amd64.tar.gz
-$ vim /etc/profile
-export PATH<span style="color:#f92672">=</span>$PATH:/usr/local/go/bin
-</code></pre></div><p>下载源码安装hugo:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">mkdir $HOME/src
-cd $HOME/src
-git clone https://github.com/gohugoio/hugo.git
-cd hugo
-go install
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$tar -C /usr/local -xzf go1.11.linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>$ vim /etc/profile
+</span></span><span style="display:flex;"><span>export PATH<span style="color:#f92672">=</span>$PATH:/usr/local/go/bin
+</span></span></code></pre></div><p>下载源码安装hugo:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir $HOME/src
+</span></span><span style="display:flex;"><span>cd $HOME/src
+</span></span><span style="display:flex;"><span>git clone https://github.com/gohugoio/hugo.git
+</span></span><span style="display:flex;"><span>cd hugo
+</span></span><span style="display:flex;"><span>go install
+</span></span></code></pre></div><ol start="2">
 <li>apt安装</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$sudo apt install hugo
-</code></pre></div><h2 id="heading">使用</h2>
-<h3 id="new-site">创建New site</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$hugo new site quickstart
-</code></pre></div><h3 id="md">创建md</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$hugo new posts/my-first-post.md
-</code></pre></div><h3 id="heading-1">预览</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$hugo server -D 
-</code></pre></div><p>Navigate to your new site at http://localhost:1313/.</p>
-<h3 id="heading-2">个性化主题</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$sudo apt install hugo
+</span></span></code></pre></div><h2 id="使用">使用</h2>
+<h3 id="创建new-site">创建New site</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$hugo new site quickstart
+</span></span></code></pre></div><h3 id="创建md">创建md</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$hugo new posts/my-first-post.md
+</span></span></code></pre></div><h3 id="预览">预览</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$hugo server -D 
+</span></span></code></pre></div><p>Navigate to your new site at http://localhost:1313/.</p>
+<h3 id="个性化主题">个性化主题</h3>
 <p><a href="https://themes.gohugo.io/">https://themes.gohugo.io/</a></p>
-<h4 id="heading-3">网站配置</h4>
+<h4 id="网站配置">网站配置</h4>
 <p><strong>config.toml</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">baseURL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://example.org/&#34;</span>
-languageCode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;en-us&#34;</span>
-title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;My New Hugo Site&#34;</span>
-theme <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ananke&#34;</span>
-
-</code></pre></div><h2 id="postgithub-pages">post到github pages上</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>baseURL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;https://example.org/&#34;</span>
+</span></span><span style="display:flex;"><span>languageCode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;en-us&#34;</span>
+</span></span><span style="display:flex;"><span>title <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;My New Hugo Site&#34;</span>
+</span></span><span style="display:flex;"><span>theme <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ananke&#34;</span>
+</span></span></code></pre></div><h2 id="post到github-pages上">post到github pages上</h2>
 <ol>
 <li>升级git</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Debian/Ubuntu
-For the latest stable version <span style="color:#66d9ef">for</span> your release of Debian/Ubuntu
-
-<span style="color:#75715e"># apt-get install git</span>
-For Ubuntu, this PPA provides the latest stable upstream Git version
-<span style="color:#75715e"># add-apt-repository ppa:git-core/ppa # apt update; apt install git</span>
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Debian/Ubuntu
+</span></span><span style="display:flex;"><span>For the latest stable version <span style="color:#66d9ef">for</span> your release of Debian/Ubuntu
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># apt-get install git</span>
+</span></span><span style="display:flex;"><span>For Ubuntu, this PPA provides the latest stable upstream Git version
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># add-apt-repository ppa:git-core/ppa # apt update; apt install git</span>
+</span></span></code></pre></div><ol start="2">
 <li>github上创建USER_NAME.github.io的repo.</li>
 <li>clone repo到public目录</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git submodule add -b master git@github.com:&lt;USERNAME&gt;/&lt;USERNAME&gt;.github.io.git public
-</code></pre></div><ol start="4">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git submodule add -b master git@github.com:&lt;USERNAME&gt;/&lt;USERNAME&gt;.github.io.git public
+</span></span></code></pre></div><ol start="4">
 <li>push</li>
 </ol>
 <p><code>depl4oy.sh</code>如下</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>
-echo -e <span style="color:#e6db74">&#34;\033[0;32mDeploying updates to GitHub...\033[0m&#34;</span>
-
-<span style="color:#75715e"># Build the project.</span>
-hugo <span style="color:#75715e"># if using a theme, replace with `hugo -t &lt;YOURTHEME&gt;`</span>
-
-<span style="color:#75715e"># Go To Public folder</span>
-cd public
-<span style="color:#75715e"># Add changes to git.</span>
-git add .
-
-<span style="color:#75715e"># Commit changes.</span>
-msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rebuilding site `date`&#34;</span>
-<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $# -eq <span style="color:#ae81ff">1</span> <span style="color:#f92672">]</span>
-  <span style="color:#66d9ef">then</span> msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
-<span style="color:#66d9ef">fi</span>
-git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
-
-<span style="color:#75715e"># Push source and build repos.</span>
-git push origin master
-
-<span style="color:#75715e"># Come Back up to the Project Root</span>
-cd ..
-</code></pre></div><h2 id="heading-4">内容编写</h2>
-<h3 id="heading-5">文档模板</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>echo -e <span style="color:#e6db74">&#34;\033[0;32mDeploying updates to GitHub...\033[0m&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Build the project.</span>
+</span></span><span style="display:flex;"><span>hugo <span style="color:#75715e"># if using a theme, replace with `hugo -t &lt;YOURTHEME&gt;`</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Go To Public folder</span>
+</span></span><span style="display:flex;"><span>cd public
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Add changes to git.</span>
+</span></span><span style="display:flex;"><span>git add .
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Commit changes.</span>
+</span></span><span style="display:flex;"><span>msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;rebuilding site `date`&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $# -eq <span style="color:#ae81ff">1</span> <span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">then</span> msg<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>git commit -m <span style="color:#e6db74">&#34;</span>$msg<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Push source and build repos.</span>
+</span></span><span style="display:flex;"><span>git push origin master
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Come Back up to the Project Root</span>
+</span></span><span style="display:flex;"><span>cd ..
+</span></span></code></pre></div><h2 id="内容编写">内容编写</h2>
+<h3 id="文档模板">文档模板</h3>
 <p>默认是<code>archetypes /default.md</code>. new 文档时, 根据这个文档创建.</p>
 <p>我的<code>default.md</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">---
-title: &#34;{{ replace .TranslationBaseName &#34;-&#34; &#34; &#34; | title }}&#34;
-date: {{ .Date }}
-lastmod: {{ .Date }}
-draft: true
-keywords: []
-description: &#34;&#34;
-tags: []
-categories: []
-author: &#34;&#34;
-
-# You can also close(false) or open(true) something for this content.
-# P.S. comment can only be closed
-comment: false
-toc: true
-autoCollapseToc: false
-# You can also define another contentCopyright. e.g. contentCopyright: &#34;This is another copyright.&#34;
-#contentCopyright: false
-reward: false
-mathjax: false
----
-
-&lt;!--more--&gt;
-
-</code></pre></div><h3 id="heading-6">插入图片</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-markdown" data-lang="markdown"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>title: &#34;{{ replace .TranslationBaseName &#34;-&#34; &#34; &#34; | title }}&#34;
+</span></span><span style="display:flex;"><span>date: {{ .Date }}
+</span></span><span style="display:flex;"><span>lastmod: {{ .Date }}
+</span></span><span style="display:flex;"><span>draft: true
+</span></span><span style="display:flex;"><span>keywords: []
+</span></span><span style="display:flex;"><span>description: &#34;&#34;
+</span></span><span style="display:flex;"><span>tags: []
+</span></span><span style="display:flex;"><span>categories: []
+</span></span><span style="display:flex;"><span>author: &#34;&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># You can also close(false) or open(true) something for this content.
+</span></span><span style="display:flex;"><span># P.S. comment can only be closed
+</span></span><span style="display:flex;"><span>comment: false
+</span></span><span style="display:flex;"><span>toc: true
+</span></span><span style="display:flex;"><span>autoCollapseToc: false
+</span></span><span style="display:flex;"><span># You can also define another contentCopyright. e.g. contentCopyright: &#34;This is another copyright.&#34;
+</span></span><span style="display:flex;"><span>#contentCopyright: false
+</span></span><span style="display:flex;"><span>reward: false
+</span></span><span style="display:flex;"><span>mathjax: false
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!--more--&gt;</span>
+</span></span></code></pre></div><h3 id="插入图片">插入图片</h3>
 <p>图片放在static目录下</p>
 <p>例如</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">目录下的文件:
-- static
-   - deepin
-      - desktop.png
-      - splitScreen.png
-      - vimMarkdownPreview.png
-</code></pre></div><p>使用的时候:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">!<span style="color:#f92672">[</span>desktop<span style="color:#f92672">]</span><span style="color:#f92672">(</span>/deepin/desktop.png<span style="color:#f92672">)</span>
-</code></pre></div><h3 id="heading-7">文章摘要</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>目录下的文件:
+</span></span><span style="display:flex;"><span>- static
+</span></span><span style="display:flex;"><span>   - deepin
+</span></span><span style="display:flex;"><span>      - desktop.png
+</span></span><span style="display:flex;"><span>      - splitScreen.png
+</span></span><span style="display:flex;"><span>      - vimMarkdownPreview.png
+</span></span></code></pre></div><p>使用的时候:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>!<span style="color:#f92672">[</span>desktop<span style="color:#f92672">](</span>/deepin/desktop.png<span style="color:#f92672">)</span>
+</span></span></code></pre></div><h3 id="文章摘要">文章摘要</h3>
 <p><code>&lt;!--more--&gt;</code>前面的会成为文章的摘要, 在首页显示.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">---
-title : &#34;hihi&#34;
-tags :  &#34;blog&#34;
----
-
-&lt;!--more--&gt;
-
-正文
-</code></pre></div><h3 id="toc">显示toc</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-md" data-lang="md"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>title : &#34;hihi&#34;
+</span></span><span style="display:flex;"><span>tags :  &#34;blog&#34;
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">&lt;!--more--&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>正文
+</span></span></code></pre></div><h3 id="显示toc">显示toc</h3>
 <p>toc : true</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">---
-title: &#34;Iqiyi开源hook框架XHook分析&#34;
-date: 2018-09-19T02:19:05+08:00
-lastmod: 2018-09-19T02:19:05+08:00
-draft: false
-keywords: []
-description: &#34;&#34;
-tags: [&#34;hook&#34;]
-categories: [&#34;hook&#34;]
-author: &#34;&#34;
-
-# You can also close(false) or open(true) something for this content.
-# P.S. comment can only be closed
-comment: false
-toc: true
-autoCollapseToc: false
-# You can also define another contentCopyright. e.g. contentCopyright: &#34;This is another copyright.&#34;
-contentCopyright: false
-reward: false
-mathjax: false
----
-</code></pre></div><h3 id="heading-8">语法高亮</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-md" data-lang="md"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>title: &#34;Iqiyi开源hook框架XHook分析&#34;
+</span></span><span style="display:flex;"><span>date: 2018-09-19T02:19:05+08:00
+</span></span><span style="display:flex;"><span>lastmod: 2018-09-19T02:19:05+08:00
+</span></span><span style="display:flex;"><span>draft: false
+</span></span><span style="display:flex;"><span>keywords: []
+</span></span><span style="display:flex;"><span>description: &#34;&#34;
+</span></span><span style="display:flex;"><span>tags: [&#34;hook&#34;]
+</span></span><span style="display:flex;"><span>categories: [&#34;hook&#34;]
+</span></span><span style="display:flex;"><span>author: &#34;&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># You can also close(false) or open(true) something for this content.
+</span></span><span style="display:flex;"><span># P.S. comment can only be closed
+</span></span><span style="display:flex;"><span>comment: false
+</span></span><span style="display:flex;"><span>toc: true
+</span></span><span style="display:flex;"><span>autoCollapseToc: false
+</span></span><span style="display:flex;"><span># You can also define another contentCopyright. e.g. contentCopyright: &#34;This is another copyright.&#34;
+</span></span><span style="display:flex;"><span>contentCopyright: false
+</span></span><span style="display:flex;"><span>reward: false
+</span></span><span style="display:flex;"><span>mathjax: false
+</span></span><span style="display:flex;"><span>---
+</span></span></code></pre></div><h3 id="语法高亮">语法高亮</h3>
 <h4 id="chroma">Chroma</h4>
 <p>hugo <strong>使用chroma默认进行语法高亮, 垃圾, 不好用, 推荐highlight.js</strong></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">pygmentsCodefences <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown的代码块</span>
-pygmentsCodefencesGuessSyntax <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown中没有标注语言的代码块</span>
-pygmentsStyle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;manni&#39;</span> <span style="color:#75715e">#高亮主题</span>
-</code></pre></div><p>有些主题的默认css设置了background. 会导致highlight时出现字体白色阴影. 此时我们需要将它的background-color删掉或者覆盖掉.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pygmentsCodefences <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown的代码块</span>
+</span></span><span style="display:flex;"><span>pygmentsCodefencesGuessSyntax <span style="color:#f92672">=</span> true <span style="color:#75715e">#高亮markdown中没有标注语言的代码块</span>
+</span></span><span style="display:flex;"><span>pygmentsStyle <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;manni&#39;</span> <span style="color:#75715e">#高亮主题</span>
+</span></span></code></pre></div><p>有些主题的默认css设置了background. 会导致highlight时出现字体白色阴影. 此时我们需要将它的background-color删掉或者覆盖掉.</p>
 <p>我使用的主题是<code>jane</code>, 默认css样式是<code>/themes/jane/static/dist/jane.min.css</code>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-css" data-lang="css">#jane.<span style="color:#a6e22e">min</span>.<span style="color:#a6e22e">css</span>
- <span style="color:#f92672">code</span>{<span style="color:#66d9ef">padding</span>:<span style="color:#ae81ff">0</span> <span style="color:#ae81ff">7</span><span style="color:#66d9ef">px</span>;<span style="color:#66d9ef">background</span>:<span style="color:#ae81ff">#f8f5ec</span>;<span style="color:#66d9ef">border-radius</span>:<span style="color:#ae81ff">4</span><span style="color:#66d9ef">px</span>;<span style="color:#66d9ef">color</span>:<span style="color:#ae81ff">#c7254e</span>}
-</code></pre></div><p>把该块删掉.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-css" data-lang="css"><span style="display:flex;"><span>#jane.<span style="color:#a6e22e">min</span>.<span style="color:#a6e22e">css</span>
+</span></span><span style="display:flex;"><span> <span style="color:#f92672">code</span>{<span style="color:#66d9ef">padding</span>:<span style="color:#ae81ff">0</span> <span style="color:#ae81ff">7</span><span style="color:#66d9ef">px</span>;<span style="color:#66d9ef">background</span>:<span style="color:#ae81ff">#f8f5ec</span>;<span style="color:#66d9ef">border-radius</span>:<span style="color:#ae81ff">4</span><span style="color:#66d9ef">px</span>;<span style="color:#66d9ef">color</span>:<span style="color:#ae81ff">#c7254e</span>}
+</span></span></code></pre></div><p>把该块删掉.</p>
 <p>这要就可以解决阴影的问题了.<strong>可能自己的主题版本太老了, 可以pull一下最新版本, 这个问题应该会被修复了</strong> .</p>
 <h4 id="highlightjs">highlight.js</h4>
 <p>添加<strong>主题css</strong>和<strong>highlight.pack.js</strong>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">customCSS</span> = [<span style="color:#e6db74">&#39;styles/dracula.css]
-</span><span style="color:#e6db74">customJS = [&#39;</span><span style="color:#a6e22e">highlight</span>.<span style="color:#a6e22e">pack</span>.<span style="color:#a6e22e">js</span>]
-
-</code></pre></div><p><strong>body</strong>中添加<strong>script</strong>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">hljs</span>.<span style="color:#a6e22e">initHighlightingOnLoad</span>();<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
-</code></pre></div><h3 id="heading-9">显示最后更新日期</h3>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">enableGitInfo = true    # 开启gitinfo
-
-[frontmatter]
-date = [&#34;date&#34;, &#34;publishDate&#34;, &#34;lastmod&#34;]
-lastmod = [&#34;:git&#34;, &#34;lastmod&#34;, &#34;date&#34;, &#34;publishDate&#34;]
-publishDate = [&#34;publishDate&#34;, &#34;date&#34;]
-expiryDate = [&#34;expiryDate&#34;]
-</code></pre></div><p>要实现该功能需要有<strong>commit记录</strong> , 所以需要<strong>添加我们的.md到git版本控制工具</strong> 中. 请阅读下面的<strong>博客搭建心得</strong>.</p>
-<h3 id="heading-10">数学公式</h3>
-<h4 id="mathjax">如何开启mathjax</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span><span style="color:#a6e22e">customCSS</span> = [<span style="color:#e6db74">&#39;styles/dracula.css]
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">customJS = [&#39;</span><span style="color:#a6e22e">highlight</span>.<span style="color:#a6e22e">pack</span>.<span style="color:#a6e22e">js</span>]
+</span></span></code></pre></div><p><strong>body</strong>中添加<strong>script</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span><span style="color:#a6e22e">hljs</span>.<span style="color:#a6e22e">initHighlightingOnLoad</span>();<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span>
+</span></span></code></pre></div><h3 id="显示最后更新日期">显示最后更新日期</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-md" data-lang="md"><span style="display:flex;"><span>enableGitInfo = true    # 开启gitinfo
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>[frontmatter]
+</span></span><span style="display:flex;"><span>date = [&#34;date&#34;, &#34;publishDate&#34;, &#34;lastmod&#34;]
+</span></span><span style="display:flex;"><span>lastmod = [&#34;:git&#34;, &#34;lastmod&#34;, &#34;date&#34;, &#34;publishDate&#34;]
+</span></span><span style="display:flex;"><span>publishDate = [&#34;publishDate&#34;, &#34;date&#34;]
+</span></span><span style="display:flex;"><span>expiryDate = [&#34;expiryDate&#34;]
+</span></span></code></pre></div><p>要实现该功能需要有<strong>commit记录</strong> , 所以需要<strong>添加我们的.md到git版本控制工具</strong> 中. 请阅读下面的<strong>博客搭建心得</strong>.</p>
+<h3 id="数学公式">数学公式</h3>
+<h4 id="如何开启mathjax">如何开启mathjax</h4>
 <p><code>/layout/partical</code>目录下创建<code>mathjax_support.html</code>, 写入:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/javascript&#34;</span>
-  <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;</span><span style="color:#f92672">&gt;</span>
-<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
-</code></pre></div><h4 id="heading-11">支持内联</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/javascript&#34;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span>
+</span></span></code></pre></div><h4 id="支持内联">支持内联</h4>
 <p><code>/layouts/partials/custom_head.html</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/x-mathjax-config&#34;</span><span style="color:#f92672">&gt;</span>
-  <span style="color:#a6e22e">MathJax</span>.<span style="color:#a6e22e">Hub</span>.<span style="color:#a6e22e">Config</span>({<span style="color:#a6e22e">tex2jax</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">inlineMath</span><span style="color:#f92672">:</span> [[<span style="color:#e6db74">&#39;$&#39;</span>,<span style="color:#e6db74">&#39;$&#39;</span>], [<span style="color:#e6db74">&#39;\\(&#39;</span>,<span style="color:#e6db74">&#39;\\)&#39;</span>]]}});  <span style="color:#75715e">// 内联公式
-</span><span style="color:#75715e"></span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
-</code></pre></div><h4 id="color">支持color</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/x-mathjax-config&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">MathJax</span>.<span style="color:#a6e22e">Hub</span>.<span style="color:#a6e22e">Config</span>({<span style="color:#a6e22e">tex2jax</span><span style="color:#f92672">:</span> {<span style="color:#a6e22e">inlineMath</span><span style="color:#f92672">:</span> [[<span style="color:#e6db74">&#39;$&#39;</span>,<span style="color:#e6db74">&#39;$&#39;</span>], [<span style="color:#e6db74">&#39;\\(&#39;</span>,<span style="color:#e6db74">&#39;\\)&#39;</span>]]}});  <span style="color:#75715e">// 内联公式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span>
+</span></span></code></pre></div><h4 id="支持color">支持color</h4>
 <p><code>/layouts/partials/custom_head.html</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/x-mathjax-config&#34;</span><span style="color:#f92672">&gt;</span>
-  <span style="color:#a6e22e">MathJax</span>.<span style="color:#a6e22e">Hub</span>.<span style="color:#a6e22e">Config</span>({                                                      <span style="color:#75715e">// support color
-</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">showProcessingMessages</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>,
-  <span style="color:#a6e22e">jax</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;input/TeX&#34;</span>, <span style="color:#e6db74">&#34;output/HTML-CSS&#34;</span>],
-  <span style="color:#a6e22e">TeX</span><span style="color:#f92672">:</span> {
-    <span style="color:#a6e22e">TagSide</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;left&#34;</span>,
-    <span style="color:#a6e22e">Macros</span><span style="color:#f92672">:</span> {
-      <span style="color:#a6e22e">RR</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{\\bf R}&#39;</span>,
-      <span style="color:#a6e22e">bold</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;{\\bf #1}&#39;</span>,<span style="color:#ae81ff">1</span>]
-    }
-  }
-});
-<span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">&gt;</span><span style="color:#960050;background-color:#1e0010"></span>
-
-</code></pre></div><h3 id="mermaid">mermaid</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text/x-mathjax-config&#34;</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">MathJax</span>.<span style="color:#a6e22e">Hub</span>.<span style="color:#a6e22e">Config</span>({                                                      <span style="color:#75715e">// support color
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#a6e22e">showProcessingMessages</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">false</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">jax</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#34;input/TeX&#34;</span>, <span style="color:#e6db74">&#34;output/HTML-CSS&#34;</span>],
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">TeX</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">TagSide</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;left&#34;</span>,
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">Macros</span><span style="color:#f92672">:</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">RR</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;{\\bf R}&#39;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">bold</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;{\\bf #1}&#39;</span>,<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>});
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#960050;background-color:#1e0010">/script&gt;</span>
+</span></span></code></pre></div><h3 id="mermaid">mermaid</h3>
 <p><code>mermaid</code>支持画流程图, 甘特图等.</p>
 <p><a href="https://github.com/knsv/mermaid/releases">https://github.com/knsv/mermaid/releases</a></p>
 <p>和使用<code>highlight.js</code>的方法类似:</p>
 <p>添加<code>mermaid.css</code> 和 <code>mermaid.min.js</code> .</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#a6e22e">customCSS</span> = [<span style="color:#e6db74">&#39;styles/dracula.css&#39;</span>, <span style="color:#e6db74">&#39;mermaid.css&#39;</span>]            <span style="color:#75715e"># if [&#39;custom.css&#39;], load &#39;/static/css/custom.css&#39; file</span>
-<span style="color:#a6e22e">customJS</span> = [<span style="color:#e6db74">&#39;highlight.pack.js&#39;</span>,<span style="color:#e6db74">&#39;mermaid.min.js&#39;</span>]             <span style="color:#75715e"># if [&#39;custom.js&#39;], load &#39;/static/js/custom.js&#39; file</span>
-</code></pre></div><p><code>script.html</code>中添加</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span>&gt; <span style="color:#a6e22e">mermaid</span>.<span style="color:#a6e22e">initialize</span>({ <span style="color:#a6e22e">startOnLoad</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> });&lt;/<span style="color:#f92672">script</span>&gt;
-</code></pre></div><p>除此之外，还需要在主题的shortcodes目录下创建mermaid.html, 参考:<a href="https://kentxxq.com/contents/%E6%8B%93%E5%B1%95hugo%E7%9A%84markdown_%E6%B5%81%E7%A8%8B%E5%9B%BEmermaid/">mermaid笔记</a></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html"><span style="color:#75715e">&lt;!--</span><span style="color:#75715e">mermaid.html</span><span style="color:#75715e">--&gt;</span>
-&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mermaid&#34;</span> <span style="color:#a6e22e">align</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ if .Get &#34;</span><span style="color:#a6e22e">align</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span>
-                            <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#960050;background-color:#1e0010">.</span><span style="color:#a6e22e">Get</span> <span style="color:#960050;background-color:#1e0010">&#34;</span><span style="color:#a6e22e">align</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span>
-                        <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#a6e22e">else</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span> 
-                            <span style="color:#a6e22e">center</span>
-                        <span style="color:#960050;background-color:#1e0010">{</span><span style="color:#960050;background-color:#1e0010">{</span> <span style="color:#a6e22e">end</span> <span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">}</span><span style="color:#960050;background-color:#1e0010">&#34;</span>&gt; 
-{{ safeHTML .Inner }}
-&lt;/<span style="color:#f92672">div</span>&gt;
-</code></pre></div><h5 id="heading-12">使用</h5>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-toml" data-lang="toml"><span style="display:flex;"><span><span style="color:#a6e22e">customCSS</span> = [<span style="color:#e6db74">&#39;styles/dracula.css&#39;</span>, <span style="color:#e6db74">&#39;mermaid.css&#39;</span>]            <span style="color:#75715e"># if [&#39;custom.css&#39;], load &#39;/static/css/custom.css&#39; file</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">customJS</span> = [<span style="color:#e6db74">&#39;highlight.pack.js&#39;</span>,<span style="color:#e6db74">&#39;mermaid.min.js&#39;</span>]             <span style="color:#75715e"># if [&#39;custom.js&#39;], load &#39;/static/js/custom.js&#39; file</span>
+</span></span></code></pre></div><p><code>script.html</code>中添加</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span>&gt; <span style="color:#a6e22e">mermaid</span>.<span style="color:#a6e22e">initialize</span>({ <span style="color:#a6e22e">startOnLoad</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span> });&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>除此之外，还需要在主题的shortcodes目录下创建mermaid.html, 参考:<a href="https://kentxxq.com/contents/%E6%8B%93%E5%B1%95hugo%E7%9A%84markdown_%E6%B5%81%E7%A8%8B%E5%9B%BEmermaid/">mermaid笔记</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span><span style="color:#75715e">&lt;!--mermaid.html--&gt;</span>
+</span></span><span style="display:flex;"><span>&lt;<span style="color:#f92672">div</span> <span style="color:#a6e22e">class</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mermaid&#34;</span> <span style="color:#a6e22e">align</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;{{ if .Get &#34;</span><span style="color:#a6e22e">align</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}}</span>
+</span></span><span style="display:flex;"><span>                            <span style="color:#960050;background-color:#1e0010">{{</span> <span style="color:#960050;background-color:#1e0010">.</span><span style="color:#a6e22e">Get</span> <span style="color:#960050;background-color:#1e0010">&#34;</span><span style="color:#a6e22e">align</span><span style="color:#960050;background-color:#1e0010">&#34;</span> <span style="color:#960050;background-color:#1e0010">}}</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#960050;background-color:#1e0010">{{</span> <span style="color:#a6e22e">else</span> <span style="color:#960050;background-color:#1e0010">}}</span> 
+</span></span><span style="display:flex;"><span>                            <span style="color:#a6e22e">center</span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#960050;background-color:#1e0010">{{</span> <span style="color:#a6e22e">end</span> <span style="color:#960050;background-color:#1e0010">}}&#34;</span>&gt; 
+</span></span><span style="display:flex;"><span>{{ safeHTML .Inner }}
+</span></span><span style="display:flex;"><span>&lt;/<span style="color:#f92672">div</span>&gt;
+</span></span></code></pre></div><h5 id="使用-1">使用</h5>
 <p>要被<code>{{ xxx}}</code>, <code>{{ xxx }}</code>,  括起来, xxx为<code>&lt;mermaid&gt;</code>和<code>&lt;/mermaid&gt;</code></p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">graph TD
-    Start <span style="color:#f92672">-</span><span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span> Stop
-</code></pre></div><p>生成:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>graph TD
+</span></span><span style="display:flex;"><span>    Start <span style="color:#f92672">--&gt;</span> Stop
+</span></span></code></pre></div><p>生成:</p>
 
 <div class="mermaid" align=" 
                             center
@@ -495,7 +490,7 @@ graph TD
     Start --> Stop
 
 </div>
-<h1 id="heading-13">博客搭建心得</h1>
+<h1 id="博客搭建心得">博客搭建心得</h1>
 <p>注意到, 在上文我们<strong>post网站到github pages</strong> 上时,  是将<strong>public目录作为submodule</strong>  push的. (push 的就是public目录的内容 ).</p>
 <p><img src="/life/blog-public.png" alt="blog-public"></p>
 <p>我们可以将当前的hugo 目录, 按上图来说就是<strong>quickstart目录</strong> 作为我们的博客代码编写目录添加到<strong>quickstart的git版本控制中</strong> .</p>
@@ -541,7 +536,7 @@ graph TD
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

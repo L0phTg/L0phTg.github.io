@@ -6,11 +6,7 @@
     <description>Recent content in compiler on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Tue, 09 Apr 2019 21:54:49 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/tags/compiler/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 09 Apr 2019 21:54:49 +0800</lastBuildDate><atom:link href="http://L0phTg.top/tags/compiler/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Static Single Assignment</title>
       <link>http://L0phTg.top/post/llvm/static-single-assignment/</link>

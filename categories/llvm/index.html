@@ -13,7 +13,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -49,7 +49,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/categories/llvm/">
@@ -181,7 +180,7 @@
       
         <li class="menu-item
           
-           is-active
+          
           ">
           <a href="/tags/">Tags</a>
         </li>
@@ -286,7 +285,7 @@
 <li>
 <p>迭代变量。</p>
 <p>在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。</p>
-<p>具体到Kaleidoscope语法层面，我们通过'='运算符达到对已经定义变量的改变。</p>
+<p>具体到Kaleidoscope语法层面，我们通过&rsquo;=&lsquo;运算符达到对已经定义变量的改变。</p>
 </li>
 </ol>
 </li>
@@ -401,8 +400,7 @@ graph TB
 <p>注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.</p>
 <p>因为这个系列主要是翻译, 所以基本没有涉及自己的理解. <strong>之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结</strong>.</p>
 <!-- raw HTML omitted -->
-<figure>
-    <img src="/docs-pic/llvm/loop.png" width="50%" height="50%"/> 
+<figure><img src="/docs-pic/llvm/loop.png" width="50%" height="50%"/>
 </figure>
   </p>
   <footer class="post-footer">
@@ -490,8 +488,7 @@ graph TB
     <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl03.html">http://llvm.org/docs/tutorial/LangImpl03.html</a></p>
 <p>介绍四个基本表达式和函数申明与定义的Codegen.</p>
 <!-- raw HTML omitted -->
-<figure>
-    <img src="/docs-pic/llvm/Codegen.png" width="100%&#34;" height="100%"/> 
+<figure><img src="/docs-pic/llvm/Codegen.png" width="100%&#34;" height="100%"/>
 </figure>
   </p>
   <footer class="post-footer">
@@ -533,7 +530,7 @@ graph TB
   </section>
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

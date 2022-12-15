@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -50,7 +50,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/llvm/static-single-assignment/">
@@ -222,7 +221,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#computing-minimal-ssa-using-dominance-frontiersdominancessa">computing minimal SSA using dominance frontiers(使用dominance边界计算最小的SSA)</a></li>
+    <li><a href="#computing-minimal-ssa-using-dominance-frontiers使用dominance边界计算最小的ssa">computing minimal SSA using dominance frontiers(使用dominance边界计算最小的SSA)</a></li>
   </ul>
 </nav>
   </div>
@@ -237,14 +236,14 @@
 <h1 id="benefits">Benefits</h1>
 <p>SSA的主要用途: 来自于它通过简化变量的属性来同时简化和改进各种编译器优化的结果.</p>
 <p>例如, 考虑这段代码:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C">y :<span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
-y :<span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
-x :<span style="color:#f92672">=</span> y
-</code></pre></div><p>我们可以一眼就看到第一行代码是不必要的, 第三行使用的y的值来自于第二行y的赋值. 一个程序必须执行 <strong><a href="https://en.wikipedia.org/wiki/Reaching_definition">reaching definition analysis</a></strong> to 决定这个. 但是如果一个程序是SSA形式, 这些都是直接的:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">y1 :<span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
-y2 :<span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
-x1 :<span style="color:#f92672">=</span> y2
-</code></pre></div><p>通过SSA的包含使用, <a href="https://en.wikipedia.org/wiki/Optimizing_compiler">编译器优化</a>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span>y :<span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>y :<span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>x :<span style="color:#f92672">=</span> y
+</span></span></code></pre></div><p>我们可以一眼就看到第一行代码是不必要的, 第三行使用的y的值来自于第二行y的赋值. 一个程序必须执行 <strong><a href="https://en.wikipedia.org/wiki/Reaching_definition">reaching definition analysis</a></strong> to 决定这个. 但是如果一个程序是SSA形式, 这些都是直接的:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>y1 :<span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>y2 :<span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>x1 :<span style="color:#f92672">=</span> y2
+</span></span></code></pre></div><p>通过SSA的包含使用, <a href="https://en.wikipedia.org/wiki/Optimizing_compiler">编译器优化</a>
 算法增强了很多:</p>
 <ul>
 <li>Constant propagation 常量传播</li>
@@ -274,22 +273,22 @@ and replacing each use of a variable with the &ldquo;version&rdquo; of the varia
 <p>编译器只需在存储器(或者相同的寄存器)中即可轻松地实现$\bold{\phi}$ 函数.  (存储器或寄存器作为一个$\bold{\phi}$函数输入的任何操作的目的地).  然而, 当simultaneous operations are speculatively producing inputs to a $\bold{\phi}$ 函数(就像很多机器上发生的那样), 该方法就不起作用了.</p>
 <p>通常, 大多数机器都有一个选择指令被用于该情况中, 这可以被我们的编译器用于实现$\bold{\phi}$函数.</p>
 <p>根据 Kenny Zadeck , $\bold{\phi}$ 函数最初被称为phony functions. 正式的名字是在学术paper上第一次发表时引入的.</p>
-<h2 id="computing-minimal-ssa-using-dominance-frontiersdominancessa">computing minimal SSA using dominance frontiers(使用dominance边界计算最小的SSA)</h2>
-<p>首先, 我们需要了解**<a href="https://en.wikipedia.org/wiki/Dominator_(graph_theory)">dominator</a>**的概念: 如果**不先经过节点 A 就到不了节点 B**, 我们就称节点 A 在控制流中严格支配节点 B. 这很有用, 因为如果我们已经到达节点 B , 就证明 A 中的代码也都正在工作. 如果 **A 严格支配 B** 或者 A = B, 我们就说 A dominates B ( 或者 B is dominated by A)</p>
+<h2 id="computing-minimal-ssa-using-dominance-frontiers使用dominance边界计算最小的ssa">computing minimal SSA using dominance frontiers(使用dominance边界计算最小的SSA)</h2>
+<p>首先, 我们需要了解**<a href="https://en.wikipedia.org/wiki/Dominator_(graph_theory)">dominator</a><strong>的概念: 如果</strong>不先经过节点 A 就到不了节点 B**, 我们就称节点 A 在控制流中严格支配节点 B. 这很有用, 因为如果我们已经到达节点 B , 就证明 A 中的代码也都正在工作. 如果 <strong>A 严格支配 B</strong> 或者 A = B, 我们就说 A dominates B ( 或者 B is dominated by A)</p>
 <p>现在, 我们可以定义 the <strong><a href="https://en.wikipedia.org/wiki/Dominator_(graph_theory)">dominance frontier</a></strong> : 如果节点 A 不严格支配节点 B, 但是支配了一些 B的前面节点(predecessor), 就称为节点 B 在节点 A 的<em>dominace frontier</em>中. ( 可能节点 A 是 节点 B 的直接前节点. 然后, 因为任何节点都 <em>dominates</em> 它自身, 并且节点 A <em>dominates</em> 它自身, 所以节点 B 是处于节点 A的支配边界).</p>
 <p>从 A 的角度看, 那是在其他控制路径上不经过A的 最早出现的节点.</p>
 <p><em>Dominance frontiers</em> 可以精准地确定我们需要$\bold{\phi}$ 函数的地方:  如果节点A定义了某个变量, then that definition and that definition alone (or redefinitions) will reach every node A dominates. 只有当我们离开这些节点并进入<em>dominance frontiers</em> 时,我们必须考虑其他流是否引入了相同变量的另外一个定义.此外, 控制流图中不需要处理其他 $\bold{\phi}$ 函数, 我们可以做到 no less.</p>
 <p>一个算法可以用来计算<em>dominance frontier set</em> :</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">for</span> each node b
-   dominance_frontier(b) :<span style="color:#f92672">=</span> {}
-<span style="color:#66d9ef">for</span> each node b
-    <span style="color:#66d9ef">if</span> the number of immediate predecessors of b <span style="color:#960050;background-color:#1e0010">≥</span> <span style="color:#ae81ff">2</span>
-        <span style="color:#66d9ef">for</span> each p <span style="color:#f92672">in</span> immediate predecessors of b
-            runner :<span style="color:#f92672">=</span> p
-            <span style="color:#66d9ef">while</span> runner <span style="color:#960050;background-color:#1e0010">≠</span> idom(b)
-                dominance_frontier(runner) :<span style="color:#f92672">=</span> dominance_frontier(runner) <span style="color:#960050;background-color:#1e0010">∪</span> { b }
-                runner :<span style="color:#f92672">=</span> idom(runner)
-</code></pre></div></article>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">for</span> each node b
+</span></span><span style="display:flex;"><span>   dominance_frontier(b) <span style="color:#f92672">:=</span> {}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> each node b
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> the number of immediate predecessors of b <span style="color:#960050;background-color:#1e0010">≥</span> <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> each p <span style="color:#f92672">in</span> immediate predecessors of b
+</span></span><span style="display:flex;"><span>            runner <span style="color:#f92672">:=</span> p
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">while</span> runner <span style="color:#960050;background-color:#1e0010">≠</span> idom(b)
+</span></span><span style="display:flex;"><span>                dominance_frontier(runner) <span style="color:#f92672">:=</span> dominance_frontier(runner) <span style="color:#960050;background-color:#1e0010">∪</span> { b }
+</span></span><span style="display:flex;"><span>                runner <span style="color:#f92672">:=</span> idom(runner)
+</span></span></code></pre></div></article>
     <footer class="post-footer">
       
       <ul class="post-tags">
@@ -331,7 +330,7 @@ and replacing each use of a variable with the &ldquo;version&rdquo; of the varia
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

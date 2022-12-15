@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -29,9 +29,9 @@
   <meta name="description" content="translate from: http://llvm.org/docs/tutorial/LangImpl06.html
 发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。
 扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。
-  为了实现用户自定义运算符，我们采用了扩展函数申明和扩展函数定义的实现方式。
-  为了实现对用户自定义运算符的表达式支持：
- 针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如&#43;、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可； 针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。    graph TBsubgraph 二元运算符binaryParser[1. 添加词法分析支持] subgraph 2. 实现用户自定义二元运算符函数funcProtoExtend[扩展函数申明AST] -- funcProtoParser[扩展ParsePrototype函数]end binaryParser -- funcProtoExtendfuncProtoParser -- binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符]endsubgraph 一元运算符unaryParser[&#34;1. 添加词法分析支持&#34;] subgraph 2. 实现用户自定义的一元运算符函数unaryFuncProtoExtend[扩展函数申明AST] -- unaryFuncProtoParser[扩展ParsePrototype函数]endunaryParser -- unaryFuncProtoExtendsubgraph 3. 实现一元运算符表达式的解析 createUnaryAST[创建UnaryExprAST节点] -- parseUnary[添加解析一元运算符表达式的函数]parseUnary -- parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑]endunaryFuncProtoParser -- createUnaryASTendstyle funcProtoExtend fill:#f9fstyle funcProtoParser fill:#f9fstyle unaryFuncProtoExtend fill:#f9fstyle unaryFuncProtoParser fill:#f9fstyle binaryCodegen fill:#ccff66style createUnaryAST fill:#ccff66style parseUnary fill:#ccff66style parsePrimary fill:#ccff66">
+为了实现用户自定义运算符，我们采用了扩展函数申明和扩展函数定义的实现方式。
+为了实现对用户自定义运算符的表达式支持：
+针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如&#43;、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可； 针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。 graph TB subgraph 二元运算符 binaryParser[1. 添加词法分析支持] subgraph 2. 实现用户自定义二元运算符函数 funcProtoExtend[扩展函数申明AST] --&gt; funcProtoParser[扩展ParsePrototype函数] end binaryParser --&gt; funcProtoExtend funcProtoParser --&gt; binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符] end subgraph 一元运算符 unaryParser[&#34;1. 添加词法分析支持&#34;] subgraph 2. 实现用户自定义的一元运算符函数 unaryFuncProtoExtend[扩展函数申明AST] --&gt; unaryFuncProtoParser[扩展ParsePrototype函数] end unaryParser --&gt; unaryFuncProtoExtend subgraph 3. 实现一元运算符表达式的解析 createUnaryAST[创建UnaryExprAST节点] --&gt; parseUnary[添加解析一元运算符表达式的函数] parseUnary --&gt; parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑] end unaryFuncProtoParser --&gt; createUnaryAST end style funcProtoExtend fill:#f9f style funcProtoParser fill:#f9f style unaryFuncProtoExtend fill:#f9f style unaryFuncProtoParser fill:#f9f style binaryCodegen fill:#ccff66 style createUnaryAST fill:#ccff66 style parseUnary fill:#ccff66 style parsePrimary fill:#ccff66 ">
 
   
   
@@ -41,9 +41,9 @@
     <meta name="twitter:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl06.html
 发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。
 扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。
-  为了实现用户自定义运算符，我们采用了扩展函数申明和扩展函数定义的实现方式。
-  为了实现对用户自定义运算符的表达式支持：
- 针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如&#43;、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可； 针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。    graph TBsubgraph 二元运算符binaryParser[1. 添加词法分析支持] subgraph 2. 实现用户自定义二元运算符函数funcProtoExtend[扩展函数申明AST] -- funcProtoParser[扩展ParsePrototype函数]end binaryParser -- funcProtoExtendfuncProtoParser -- binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符]endsubgraph 一元运算符unaryParser[&#34;1. 添加词法分析支持&#34;] subgraph 2. 实现用户自定义的一元运算符函数unaryFuncProtoExtend[扩展函数申明AST] -- unaryFuncProtoParser[扩展ParsePrototype函数]endunaryParser -- unaryFuncProtoExtendsubgraph 3. 实现一元运算符表达式的解析 createUnaryAST[创建UnaryExprAST节点] -- parseUnary[添加解析一元运算符表达式的函数]parseUnary -- parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑]endunaryFuncProtoParser -- createUnaryASTendstyle funcProtoExtend fill:#f9fstyle funcProtoParser fill:#f9fstyle unaryFuncProtoExtend fill:#f9fstyle unaryFuncProtoParser fill:#f9fstyle binaryCodegen fill:#ccff66style createUnaryAST fill:#ccff66style parseUnary fill:#ccff66style parsePrimary fill:#ccff66">
+为了实现用户自定义运算符，我们采用了扩展函数申明和扩展函数定义的实现方式。
+为了实现对用户自定义运算符的表达式支持：
+针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如&#43;、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可； 针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。 graph TB subgraph 二元运算符 binaryParser[1. 添加词法分析支持] subgraph 2. 实现用户自定义二元运算符函数 funcProtoExtend[扩展函数申明AST] --&gt; funcProtoParser[扩展ParsePrototype函数] end binaryParser --&gt; funcProtoExtend funcProtoParser --&gt; binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符] end subgraph 一元运算符 unaryParser[&#34;1. 添加词法分析支持&#34;] subgraph 2. 实现用户自定义的一元运算符函数 unaryFuncProtoExtend[扩展函数申明AST] --&gt; unaryFuncProtoParser[扩展ParsePrototype函数] end unaryParser --&gt; unaryFuncProtoExtend subgraph 3. 实现一元运算符表达式的解析 createUnaryAST[创建UnaryExprAST节点] --&gt; parseUnary[添加解析一元运算符表达式的函数] parseUnary --&gt; parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑] end unaryFuncProtoParser --&gt; createUnaryAST end style funcProtoExtend fill:#f9f style funcProtoParser fill:#f9f style unaryFuncProtoExtend fill:#f9f style unaryFuncProtoParser fill:#f9f style binaryCodegen fill:#ccff66 style createUnaryAST fill:#ccff66 style parseUnary fill:#ccff66 style parsePrimary fill:#ccff66 ">
     <meta name="twitter:image" content="/images/avatar.png">
   
 
@@ -53,16 +53,15 @@
   <meta property="og:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl06.html
 发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。
 扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。
-  为了实现用户自定义运算符，我们采用了扩展函数申明和扩展函数定义的实现方式。
-  为了实现对用户自定义运算符的表达式支持：
- 针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如&#43;、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可； 针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。    graph TBsubgraph 二元运算符binaryParser[1. 添加词法分析支持] subgraph 2. 实现用户自定义二元运算符函数funcProtoExtend[扩展函数申明AST] -- funcProtoParser[扩展ParsePrototype函数]end binaryParser -- funcProtoExtendfuncProtoParser -- binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符]endsubgraph 一元运算符unaryParser[&#34;1. 添加词法分析支持&#34;] subgraph 2. 实现用户自定义的一元运算符函数unaryFuncProtoExtend[扩展函数申明AST] -- unaryFuncProtoParser[扩展ParsePrototype函数]endunaryParser -- unaryFuncProtoExtendsubgraph 3. 实现一元运算符表达式的解析 createUnaryAST[创建UnaryExprAST节点] -- parseUnary[添加解析一元运算符表达式的函数]parseUnary -- parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑]endunaryFuncProtoParser -- createUnaryASTendstyle funcProtoExtend fill:#f9fstyle funcProtoParser fill:#f9fstyle unaryFuncProtoExtend fill:#f9fstyle unaryFuncProtoParser fill:#f9fstyle binaryCodegen fill:#ccff66style createUnaryAST fill:#ccff66style parseUnary fill:#ccff66style parsePrimary fill:#ccff66">
+为了实现用户自定义运算符，我们采用了扩展函数申明和扩展函数定义的实现方式。
+为了实现对用户自定义运算符的表达式支持：
+针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如&#43;、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可； 针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。 graph TB subgraph 二元运算符 binaryParser[1. 添加词法分析支持] subgraph 2. 实现用户自定义二元运算符函数 funcProtoExtend[扩展函数申明AST] --&gt; funcProtoParser[扩展ParsePrototype函数] end binaryParser --&gt; funcProtoExtend funcProtoParser --&gt; binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符] end subgraph 一元运算符 unaryParser[&#34;1. 添加词法分析支持&#34;] subgraph 2. 实现用户自定义的一元运算符函数 unaryFuncProtoExtend[扩展函数申明AST] --&gt; unaryFuncProtoParser[扩展ParsePrototype函数] end unaryParser --&gt; unaryFuncProtoExtend subgraph 3. 实现一元运算符表达式的解析 createUnaryAST[创建UnaryExprAST节点] --&gt; parseUnary[添加解析一元运算符表达式的函数] parseUnary --&gt; parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑] end unaryFuncProtoParser --&gt; createUnaryAST end style funcProtoExtend fill:#f9f style funcProtoParser fill:#f9f style unaryFuncProtoExtend fill:#f9f style unaryFuncProtoParser fill:#f9f style binaryCodegen fill:#ccff66 style createUnaryAST fill:#ccff66 style parseUnary fill:#ccff66 style parsePrimary fill:#ccff66 ">
   <meta property="og:url" content="http://L0phTg.top/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/">
   <meta property="og:image" content="/images/avatar.png">
 
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/">
@@ -292,538 +291,537 @@ graph TB
   style parsePrimary fill:#ccff66
 
 </div>
-<h1 id="61-">6.1 第六章介绍</h1>
+<h1 id="61-第六章介绍">6.1 第六章介绍</h1>
 <p>欢迎来到第六章。在我们的教程中，我们现在拥有一个功能完备的语言，它非常简单，但也非常有用。然而，它仍然存在一个大问题。我们的语言没有很多有用的运算符（例如除法，逻辑否定，甚至除了小于以外的任何比较运算符）。</p>
 <p>本章对简单而漂亮的Kaleidoscope语言添加用户定义的运算符，但是我们会稍微偏离主题。这种偏题会导致我们的语言变得有些丑陋，但是会让我们的语言很强大。创建自己语言的好处是：你可以决定什么是好的或者坏的。在本教程中，我们假设可以使用它作为一种展示一些有趣的解析技术的方式。</p>
 <p>在本教程的最后，我们将会运行一个Kaleidoscope 应用 that <a href="http://llvm.org/docs/tutorial/LangImpl06.html#kicking-the-tires">renders the Mandelbrot set</a>（渲染Mandelbrot集合）。我们将会通过Kaleidoscope来构建该例子，并且来展示Kaleidoscope的特性，</p>
-<h1 id="62--">6.2 用户定义运算符： 思路</h1>
+<h1 id="62-用户定义运算符-思路">6.2 用户定义运算符： 思路</h1>
 <p>我们将会添加“<strong>运算符重载</strong>”功能到Kaleidoscope语言中，它的设计将比C++中的设计更加通用。在C++中，你只能重新定义已经存在的运算符：你不能人工改变语法，并引入新的运算符，改变优先级等。在本章，我们将在Kaleidoscope语言中添加此功能，这可以用户就可以使用更多自定义的运算符。</p>
 <p>我们现在介绍用于定义运算符的目的是<strong>展示使用手写解析器的强大功能和灵活性</strong>。到目前为止，我们实现的解析器在大部分对于表达式的语法和操作符优先级解析中都使用到了递归下降。可以阅读<a href="http://llvm.org/docs/tutorial/LangImpl02.html">第二章</a>了解更多相关的内容。通过使用运算符优先级解析，允许程序员在语法中引入新的运算符是相当容易的：程序在JIT运行时，语法是动态可扩展的。</p>
 <p>我们将会添加两个功能：可以编程的一元运算符(unary operators)（现在，Kaleidoscope还没有一元运算符）以及二元运算符(binary operators)。</p>
 <p>一个例子：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Logical unary not.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unary</span><span style="color:#960050;background-color:#1e0010">!</span>(v)
-  <span style="color:#66d9ef">if</span> v then
-    <span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">else</span>
-    <span style="color:#ae81ff">1</span>;
-
-<span style="color:#75715e"># Define &gt; with the same precedence as &lt;.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10</span> (LHS RHS)
-  RHS <span style="color:#f92672">&lt;</span> LHS;
-
-<span style="color:#75715e"># Binary &#34;logical or&#34;, (note that it does not &#34;short circuit&#34;)</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> (LHS RHS)
-  <span style="color:#66d9ef">if</span> LHS then
-    <span style="color:#ae81ff">1</span>
-  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> RHS then
-    <span style="color:#ae81ff">1</span>
-  <span style="color:#66d9ef">else</span>
-    <span style="color:#ae81ff">0</span>;
-
-<span style="color:#75715e"># Define = with slightly lower precedence than relationals.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span> (LHS RHS)
-  <span style="color:#960050;background-color:#1e0010">!</span>(LHS <span style="color:#f92672">&lt;</span> RHS <span style="color:#f92672">|</span> LHS <span style="color:#f92672">&gt;</span> RHS);
-</code></pre></div><p>许多语言都希望能够<strong>使用该语言本身来实现其标准库</strong>。在Kaleidoscope中，我们可以在库中实现该语言的重要部分！</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Logical unary not.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unary</span><span style="color:#960050;background-color:#1e0010">!</span>(v)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> v then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Define &gt; with the same precedence as &lt;.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  RHS <span style="color:#f92672">&lt;</span> LHS;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Binary &#34;logical or&#34;, (note that it does not &#34;short circuit&#34;)</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> LHS then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> RHS then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Define = with slightly lower precedence than relationals.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  <span style="color:#960050;background-color:#1e0010">!</span>(LHS <span style="color:#f92672">&lt;</span> RHS <span style="color:#f92672">|</span> LHS <span style="color:#f92672">&gt;</span> RHS);
+</span></span></code></pre></div><p>许多语言都希望能够<strong>使用该语言本身来实现其标准库</strong>。在Kaleidoscope中，我们可以在库中实现该语言的重要部分！</p>
 <p>我们将这些功能的实现分解为两个部分：实现对<strong>用户定义的二元运算符的支持</strong>和<strong>添加一元运算符</strong>。</p>
-<h1 id="63-">6.3 用户定义的二元运算符</h1>
+<h1 id="63-用户定义的二元运算符">6.3 用户定义的二元运算符</h1>
 <p>使用我们目前的框架来添加对用户定义的二元运算符的支持非常简单。我们将首先添加对一元/二元关键字：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">Token</span> {
-  ...
-  <span style="color:#75715e">// operators
-</span><span style="color:#75715e"></span>  tok_binary <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">11</span>,
-  tok_unary <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">12</span>
-};
-...
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> gettok() {
-...
-    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">for</span><span style="color:#e6db74">&#34;</span>)
-      <span style="color:#66d9ef">return</span> tok_for;
-    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">in</span><span style="color:#e6db74">&#34;</span>)
-      <span style="color:#66d9ef">return</span> tok_in;
-    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">binary</span><span style="color:#e6db74">&#34;</span>)
-      <span style="color:#66d9ef">return</span> tok_binary;
-    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unary</span><span style="color:#e6db74">&#34;</span>)
-      <span style="color:#66d9ef">return</span> tok_unary;
-    <span style="color:#66d9ef">return</span> tok_identifier;
-</code></pre></div><p>这只是添加了对一元和二元关键字的<strong>词法支持</strong>。当前的AST的优点是：我们通过使用该二元运算符操作码的ASCI码来表示具有范型的二元运算符。对于我们扩展的操作符来说，我们将使用相同的表示，所以我们不需要任何新的AST或者解析器支持。</p>
-<p>在另一方面，我们必须保证在函数定义时，可以正确解析和表示这些新的运算符的定义，例如&quot;def binary | 5&rdquo;。到目前为止，我们的语法中，<strong>函数定义时的名字被解析作为申明</strong>，并且会进入到<strong>PrototypeAST</strong> AST 节点。为了将我们新定义的运算符表示为申明，我们必须扩展<strong>Prototype</strong> AST 节点：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// PrototypeAST - This class represents the &#34;prototype&#34; for a function,
-</span><span style="color:#75715e"></span><span style="color:#75715e">/// which captures its argument names as well as if it is an operator.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PrototypeAST</span> {
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string Name;
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&gt;</span> Args;
-  <span style="color:#66d9ef">bool</span> IsOperator;      <span style="color:#75715e">// 是否是运算符
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> Precedence;  <span style="color:#75715e">// Precedence if a binary op. 运算符优先级
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-  PrototypeAST(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string <span style="color:#f92672">&amp;</span>name, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&gt;</span> Args,
-               <span style="color:#66d9ef">bool</span> IsOperator <span style="color:#f92672">=</span> false, <span style="color:#66d9ef">unsigned</span> Prec <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
-  <span style="color:#f92672">:</span> Name(name), Args(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Args)), IsOperator(IsOperator),
-    Precedence(Prec) {}
-
-  Function <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>();
-  <span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string <span style="color:#f92672">&amp;</span>getName() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Name; }
-
-  <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">isUnaryOp</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> IsOperator <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> Args.size() <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; }
-  <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">isBinaryOp</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> IsOperator <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> Args.size() <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>; }
-
-  <span style="color:#66d9ef">char</span> <span style="color:#a6e22e">getOperatorName</span>() <span style="color:#66d9ef">const</span> {
-    assert(isUnaryOp() <span style="color:#f92672">|</span><span style="color:#f92672">|</span> isBinaryOp());
-    <span style="color:#66d9ef">return</span> Name[Name.size() <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>];
-  }
-
-  <span style="color:#66d9ef">unsigned</span> <span style="color:#a6e22e">getBinaryPrecedence</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Precedence; }
-};
-</code></pre></div><p>基本上，除了要知道一个申明的名字之外，我们现在还要跟踪<strong>它是否为一个运算符</strong>，并且如果它是的话，<strong>运算符的优先级别是什么</strong>。优先级仅仅被用于二元运算符（正如你将在下面看到的，它对一元运算符不适用）。现在我们有了一种方法来表示对用户定义运算符的声明，我们现在来解析它：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// prototype
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= id &#39;(&#39; id* &#39;)&#39;
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= binary LETTER number? (id, id)
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span> ParsePrototype() {
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string FnName;
-
-  <span style="color:#66d9ef">unsigned</span> Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;  <span style="color:#75715e">// 0 = identifier, 1 = unary, 2 = binary.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> BinaryPrecedence <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>;
-
-  <span style="color:#66d9ef">switch</span> (CurTok) {
-  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Expected function name in prototype</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> tok_identifier:
-    FnName <span style="color:#f92672">=</span> IdentifierStr;
-    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    getNextToken();
-    <span style="color:#66d9ef">break</span>;
-  <span style="color:#66d9ef">case</span> tok_binary:
-    getNextToken();
-    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>isascii(CurTok))
-      <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Expected binary operator</span><span style="color:#e6db74">&#34;</span>);
-    FnName <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">binary</span><span style="color:#e6db74">&#34;</span>;			<span style="color:#75715e">// 为二元运算符设置FnName = &#34;binary&#34;+CurTok
-</span><span style="color:#75715e"></span>    FnName <span style="color:#f92672">+</span><span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span>)CurTok;
-    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
-    getNextToken();
-
-    <span style="color:#75715e">// Read the precedence if present.
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">=</span><span style="color:#f92672">=</span> tok_number) {
-      <span style="color:#66d9ef">if</span> (NumVal <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> NumVal <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">100</span>)
-        <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Invalid precedence: must be 1..100</span><span style="color:#e6db74">&#34;</span>);
-      BinaryPrecedence <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span>)NumVal;
-      getNextToken();
-    }
-    <span style="color:#66d9ef">break</span>;
-  }
-
-  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#39;</span>)
-    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Expected &#39;(&#39; in prototype</span><span style="color:#e6db74">&#34;</span>);
-
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&gt;</span> ArgNames;
-  <span style="color:#66d9ef">while</span> (getNextToken() <span style="color:#f92672">=</span><span style="color:#f92672">=</span> tok_identifier)
-    ArgNames.push_back(IdentifierStr);
-  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">)</span><span style="color:#e6db74">&#39;</span>)
-    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Expected &#39;)&#39; in prototype</span><span style="color:#e6db74">&#34;</span>);
-
-  <span style="color:#75715e">// success.
-</span><span style="color:#75715e"></span>  getNextToken();  <span style="color:#75715e">// eat &#39;)&#39;.
-</span><span style="color:#75715e"></span>
-  <span style="color:#75715e">// Verify right number of names for operator.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (Kind <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> ArgNames.size() <span style="color:#f92672">!</span><span style="color:#f92672">=</span> Kind)
-    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Invalid number of operands for operator</span><span style="color:#e6db74">&#34;</span>);
-
-  <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span>(FnName, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(ArgNames), Kind <span style="color:#f92672">!</span><span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,
-                                         BinaryPrecedence);
-}
-</code></pre></div><p>上面的代码都非常简单，我们之前已经看到了很多类似的代码。关于上面的代码一个有趣的部分是为二元运算符设计FnName的那几行。这位新定义的“@”运算符构建了像“binary@”这样的名称。它利用了LLVM符号表中的符号表可以被允许包含任何字符的事实，甚至可以包括嵌入的nul字符。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> <span style="color:#a6e22e">Token</span> {
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// operators
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  tok_binary <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">11</span>,
+</span></span><span style="display:flex;"><span>  tok_unary <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">12</span>
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> gettok() {
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;for&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> tok_for;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;in&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> tok_in;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;binary&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> tok_binary;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (IdentifierStr <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;unary&#34;</span>)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> tok_unary;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> tok_identifier;
+</span></span></code></pre></div><p>这只是添加了对一元和二元关键字的<strong>词法支持</strong>。当前的AST的优点是：我们通过使用该二元运算符操作码的ASCI码来表示具有范型的二元运算符。对于我们扩展的操作符来说，我们将使用相同的表示，所以我们不需要任何新的AST或者解析器支持。</p>
+<p>在另一方面，我们必须保证在函数定义时，可以正确解析和表示这些新的运算符的定义，例如&quot;def binary | 5&quot;。到目前为止，我们的语法中，<strong>函数定义时的名字被解析作为申明</strong>，并且会进入到<strong>PrototypeAST</strong> AST 节点。为了将我们新定义的运算符表示为申明，我们必须扩展<strong>Prototype</strong> AST 节点：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// PrototypeAST - This class represents the &#34;prototype&#34; for a function,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">/// which captures its argument names as well as if it is an operator.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PrototypeAST</span> {
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>string Name;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span> Args;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">bool</span> IsOperator;      <span style="color:#75715e">// 是否是运算符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> Precedence;  <span style="color:#75715e">// Precedence if a binary op. 运算符优先级
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  PrototypeAST(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string <span style="color:#f92672">&amp;</span>name, std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span> Args,
+</span></span><span style="display:flex;"><span>               <span style="color:#66d9ef">bool</span> IsOperator <span style="color:#f92672">=</span> false, <span style="color:#66d9ef">unsigned</span> Prec <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">:</span> Name(name), Args(std<span style="color:#f92672">::</span>move(Args)), IsOperator(IsOperator),
+</span></span><span style="display:flex;"><span>    Precedence(Prec) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Function <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string <span style="color:#f92672">&amp;</span>getName() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Name; }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">isUnaryOp</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> IsOperator <span style="color:#f92672">&amp;&amp;</span> Args.size() <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>; }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">isBinaryOp</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> IsOperator <span style="color:#f92672">&amp;&amp;</span> Args.size() <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>; }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> <span style="color:#a6e22e">getOperatorName</span>() <span style="color:#66d9ef">const</span> {
+</span></span><span style="display:flex;"><span>    assert(isUnaryOp() <span style="color:#f92672">||</span> isBinaryOp());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Name[Name.size() <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#a6e22e">getBinaryPrecedence</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Precedence; }
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>基本上，除了要知道一个申明的名字之外，我们现在还要跟踪<strong>它是否为一个运算符</strong>，并且如果它是的话，<strong>运算符的优先级别是什么</strong>。优先级仅仅被用于二元运算符（正如你将在下面看到的，它对一元运算符不适用）。现在我们有了一种方法来表示对用户定义运算符的声明，我们现在来解析它：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// prototype
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= id &#39;(&#39; id* &#39;)&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= binary LETTER number? (id, id)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span> ParsePrototype() {
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>string FnName;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;  <span style="color:#75715e">// 0 = identifier, 1 = unary, 2 = binary.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> BinaryPrecedence <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (CurTok) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Expected function name in prototype&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_identifier:
+</span></span><span style="display:flex;"><span>    FnName <span style="color:#f92672">=</span> IdentifierStr;
+</span></span><span style="display:flex;"><span>    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    getNextToken();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_binary:
+</span></span><span style="display:flex;"><span>    getNextToken();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>isascii(CurTok))
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Expected binary operator&#34;</span>);
+</span></span><span style="display:flex;"><span>    FnName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;binary&#34;</span>;			<span style="color:#75715e">// 为二元运算符设置FnName = &#34;binary&#34;+CurTok
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    FnName <span style="color:#f92672">+=</span> (<span style="color:#66d9ef">char</span>)CurTok;
+</span></span><span style="display:flex;"><span>    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>    getNextToken();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Read the precedence if present.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">==</span> tok_number) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (NumVal <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">||</span> NumVal <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">100</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Invalid precedence: must be 1..100&#34;</span>);
+</span></span><span style="display:flex;"><span>      BinaryPrecedence <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span>)NumVal;
+</span></span><span style="display:flex;"><span>      getNextToken();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;(&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Expected &#39;(&#39; in prototype&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span> ArgNames;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (getNextToken() <span style="color:#f92672">==</span> tok_identifier)
+</span></span><span style="display:flex;"><span>    ArgNames.push_back(IdentifierStr);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (CurTok <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#39;)&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Expected &#39;)&#39; in prototype&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// success.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  getNextToken();  <span style="color:#75715e">// eat &#39;)&#39;.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Verify right number of names for operator.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (Kind <span style="color:#f92672">&amp;&amp;</span> ArgNames.size() <span style="color:#f92672">!=</span> Kind)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Invalid number of operands for operator&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span>(FnName, std<span style="color:#f92672">::</span>move(ArgNames), Kind <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>                                         BinaryPrecedence);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>上面的代码都非常简单，我们之前已经看到了很多类似的代码。关于上面的代码一个有趣的部分是为二元运算符设计FnName的那几行。这位新定义的“@”运算符构建了像“binary@”这样的名称。它利用了LLVM符号表中的符号表可以被允许包含任何字符的事实，甚至可以包括嵌入的nul字符。</p>
 <p>下一个有趣的事情是为这些二元运算符<strong>添加Codegen支持</strong>（产生LLVM IR的代码）。通过使用我们目前的代码框架，在已经有了二元操作符节点后，实现Codegen只需要简单添加一个case。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>BinaryExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  Value <span style="color:#f92672">*</span>L <span style="color:#f92672">=</span> LHS<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-  Value <span style="color:#f92672">*</span>R <span style="color:#f92672">=</span> RHS<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>L <span style="color:#f92672">|</span><span style="color:#f92672">|</span> <span style="color:#f92672">!</span>R)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-
-  <span style="color:#66d9ef">switch</span> (Op) {
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">+</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> Builder.CreateFAdd(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">addtmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> Builder.CreateFSub(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">subtmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> Builder.CreateFMul(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">multmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    L <span style="color:#f92672">=</span> Builder.CreateFCmpULT(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">cmptmp</span><span style="color:#e6db74">&#34;</span>);
-    <span style="color:#75715e">// Convert bool 0/1 to double 0.0 or 1.0
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> Builder.CreateUIToFP(L, Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext),
-                                <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">booltmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">break</span>;
-  }
-
-  <span style="color:#75715e">// If it wasn&#39;t a builtin binary operator, it must be a user defined one. Emit
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// a call to it.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果它不是一个内建的二元操作符，它一定是用户定义的二元操作符。Emit a call to it.
-</span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span> getFunction(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">binary</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">+</span> Op);
-  assert(F <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">binary operator not found!</span><span style="color:#e6db74">&#34;</span>);
-
-  Value <span style="color:#f92672">*</span>Ops[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> { L, R };
-  <span style="color:#66d9ef">return</span> Builder.CreateCall(F, Ops, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">binop</span><span style="color:#e6db74">&#34;</span>);
-}
-</code></pre></div><p>正如上面看到的，添加的代码实际上非常简单。它只是<strong>在符号表中查找合适的运算符并且生成对它的函数调用</strong>。由于用户定义的运算符只是被作为普通函数构建（因为“申明”就是有正确名称的函数）。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>BinaryExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span>L <span style="color:#f92672">=</span> LHS<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span>R <span style="color:#f92672">=</span> RHS<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>L <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>R)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (Op) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;+&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Builder.CreateFAdd(L, R, <span style="color:#e6db74">&#34;addtmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;-&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Builder.CreateFSub(L, R, <span style="color:#e6db74">&#34;subtmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;*&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Builder.CreateFMul(L, R, <span style="color:#e6db74">&#34;multmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;&lt;&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    L <span style="color:#f92672">=</span> Builder.CreateFCmpULT(L, R, <span style="color:#e6db74">&#34;cmptmp&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Convert bool 0/1 to double 0.0 or 1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> Builder.CreateUIToFP(L, Type<span style="color:#f92672">::</span>getDoubleTy(TheContext),
+</span></span><span style="display:flex;"><span>                                <span style="color:#e6db74">&#34;booltmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If it wasn&#39;t a builtin binary operator, it must be a user defined one. Emit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// a call to it.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果它不是一个内建的二元操作符，它一定是用户定义的二元操作符。Emit a call to it.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span> getFunction(std<span style="color:#f92672">::</span>string(<span style="color:#e6db74">&#34;binary&#34;</span>) <span style="color:#f92672">+</span> Op);
+</span></span><span style="display:flex;"><span>  assert(F <span style="color:#f92672">&amp;&amp;</span> <span style="color:#e6db74">&#34;binary operator not found!&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span>Ops[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">=</span> { L, R };
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> Builder.CreateCall(F, Ops, <span style="color:#e6db74">&#34;binop&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>正如上面看到的，添加的代码实际上非常简单。它只是<strong>在符号表中查找合适的运算符并且生成对它的函数调用</strong>。由于用户定义的运算符只是被作为普通函数构建（因为“申明”就是有正确名称的函数）。</p>
 <p>我们最好还需要添加的一段代码，是<strong>一段顶级膜法</strong>（hhhh）：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#75715e">// Transfer ownership of the prototype to the FunctionProtos map, but keep a
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// reference to it for use below.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 将申明的所有权转移到了FunctionProtos映射中，但是会保留一个引用以便于之后调用。
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>P <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>Proto;
-  FunctionProtos[Proto<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getName()] <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Proto);
-  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> getFunction(P.getName());
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-
-  <span style="color:#75715e">// If this is an operator, install it.、
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果当前正在解析的函数是一个运算符函数，install it.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (P.isBinaryOp())
-    BinopPrecedence[P.getOperatorName()] <span style="color:#f92672">=</span> P.getBinaryPrecedence(); <span style="color:#75715e">// 赋予它优先级
-</span><span style="color:#75715e"></span>
-  <span style="color:#75715e">// Create a new basic block to start insertion into.
-</span><span style="color:#75715e"></span>  BasicBlock <span style="color:#f92672">*</span>BB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">entry</span><span style="color:#e6db74">&#34;</span>, TheFunction);
-  ...
-</code></pre></div><p>基本上，在一个函数codegen之前，如果它是一个用户定义的运算符，我们会在优先级表中注册它。这会允许我们使用已经有的二元运算符解析逻辑来处理它。由于我们正在研究一个完全通用的运算符优先级解析器，所以我们需要做的就是“扩展语法”。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Transfer ownership of the prototype to the FunctionProtos map, but keep a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// reference to it for use below.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 将申明的所有权转移到了FunctionProtos映射中，但是会保留一个引用以便于之后调用。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>P <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>Proto;
+</span></span><span style="display:flex;"><span>  FunctionProtos[Proto<span style="color:#f92672">-&gt;</span>getName()] <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>move(Proto);
+</span></span><span style="display:flex;"><span>  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> getFunction(P.getName());
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If this is an operator, install it.、
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果当前正在解析的函数是一个运算符函数，install it.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (P.isBinaryOp())
+</span></span><span style="display:flex;"><span>    BinopPrecedence[P.getOperatorName()] <span style="color:#f92672">=</span> P.getBinaryPrecedence(); <span style="color:#75715e">// 赋予它优先级
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Create a new basic block to start insertion into.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  BasicBlock <span style="color:#f92672">*</span>BB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">::</span>Create(TheContext, <span style="color:#e6db74">&#34;entry&#34;</span>, TheFunction);
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><p>基本上，在一个函数codegen之前，如果它是一个用户定义的运算符，我们会在优先级表中注册它。这会允许我们使用已经有的二元运算符解析逻辑来处理它。由于我们正在研究一个完全通用的运算符优先级解析器，所以我们需要做的就是“扩展语法”。</p>
 <p>现在我们有了有用的用户定义的二元运算符。我们在之前的框架上添加了一些逻辑来支持这个功能。</p>
-<p>添加一元运算符是更具有挑战性的，因为我们还没有任何框架 &ndash; let's see what it takes.</p>
-<h1 id="64-">6.4 用户定义的一元运算符</h1>
+<p>添加一元运算符是更具有挑战性的，因为我们还没有任何框架 &ndash; let&rsquo;s see what it takes.</p>
+<h1 id="64-用户定义的一元运算符">6.4 用户定义的一元运算符</h1>
 <p>由于目前我们的Kaleidoscope语言中还不支持一元运算符，所以为了支持该功能，我们必须要从头开始做。在之前的介绍中，我们已经在词法分析器中为一元运算符添加了&quot;unary&quot;关键字支持。除此之外，我们还需要<strong>创建AST节点</strong>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// UnaryExprAST - Expression class for a unary operator.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UnaryExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
-  <span style="color:#66d9ef">char</span> Opcode;
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Operand;
-
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-  UnaryExprAST(<span style="color:#66d9ef">char</span> Opcode, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Operand)
-    <span style="color:#f92672">:</span> Opcode(Opcode), Operand(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Operand)) {}
-
-  Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#66d9ef">override</span>;
-};
-</code></pre></div><p>到现在为止，AST节点的意义是非常简单明了的。除了一元运算符只有一个子节点之外（二元运算符有两个子节点），它与二元运算符的AST节点基本相同。有了AST节点之后，我们需要<strong>添加解析逻辑</strong>。解析一元运算符实现起来是非常简单的：<strong>我们将添加一个新的函数来支持该功能</strong>：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// unary
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= primary
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= &#39;!&#39; unary
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseUnary() {
-  <span style="color:#75715e">// If the current token is not an operator, it must be a primary expr.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果当前处理的token不是运算符，那它就一定是一个主表达式。
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>isascii(CurTok) <span style="color:#f92672">|</span><span style="color:#f92672">|</span> CurTok <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">(</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> CurTok <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">,</span><span style="color:#e6db74">&#39;</span>)
-    <span style="color:#66d9ef">return</span> ParsePrimary();
-
-  <span style="color:#75715e">// If this is a unary operator, read it.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果它是一个一元运算符，read it。
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> Opc <span style="color:#f92672">=</span> CurTok;
-  getNextToken();
-  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> Operand <span style="color:#f92672">=</span> ParseUnary())
-    <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>UnaryExprAST<span style="color:#f92672">&gt;</span>(Opc, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Operand));
-  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-}
-</code></pre></div><p>在这里我们添加的语法是非常简单的。当解析主运算符时，如果我们看到了一个一元运算符，我们将会将运算符作为前缀使用，并且将剩余的部分解析为另一个一元运算符。这允许我们处理多个一元运算符（例如“!!x”）。请注意，一元运算符不能像二元运算符那样具有模糊的解析，所以不需要优先级信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// UnaryExprAST - Expression class for a unary operator.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">UnaryExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">char</span> Opcode;
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Operand;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  UnaryExprAST(<span style="color:#66d9ef">char</span> Opcode, std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> Operand)
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">:</span> Opcode(Opcode), Operand(std<span style="color:#f92672">::</span>move(Operand)) {}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#66d9ef">override</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>到现在为止，AST节点的意义是非常简单明了的。除了一元运算符只有一个子节点之外（二元运算符有两个子节点），它与二元运算符的AST节点基本相同。有了AST节点之后，我们需要<strong>添加解析逻辑</strong>。解析一元运算符实现起来是非常简单的：<strong>我们将添加一个新的函数来支持该功能</strong>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// unary
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= primary
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= &#39;!&#39; unary
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseUnary() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If the current token is not an operator, it must be a primary expr.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果当前处理的token不是运算符，那它就一定是一个主表达式。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>isascii(CurTok) <span style="color:#f92672">||</span> CurTok <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;(&#39;</span> <span style="color:#f92672">||</span> CurTok <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;,&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ParsePrimary();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If this is a unary operator, read it.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 如果它是一个一元运算符，read it。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int</span> Opc <span style="color:#f92672">=</span> CurTok;
+</span></span><span style="display:flex;"><span>  getNextToken();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> Operand <span style="color:#f92672">=</span> ParseUnary())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>UnaryExprAST<span style="color:#f92672">&gt;</span>(Opc, std<span style="color:#f92672">::</span>move(Operand));
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在这里我们添加的语法是非常简单的。当解析主运算符时，如果我们看到了一个一元运算符，我们将会将运算符作为前缀使用，并且将剩余的部分解析为另一个一元运算符。这允许我们处理多个一元运算符（例如“!!x”）。请注意，一元运算符不能像二元运算符那样具有模糊的解析，所以不需要优先级信息。</p>
 <p>这个函数的问题是：我们需要在某个地方调用<strong>ParseUnary</strong>。为了做这个，我们改变以前的 <strong>ParsePrimay</strong> 调用者来调用 <strong>ParseUnary</strong> ：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// binoprhs
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= (&#39;+&#39; unary)*
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseBinOpRHS(<span style="color:#66d9ef">int</span> ExprPrec,
-                                              std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> LHS) {
-  ...
-    <span style="color:#75715e">// Parse the unary expression after the binary operator.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 在解析二元操作符后解析一元表达式
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">auto</span> RHS <span style="color:#f92672">=</span> ParseUnary();
-    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>RHS)
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-  ...
-}
-<span style="color:#75715e">/// expression
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= unary binoprhs
-</span><span style="color:#75715e"></span><span style="color:#75715e">///
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseExpression() {
-  <span style="color:#66d9ef">auto</span> LHS <span style="color:#f92672">=</span> ParseUnary();
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>LHS)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-
-  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ParseBinOpRHS</span>(<span style="color:#ae81ff">0</span>, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(LHS));
-}
-</code></pre></div><p>有了这两个改变之后，我们现在能够解析一元运算符并为他们构建AST。下一步，我们需要为申明添加解析器支持，来解析一元运算符的申明。我们对上面的二元运算符代码进行扩展：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// prototype
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= id &#39;(&#39; id* &#39;)&#39;
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= binary LETTER number? (id, id)
-</span><span style="color:#75715e"></span><span style="color:#75715e">///   ::= unary LETTER (id)
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span> ParsePrototype() {
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string FnName;
-
-  <span style="color:#66d9ef">unsigned</span> Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;  <span style="color:#75715e">// 0 = identifier, 1 = unary, 2 = binary.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> BinaryPrecedence <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>;
-
-  <span style="color:#66d9ef">switch</span> (CurTok) {
-  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Expected function name in prototype</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> tok_identifier:
-    FnName <span style="color:#f92672">=</span> IdentifierStr;
-    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    getNextToken();
-    <span style="color:#66d9ef">break</span>;
-  <span style="color:#66d9ef">case</span> tok_unary:
-    getNextToken();
-    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>isascii(CurTok))
-      <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Expected unary operator</span><span style="color:#e6db74">&#34;</span>);
-    FnName <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unary</span><span style="color:#e6db74">&#34;</span>;
-    FnName <span style="color:#f92672">+</span><span style="color:#f92672">=</span> (<span style="color:#66d9ef">char</span>)CurTok;
-    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-    getNextToken();
-    <span style="color:#66d9ef">break</span>;
-  <span style="color:#66d9ef">case</span> tok_binary:
-    ...
-</code></pre></div><p>和二元运算符一样，我们将一元运算符命名为包含operator+字符的名称。这有助于我们进行代码产生。Speaking of，我们需要添加的最后一部分是<strong>对一元运算符添加codegen支持</strong>。它像下面这样：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>UnaryExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  Value <span style="color:#f92672">*</span>OperandV <span style="color:#f92672">=</span> Operand<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>OperandV)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-
-  Function <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span> getFunction(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unary</span><span style="color:#e6db74">&#34;</span>) <span style="color:#f92672">+</span> Opcode);
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>F)
-    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unknown unary operator</span><span style="color:#e6db74">&#34;</span>);
-
-  <span style="color:#66d9ef">return</span> Builder.CreateCall(F, OperandV, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">unop</span><span style="color:#e6db74">&#34;</span>);
-}
-</code></pre></div><p>此代码与二进制运算符的代码类似，但是更简单。它更简单，主要是因为它不需要处理任何预定义的运算符。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// binoprhs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= (&#39;+&#39; unary)*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseBinOpRHS(<span style="color:#66d9ef">int</span> ExprPrec,
+</span></span><span style="display:flex;"><span>                                              std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> LHS) {
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Parse the unary expression after the binary operator.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// 在解析二元操作符后解析一元表达式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">auto</span> RHS <span style="color:#f92672">=</span> ParseUnary();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>RHS)
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/// expression
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= unary binoprhs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseExpression() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">auto</span> LHS <span style="color:#f92672">=</span> ParseUnary();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>LHS)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ParseBinOpRHS</span>(<span style="color:#ae81ff">0</span>, std<span style="color:#f92672">::</span>move(LHS));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>有了这两个改变之后，我们现在能够解析一元运算符并为他们构建AST。下一步，我们需要为申明添加解析器支持，来解析一元运算符的申明。我们对上面的二元运算符代码进行扩展：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// prototype
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= id &#39;(&#39; id* &#39;)&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= binary LETTER number? (id, id)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= unary LETTER (id)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span> ParsePrototype() {
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>string FnName;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;  <span style="color:#75715e">// 0 = identifier, 1 = unary, 2 = binary.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> BinaryPrecedence <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (CurTok) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Expected function name in prototype&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_identifier:
+</span></span><span style="display:flex;"><span>    FnName <span style="color:#f92672">=</span> IdentifierStr;
+</span></span><span style="display:flex;"><span>    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    getNextToken();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_unary:
+</span></span><span style="display:flex;"><span>    getNextToken();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>isascii(CurTok))
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> LogErrorP(<span style="color:#e6db74">&#34;Expected unary operator&#34;</span>);
+</span></span><span style="display:flex;"><span>    FnName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;unary&#34;</span>;
+</span></span><span style="display:flex;"><span>    FnName <span style="color:#f92672">+=</span> (<span style="color:#66d9ef">char</span>)CurTok;
+</span></span><span style="display:flex;"><span>    Kind <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    getNextToken();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_binary:
+</span></span><span style="display:flex;"><span>    ...
+</span></span></code></pre></div><p>和二元运算符一样，我们将一元运算符命名为包含operator+字符的名称。这有助于我们进行代码产生。Speaking of，我们需要添加的最后一部分是<strong>对一元运算符添加codegen支持</strong>。它像下面这样：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>UnaryExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span>OperandV <span style="color:#f92672">=</span> Operand<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>OperandV)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Function <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span> getFunction(std<span style="color:#f92672">::</span>string(<span style="color:#e6db74">&#34;unary&#34;</span>) <span style="color:#f92672">+</span> Opcode);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>F)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74">&#34;Unknown unary operator&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> Builder.CreateCall(F, OperandV, <span style="color:#e6db74">&#34;unop&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>此代码与二进制运算符的代码类似，但是更简单。它更简单，主要是因为它不需要处理任何预定义的运算符。</p>
 <h1 id="65-kicking-the-tires">6.5 Kicking the Tires</h1>
 <p>听起来是难以置信的，但是在有了最后几章中介绍的简单的扩展之后，Kaleidoscope就会成长为一个真正的语言。之后，我们可以使用Kaleidoscope做大量有趣的事情，包括I/O，数学，和一堆其它的东西。例如，我们现在可以添加一个排序运算符（printd 被定义为打印出指定的值和换行符）：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">ready<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extern</span> printd(x);
-Read <span style="color:#66d9ef">extern</span><span style="color:#f92672">:</span>
-declare <span style="color:#66d9ef">double</span> <span style="color:#960050;background-color:#1e0010">@</span>printd(<span style="color:#66d9ef">double</span>)
-
-ready<span style="color:#f92672">&gt;</span> def binary : <span style="color:#ae81ff">1</span> (x y) <span style="color:#ae81ff">0</span>;  <span style="color:#960050;background-color:#1e0010">#</span> Low<span style="color:#f92672">-</span>precedence <span style="color:#66d9ef">operator</span> that ignores operands.
-...
-ready<span style="color:#f92672">&gt;</span> printd(<span style="color:#ae81ff">123</span>) <span style="color:#f92672">:</span> printd(<span style="color:#ae81ff">456</span>) <span style="color:#f92672">:</span> printd(<span style="color:#ae81ff">789</span>);
-<span style="color:#ae81ff">123.000000</span>
-<span style="color:#ae81ff">456.000000</span>
-<span style="color:#ae81ff">789.000000</span>
-Evaluated to <span style="color:#ae81ff">0.000000</span>
-</code></pre></div><p>我们可以定义一堆其它的“primitive”的操作，例如：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Logical unary not.</span>
-<span style="color:#75715e"># 逻辑 not</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unary</span><span style="color:#960050;background-color:#1e0010">!</span>(v)
-  <span style="color:#66d9ef">if</span> v then
-    <span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">else</span>
-    <span style="color:#ae81ff">1</span>;
-
-<span style="color:#75715e"># Unary negate.</span>
-<span style="color:#75715e"># 一元运算符 负</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unary</span><span style="color:#f92672">-</span>(v)
-  <span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>v;
-
-<span style="color:#75715e"># Define &gt; with the same precedence as &lt;.</span>
-<span style="color:#75715e"># 定义 &gt; 与 &lt; 的优先级相同</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10</span> (LHS RHS)
-  RHS <span style="color:#f92672">&lt;</span> LHS;
-
-<span style="color:#75715e"># Binary logical or, which does not short circuit.</span>
-<span style="color:#75715e"># 逻辑或</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> (LHS RHS)
-  <span style="color:#66d9ef">if</span> LHS then
-    <span style="color:#ae81ff">1</span>
-  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> RHS then
-    <span style="color:#ae81ff">1</span>
-  <span style="color:#66d9ef">else</span>
-    <span style="color:#ae81ff">0</span>;
-
-<span style="color:#75715e"># Binary logical and, which does not short circuit.</span>
-<span style="color:#75715e"># 逻辑 and</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">6</span> (LHS RHS)
-  <span style="color:#66d9ef">if</span> <span style="color:#960050;background-color:#1e0010">!</span>LHS then
-    <span style="color:#ae81ff">0</span>
-  <span style="color:#66d9ef">else</span>
-    <span style="color:#960050;background-color:#1e0010">!</span><span style="color:#960050;background-color:#1e0010">!</span>RHS;
-
-<span style="color:#75715e"># Define = with slightly lower precedence than relationals.</span>
-<span style="color:#75715e"># = </span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span> (LHS RHS)
-  <span style="color:#960050;background-color:#1e0010">!</span>(LHS <span style="color:#f92672">&lt;</span> RHS <span style="color:#f92672">|</span> LHS <span style="color:#f92672">&gt;</span> RHS);
-
-<span style="color:#75715e"># Define &#39;:&#39; for sequencing: as a low-precedence operator that ignores operands</span>
-<span style="color:#75715e"># and just returns the RHS.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span> : <span style="color:#ae81ff">1</span> (x y) y;
-</code></pre></div><p>有了之前的 if/then/else 支持，我们也可以为 I/O 定义一些有趣的函数。例如，下面打印出一个字符，其密度反映了传入的值： 值越低，字符越密集。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ready&gt; extern putchard<span style="color:#f92672">(</span>char<span style="color:#f92672">)</span>;
-...
-ready&gt; def printdensity<span style="color:#f92672">(</span>d<span style="color:#f92672">)</span>
-  <span style="color:#66d9ef">if</span> d &gt; <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">then</span>
-    putchard<span style="color:#f92672">(</span>32<span style="color:#f92672">)</span>  <span style="color:#75715e"># &#39; &#39;</span>
-  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> d &gt; <span style="color:#ae81ff">4</span> <span style="color:#66d9ef">then</span>
-    putchard<span style="color:#f92672">(</span>46<span style="color:#f92672">)</span>  <span style="color:#75715e"># &#39;.&#39;</span>
-  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> d &gt; <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">then</span>
-    putchard<span style="color:#f92672">(</span>43<span style="color:#f92672">)</span>  <span style="color:#75715e"># &#39;+&#39;</span>
-  <span style="color:#66d9ef">else</span>
-    putchard<span style="color:#f92672">(</span>42<span style="color:#f92672">)</span>; <span style="color:#75715e"># &#39;*&#39;</span>
-...
-ready&gt; printdensity<span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>2<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>3<span style="color:#f92672">)</span>:
-       printdensity<span style="color:#f92672">(</span>4<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>5<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>9<span style="color:#f92672">)</span>:
-       putchard<span style="color:#f92672">(</span>10<span style="color:#f92672">)</span>;
-**++.
-Evaluated to 0.000000
-</code></pre></div><p>基于这些简单的操作，我们可以开始定义一些有趣的东西。例如，这儿有一个函数，它确定复平面中某个函数发散所需的迭代次数：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Determine whether the specific location diverges. 决定具体位置是否发散.</span>
-<span style="color:#75715e"># Solve for z = z^2 + c in the complex plane. 求解复平面中的 z = z^2 + c.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandelconverger</span>(real imag iters creal cimag)
-  <span style="color:#66d9ef">if</span> iters <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">255</span> <span style="color:#f92672">|</span> (real<span style="color:#f92672">*</span>real <span style="color:#f92672">+</span> imag<span style="color:#f92672">*</span>imag <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">4</span>) then
-    iters
-  <span style="color:#66d9ef">else</span>
-    mandelconverger(real<span style="color:#f92672">*</span>real <span style="color:#f92672">-</span> imag<span style="color:#f92672">*</span>imag <span style="color:#f92672">+</span> creal,
-                    <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>real<span style="color:#f92672">*</span>imag <span style="color:#f92672">+</span> cimag,
-                    iters<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, creal, cimag);
-
-<span style="color:#75715e"># Return the number of iterations required for the iteration to escape</span>
-<span style="color:#75715e"># 返回iteration to escape所需的迭代次数.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandelconverge</span>(real imag)
-  mandelconverger(real, imag, <span style="color:#ae81ff">0</span>, real, imag);
-</code></pre></div><p>这个“z = z2 + c”函数是一个漂亮的小生物(hhh)，是计算 <a href="http://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot 集合</a>的基础。我们的 mandelconverge 函数返回复杂轨道逃逸所需的迭代次数，饱和度是255。这本身不是一个有用的函数，但是如果你在二维平面上绘制它的值，你能够看到 Mandelbrot set。由于我们仅限于使用 putchard，我们的图形输出是有限的，但是我们可以使用上面的密度绘图仪将一些东西结合在一起。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># Compute and plot the mandelbrot set with the specified 2 dimensional range</span>
-<span style="color:#75715e"># info.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandelhelp</span>(xmin xmax xstep   ymin ymax ystep)
-  <span style="color:#66d9ef">for</span> y <span style="color:#f92672">=</span> ymin, y <span style="color:#f92672">&lt;</span> ymax, ystep <span style="color:#f92672">in</span> (
-    (<span style="color:#66d9ef">for</span> x <span style="color:#f92672">=</span> xmin, x <span style="color:#f92672">&lt;</span> xmax, xstep <span style="color:#f92672">in</span>
-       printdensity(mandelconverge(x,y)))
-    : putchard(<span style="color:#ae81ff">10</span>)
-  )
-
-<span style="color:#75715e"># mandel - This is a convenient helper function for plotting the mandelbrot set</span>
-<span style="color:#75715e"># from the specified position with the specified Magnification.</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandel</span>(realstart imagstart realmag imagmag)
-  mandelhelp(realstart, realstart<span style="color:#f92672">+</span>realmag<span style="color:#f92672">*</span><span style="color:#ae81ff">78</span>, realmag,
-             imagstart, imagstart<span style="color:#f92672">+</span>imagmag<span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>, imagmag);
-</code></pre></div><p>有了这个，我们可以尝试绘制出mandelbrot集合！ Lets try it out:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ready&gt; mandel<span style="color:#f92672">(</span>-2.3, -1.3, 0.05, 0.07<span style="color:#f92672">)</span>;
-*******************************+++++++++++*************************************
-*************************+++++++++++++++++++++++*******************************
-**********************+++++++++++++++++++++++++++++****************************
-*******************+++++++++++++++++++++.. ...++++++++*************************
-*****************++++++++++++++++++++++.... ...+++++++++***********************
-***************+++++++++++++++++++++++.....   ...+++++++++*********************
-**************+++++++++++++++++++++++....     ....+++++++++********************
-*************++++++++++++++++++++++......      .....++++++++*******************
-************+++++++++++++++++++++.......       .......+++++++******************
-***********+++++++++++++++++++....                ... .+++++++*****************
-**********+++++++++++++++++.......                     .+++++++****************
-*********++++++++++++++...........                    ...+++++++***************
-********++++++++++++............                      ...++++++++**************
-********++++++++++... ..........                        .++++++++**************
-*******+++++++++.....                                   .+++++++++*************
-*******++++++++......                                  ..+++++++++*************
-*******++++++.......                                   ..+++++++++*************
-*******+++++......                                     ..+++++++++*************
-*******.... ....                                      ...+++++++++*************
-*******.... .                                         ...+++++++++*************
-*******+++++......                                    ...+++++++++*************
-*******++++++.......                                   ..+++++++++*************
-*******++++++++......                                   .+++++++++*************
-*******+++++++++.....                                  ..+++++++++*************
-********++++++++++... ..........                        .++++++++**************
-********++++++++++++............                      ...++++++++**************
-*********++++++++++++++..........                     ...+++++++***************
-**********++++++++++++++++........                     .+++++++****************
-**********++++++++++++++++++++....                ... ..+++++++****************
-***********++++++++++++++++++++++.......       .......++++++++*****************
-************+++++++++++++++++++++++......      ......++++++++******************
-**************+++++++++++++++++++++++....      ....++++++++********************
-***************+++++++++++++++++++++++.....   ...+++++++++*********************
-*****************++++++++++++++++++++++....  ...++++++++***********************
-*******************+++++++++++++++++++++......++++++++*************************
-*********************++++++++++++++++++++++.++++++++***************************
-*************************+++++++++++++++++++++++*******************************
-******************************+++++++++++++************************************
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-Evaluated to 0.000000
-ready&gt; mandel<span style="color:#f92672">(</span>-2, -1, 0.02, 0.04<span style="color:#f92672">)</span>;
-**************************+++++++++++++++++++++++++++++++++++++++++++++++++++++
-***********************++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-*********************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
-*******************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++...
-*****************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++.....
-***************++++++++++++++++++++++++++++++++++++++++++++++++++++++++........
-**************++++++++++++++++++++++++++++++++++++++++++++++++++++++...........
-************+++++++++++++++++++++++++++++++++++++++++++++++++++++..............
-***********++++++++++++++++++++++++++++++++++++++++++++++++++........        .
-**********++++++++++++++++++++++++++++++++++++++++++++++.............
-********+++++++++++++++++++++++++++++++++++++++++++..................
-*******+++++++++++++++++++++++++++++++++++++++.......................
-******+++++++++++++++++++++++++++++++++++...........................
-*****++++++++++++++++++++++++++++++++............................
-*****++++++++++++++++++++++++++++...............................
-****++++++++++++++++++++++++++......   .........................
-***++++++++++++++++++++++++.........     ......    ...........
-***++++++++++++++++++++++............
-**+++++++++++++++++++++..............
-**+++++++++++++++++++................
-*++++++++++++++++++.................
-*++++++++++++++++............ ...
-*++++++++++++++..............
-*+++....++++................
-*..........  ...........
-*
-*..........  ...........
-*+++....++++................
-*++++++++++++++..............
-*++++++++++++++++............ ...
-*++++++++++++++++++.................
-**+++++++++++++++++++................
-**+++++++++++++++++++++..............
-***++++++++++++++++++++++............
-***++++++++++++++++++++++++.........     ......    ...........
-****++++++++++++++++++++++++++......   .........................
-*****++++++++++++++++++++++++++++...............................
-*****++++++++++++++++++++++++++++++++............................
-******+++++++++++++++++++++++++++++++++++...........................
-*******+++++++++++++++++++++++++++++++++++++++.......................
-********+++++++++++++++++++++++++++++++++++++++++++..................
-Evaluated to 0.000000
-ready&gt; mandel<span style="color:#f92672">(</span>-0.9, -1.4, 0.02, 0.03<span style="color:#f92672">)</span>;
-*******************************************************************************
-*******************************************************************************
-*******************************************************************************
-**********+++++++++++++++++++++************************************************
-*+++++++++++++++++++++++++++++++++++++++***************************************
-+++++++++++++++++++++++++++++++++++++++++++++**********************************
-++++++++++++++++++++++++++++++++++++++++++++++++++*****************************
-++++++++++++++++++++++++++++++++++++++++++++++++++++++*************************
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++**********************
-+++++++++++++++++++++++++++++++++.........++++++++++++++++++*******************
-+++++++++++++++++++++++++++++++....   ......+++++++++++++++++++****************
-+++++++++++++++++++++++++++++.......  ........+++++++++++++++++++**************
-++++++++++++++++++++++++++++........   ........++++++++++++++++++++************
-+++++++++++++++++++++++++++.........     ..  ...+++++++++++++++++++++**********
-++++++++++++++++++++++++++...........        ....++++++++++++++++++++++********
-++++++++++++++++++++++++.............       .......++++++++++++++++++++++******
-+++++++++++++++++++++++.............        ........+++++++++++++++++++++++****
-++++++++++++++++++++++...........           ..........++++++++++++++++++++++***
-++++++++++++++++++++...........                .........++++++++++++++++++++++*
-++++++++++++++++++............                  ...........++++++++++++++++++++
-++++++++++++++++...............                 .............++++++++++++++++++
-++++++++++++++.................                 ...............++++++++++++++++
-++++++++++++..................                  .................++++++++++++++
-+++++++++..................                      .................+++++++++++++
-++++++........        .                               .........  ..++++++++++++
-++............                                         ......    ....++++++++++
-..............                                                    ...++++++++++
-..............                                                    ....+++++++++
-..............                                                    .....++++++++
-.............                                                    ......++++++++
-...........                                                     .......++++++++
-.........                                                       ........+++++++
-.........                                                       ........+++++++
-.........                                                           ....+++++++
-........                                                             ...+++++++
-.......                                                              ...+++++++
-                                                                    ....+++++++
-                                                                   .....+++++++
-                                                                    ....+++++++
-                                                                    ....+++++++
-                                                                    ....+++++++
-Evaluated to 0.000000
-ready&gt; ^D
-
-</code></pre></div><p>在此刻，你可能开始意识到 Kaleidoscope 是一个真实的并且强大的语言。It may not be self-similar：），但是它可以被用来绘制那些东西！</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>ready<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">extern</span> printd(x);
+</span></span><span style="display:flex;"><span>Read <span style="color:#66d9ef">extern</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>declare <span style="color:#66d9ef">double</span> <span style="color:#960050;background-color:#1e0010">@</span>printd(<span style="color:#66d9ef">double</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ready<span style="color:#f92672">&gt;</span> def binary : <span style="color:#ae81ff">1</span> (x y) <span style="color:#ae81ff">0</span>;  <span style="color:#960050;background-color:#1e0010">#</span> Low<span style="color:#f92672">-</span>precedence <span style="color:#66d9ef">operator</span> that ignores operands.
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>ready<span style="color:#f92672">&gt;</span> printd(<span style="color:#ae81ff">123</span>) <span style="color:#f92672">:</span> printd(<span style="color:#ae81ff">456</span>) <span style="color:#f92672">:</span> printd(<span style="color:#ae81ff">789</span>);
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">123.000000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">456.000000</span>
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">789.000000</span>
+</span></span><span style="display:flex;"><span>Evaluated to <span style="color:#ae81ff">0.000000</span>
+</span></span></code></pre></div><p>我们可以定义一堆其它的“primitive”的操作，例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Logical unary not.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 逻辑 not</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unary</span><span style="color:#960050;background-color:#1e0010">!</span>(v)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> v then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Unary negate.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 一元运算符 负</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">unary</span><span style="color:#f92672">-</span>(v)
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">0</span><span style="color:#f92672">-</span>v;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Define &gt; with the same precedence as &lt;.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 定义 &gt; 与 &lt; 的优先级相同</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">10</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  RHS <span style="color:#f92672">&lt;</span> LHS;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Binary logical or, which does not short circuit.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 逻辑或</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> LHS then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> RHS then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Binary logical and, which does not short circuit.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 逻辑 and</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span><span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">6</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> <span style="color:#960050;background-color:#1e0010">!</span>LHS then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#960050;background-color:#1e0010">!!</span>RHS;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Define = with slightly lower precedence than relationals.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># = </span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">9</span> (LHS RHS)
+</span></span><span style="display:flex;"><span>  <span style="color:#960050;background-color:#1e0010">!</span>(LHS <span style="color:#f92672">&lt;</span> RHS <span style="color:#f92672">|</span> LHS <span style="color:#f92672">&gt;</span> RHS);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Define &#39;:&#39; for sequencing: as a low-precedence operator that ignores operands</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># and just returns the RHS.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">binary</span> : <span style="color:#ae81ff">1</span> (x y) y;
+</span></span></code></pre></div><p>有了之前的 if/then/else 支持，我们也可以为 I/O 定义一些有趣的函数。例如，下面打印出一个字符，其密度反映了传入的值： 值越低，字符越密集。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ready&gt; extern putchard<span style="color:#f92672">(</span>char<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>ready&gt; def printdensity<span style="color:#f92672">(</span>d<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> d &gt; <span style="color:#ae81ff">8</span> <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    putchard<span style="color:#f92672">(</span>32<span style="color:#f92672">)</span>  <span style="color:#75715e"># &#39; &#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> d &gt; <span style="color:#ae81ff">4</span> <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    putchard<span style="color:#f92672">(</span>46<span style="color:#f92672">)</span>  <span style="color:#75715e"># &#39;.&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> d &gt; <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    putchard<span style="color:#f92672">(</span>43<span style="color:#f92672">)</span>  <span style="color:#75715e"># &#39;+&#39;</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    putchard<span style="color:#f92672">(</span>42<span style="color:#f92672">)</span>; <span style="color:#75715e"># &#39;*&#39;</span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>ready&gt; printdensity<span style="color:#f92672">(</span>1<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>2<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>3<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>       printdensity<span style="color:#f92672">(</span>4<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>5<span style="color:#f92672">)</span>: printdensity<span style="color:#f92672">(</span>9<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>       putchard<span style="color:#f92672">(</span>10<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>**++.
+</span></span><span style="display:flex;"><span>Evaluated to 0.000000
+</span></span></code></pre></div><p>基于这些简单的操作，我们可以开始定义一些有趣的东西。例如，这儿有一个函数，它确定复平面中某个函数发散所需的迭代次数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Determine whether the specific location diverges. 决定具体位置是否发散.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Solve for z = z^2 + c in the complex plane. 求解复平面中的 z = z^2 + c.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandelconverger</span>(real imag iters creal cimag)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> iters <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">255</span> <span style="color:#f92672">|</span> (real<span style="color:#f92672">*</span>real <span style="color:#f92672">+</span> imag<span style="color:#f92672">*</span>imag <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">4</span>) then
+</span></span><span style="display:flex;"><span>    iters
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    mandelconverger(real<span style="color:#f92672">*</span>real <span style="color:#f92672">-</span> imag<span style="color:#f92672">*</span>imag <span style="color:#f92672">+</span> creal,
+</span></span><span style="display:flex;"><span>                    <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>real<span style="color:#f92672">*</span>imag <span style="color:#f92672">+</span> cimag,
+</span></span><span style="display:flex;"><span>                    iters<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>, creal, cimag);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Return the number of iterations required for the iteration to escape</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 返回iteration to escape所需的迭代次数.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandelconverge</span>(real imag)
+</span></span><span style="display:flex;"><span>  mandelconverger(real, imag, <span style="color:#ae81ff">0</span>, real, imag);
+</span></span></code></pre></div><p>这个“z = z2 + c”函数是一个漂亮的小生物(hhh)，是计算 <a href="http://en.wikipedia.org/wiki/Mandelbrot_set">Mandelbrot 集合</a>的基础。我们的 mandelconverge 函数返回复杂轨道逃逸所需的迭代次数，饱和度是255。这本身不是一个有用的函数，但是如果你在二维平面上绘制它的值，你能够看到 Mandelbrot set。由于我们仅限于使用 putchard，我们的图形输出是有限的，但是我们可以使用上面的密度绘图仪将一些东西结合在一起。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># Compute and plot the mandelbrot set with the specified 2 dimensional range</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># info.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandelhelp</span>(xmin xmax xstep   ymin ymax ystep)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> y <span style="color:#f92672">=</span> ymin, y <span style="color:#f92672">&lt;</span> ymax, ystep <span style="color:#f92672">in</span> (
+</span></span><span style="display:flex;"><span>    (<span style="color:#66d9ef">for</span> x <span style="color:#f92672">=</span> xmin, x <span style="color:#f92672">&lt;</span> xmax, xstep <span style="color:#f92672">in</span>
+</span></span><span style="display:flex;"><span>       printdensity(mandelconverge(x,y)))
+</span></span><span style="display:flex;"><span>    : putchard(<span style="color:#ae81ff">10</span>)
+</span></span><span style="display:flex;"><span>  )
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># mandel - This is a convenient helper function for plotting the mandelbrot set</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># from the specified position with the specified Magnification.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mandel</span>(realstart imagstart realmag imagmag)
+</span></span><span style="display:flex;"><span>  mandelhelp(realstart, realstart<span style="color:#f92672">+</span>realmag<span style="color:#f92672">*</span><span style="color:#ae81ff">78</span>, realmag,
+</span></span><span style="display:flex;"><span>             imagstart, imagstart<span style="color:#f92672">+</span>imagmag<span style="color:#f92672">*</span><span style="color:#ae81ff">40</span>, imagmag);
+</span></span></code></pre></div><p>有了这个，我们可以尝试绘制出mandelbrot集合！ Lets try it out:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ready&gt; mandel<span style="color:#f92672">(</span>-2.3, -1.3, 0.05, 0.07<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>*******************************+++++++++++*************************************
+</span></span><span style="display:flex;"><span>*************************+++++++++++++++++++++++*******************************
+</span></span><span style="display:flex;"><span>**********************+++++++++++++++++++++++++++++****************************
+</span></span><span style="display:flex;"><span>*******************+++++++++++++++++++++.. ...++++++++*************************
+</span></span><span style="display:flex;"><span>*****************++++++++++++++++++++++.... ...+++++++++***********************
+</span></span><span style="display:flex;"><span>***************+++++++++++++++++++++++.....   ...+++++++++*********************
+</span></span><span style="display:flex;"><span>**************+++++++++++++++++++++++....     ....+++++++++********************
+</span></span><span style="display:flex;"><span>*************++++++++++++++++++++++......      .....++++++++*******************
+</span></span><span style="display:flex;"><span>************+++++++++++++++++++++.......       .......+++++++******************
+</span></span><span style="display:flex;"><span>***********+++++++++++++++++++....                ... .+++++++*****************
+</span></span><span style="display:flex;"><span>**********+++++++++++++++++.......                     .+++++++****************
+</span></span><span style="display:flex;"><span>*********++++++++++++++...........                    ...+++++++***************
+</span></span><span style="display:flex;"><span>********++++++++++++............                      ...++++++++**************
+</span></span><span style="display:flex;"><span>********++++++++++... ..........                        .++++++++**************
+</span></span><span style="display:flex;"><span>*******+++++++++.....                                   .+++++++++*************
+</span></span><span style="display:flex;"><span>*******++++++++......                                  ..+++++++++*************
+</span></span><span style="display:flex;"><span>*******++++++.......                                   ..+++++++++*************
+</span></span><span style="display:flex;"><span>*******+++++......                                     ..+++++++++*************
+</span></span><span style="display:flex;"><span>*******.... ....                                      ...+++++++++*************
+</span></span><span style="display:flex;"><span>*******.... .                                         ...+++++++++*************
+</span></span><span style="display:flex;"><span>*******+++++......                                    ...+++++++++*************
+</span></span><span style="display:flex;"><span>*******++++++.......                                   ..+++++++++*************
+</span></span><span style="display:flex;"><span>*******++++++++......                                   .+++++++++*************
+</span></span><span style="display:flex;"><span>*******+++++++++.....                                  ..+++++++++*************
+</span></span><span style="display:flex;"><span>********++++++++++... ..........                        .++++++++**************
+</span></span><span style="display:flex;"><span>********++++++++++++............                      ...++++++++**************
+</span></span><span style="display:flex;"><span>*********++++++++++++++..........                     ...+++++++***************
+</span></span><span style="display:flex;"><span>**********++++++++++++++++........                     .+++++++****************
+</span></span><span style="display:flex;"><span>**********++++++++++++++++++++....                ... ..+++++++****************
+</span></span><span style="display:flex;"><span>***********++++++++++++++++++++++.......       .......++++++++*****************
+</span></span><span style="display:flex;"><span>************+++++++++++++++++++++++......      ......++++++++******************
+</span></span><span style="display:flex;"><span>**************+++++++++++++++++++++++....      ....++++++++********************
+</span></span><span style="display:flex;"><span>***************+++++++++++++++++++++++.....   ...+++++++++*********************
+</span></span><span style="display:flex;"><span>*****************++++++++++++++++++++++....  ...++++++++***********************
+</span></span><span style="display:flex;"><span>*******************+++++++++++++++++++++......++++++++*************************
+</span></span><span style="display:flex;"><span>*********************++++++++++++++++++++++.++++++++***************************
+</span></span><span style="display:flex;"><span>*************************+++++++++++++++++++++++*******************************
+</span></span><span style="display:flex;"><span>******************************+++++++++++++************************************
+</span></span><span style="display:flex;"><span>*******************************************************************************
+</span></span><span style="display:flex;"><span>*******************************************************************************
+</span></span><span style="display:flex;"><span>*******************************************************************************
+</span></span><span style="display:flex;"><span>Evaluated to 0.000000
+</span></span><span style="display:flex;"><span>ready&gt; mandel<span style="color:#f92672">(</span>-2, -1, 0.02, 0.04<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>**************************+++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span><span style="display:flex;"><span>***********************++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+</span></span><span style="display:flex;"><span>*********************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++.
+</span></span><span style="display:flex;"><span>*******************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++...
+</span></span><span style="display:flex;"><span>*****************+++++++++++++++++++++++++++++++++++++++++++++++++++++++++.....
+</span></span><span style="display:flex;"><span>***************++++++++++++++++++++++++++++++++++++++++++++++++++++++++........
+</span></span><span style="display:flex;"><span>**************++++++++++++++++++++++++++++++++++++++++++++++++++++++...........
+</span></span><span style="display:flex;"><span>************+++++++++++++++++++++++++++++++++++++++++++++++++++++..............
+</span></span><span style="display:flex;"><span>***********++++++++++++++++++++++++++++++++++++++++++++++++++........        .
+</span></span><span style="display:flex;"><span>**********++++++++++++++++++++++++++++++++++++++++++++++.............
+</span></span><span style="display:flex;"><span>********+++++++++++++++++++++++++++++++++++++++++++..................
+</span></span><span style="display:flex;"><span>*******+++++++++++++++++++++++++++++++++++++++.......................
+</span></span><span style="display:flex;"><span>******+++++++++++++++++++++++++++++++++++...........................
+</span></span><span style="display:flex;"><span>*****++++++++++++++++++++++++++++++++............................
+</span></span><span style="display:flex;"><span>*****++++++++++++++++++++++++++++...............................
+</span></span><span style="display:flex;"><span>****++++++++++++++++++++++++++......   .........................
+</span></span><span style="display:flex;"><span>***++++++++++++++++++++++++.........     ......    ...........
+</span></span><span style="display:flex;"><span>***++++++++++++++++++++++............
+</span></span><span style="display:flex;"><span>**+++++++++++++++++++++..............
+</span></span><span style="display:flex;"><span>**+++++++++++++++++++................
+</span></span><span style="display:flex;"><span>*++++++++++++++++++.................
+</span></span><span style="display:flex;"><span>*++++++++++++++++............ ...
+</span></span><span style="display:flex;"><span>*++++++++++++++..............
+</span></span><span style="display:flex;"><span>*+++....++++................
+</span></span><span style="display:flex;"><span>*..........  ...........
+</span></span><span style="display:flex;"><span>*
+</span></span><span style="display:flex;"><span>*..........  ...........
+</span></span><span style="display:flex;"><span>*+++....++++................
+</span></span><span style="display:flex;"><span>*++++++++++++++..............
+</span></span><span style="display:flex;"><span>*++++++++++++++++............ ...
+</span></span><span style="display:flex;"><span>*++++++++++++++++++.................
+</span></span><span style="display:flex;"><span>**+++++++++++++++++++................
+</span></span><span style="display:flex;"><span>**+++++++++++++++++++++..............
+</span></span><span style="display:flex;"><span>***++++++++++++++++++++++............
+</span></span><span style="display:flex;"><span>***++++++++++++++++++++++++.........     ......    ...........
+</span></span><span style="display:flex;"><span>****++++++++++++++++++++++++++......   .........................
+</span></span><span style="display:flex;"><span>*****++++++++++++++++++++++++++++...............................
+</span></span><span style="display:flex;"><span>*****++++++++++++++++++++++++++++++++............................
+</span></span><span style="display:flex;"><span>******+++++++++++++++++++++++++++++++++++...........................
+</span></span><span style="display:flex;"><span>*******+++++++++++++++++++++++++++++++++++++++.......................
+</span></span><span style="display:flex;"><span>********+++++++++++++++++++++++++++++++++++++++++++..................
+</span></span><span style="display:flex;"><span>Evaluated to 0.000000
+</span></span><span style="display:flex;"><span>ready&gt; mandel<span style="color:#f92672">(</span>-0.9, -1.4, 0.02, 0.03<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>*******************************************************************************
+</span></span><span style="display:flex;"><span>*******************************************************************************
+</span></span><span style="display:flex;"><span>*******************************************************************************
+</span></span><span style="display:flex;"><span>**********+++++++++++++++++++++************************************************
+</span></span><span style="display:flex;"><span>*+++++++++++++++++++++++++++++++++++++++***************************************
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++++++++++++++++++++++++**********************************
+</span></span><span style="display:flex;"><span>++++++++++++++++++++++++++++++++++++++++++++++++++*****************************
+</span></span><span style="display:flex;"><span>++++++++++++++++++++++++++++++++++++++++++++++++++++++*************************
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++++++++++++++++++++++++++++++++++++**********************
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++++++++++++.........++++++++++++++++++*******************
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++++++++++....   ......+++++++++++++++++++****************
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++++++++.......  ........+++++++++++++++++++**************
+</span></span><span style="display:flex;"><span>++++++++++++++++++++++++++++........   ........++++++++++++++++++++************
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++++++.........     ..  ...+++++++++++++++++++++**********
+</span></span><span style="display:flex;"><span>++++++++++++++++++++++++++...........        ....++++++++++++++++++++++********
+</span></span><span style="display:flex;"><span>++++++++++++++++++++++++.............       .......++++++++++++++++++++++******
+</span></span><span style="display:flex;"><span>+++++++++++++++++++++++.............        ........+++++++++++++++++++++++****
+</span></span><span style="display:flex;"><span>++++++++++++++++++++++...........           ..........++++++++++++++++++++++***
+</span></span><span style="display:flex;"><span>++++++++++++++++++++...........                .........++++++++++++++++++++++*
+</span></span><span style="display:flex;"><span>++++++++++++++++++............                  ...........++++++++++++++++++++
+</span></span><span style="display:flex;"><span>++++++++++++++++...............                 .............++++++++++++++++++
+</span></span><span style="display:flex;"><span>++++++++++++++.................                 ...............++++++++++++++++
+</span></span><span style="display:flex;"><span>++++++++++++..................                  .................++++++++++++++
+</span></span><span style="display:flex;"><span>+++++++++..................                      .................+++++++++++++
+</span></span><span style="display:flex;"><span>++++++........        .                               .........  ..++++++++++++
+</span></span><span style="display:flex;"><span>++............                                         ......    ....++++++++++
+</span></span><span style="display:flex;"><span>..............                                                    ...++++++++++
+</span></span><span style="display:flex;"><span>..............                                                    ....+++++++++
+</span></span><span style="display:flex;"><span>..............                                                    .....++++++++
+</span></span><span style="display:flex;"><span>.............                                                    ......++++++++
+</span></span><span style="display:flex;"><span>...........                                                     .......++++++++
+</span></span><span style="display:flex;"><span>.........                                                       ........+++++++
+</span></span><span style="display:flex;"><span>.........                                                       ........+++++++
+</span></span><span style="display:flex;"><span>.........                                                           ....+++++++
+</span></span><span style="display:flex;"><span>........                                                             ...+++++++
+</span></span><span style="display:flex;"><span>.......                                                              ...+++++++
+</span></span><span style="display:flex;"><span>                                                                    ....+++++++
+</span></span><span style="display:flex;"><span>                                                                   .....+++++++
+</span></span><span style="display:flex;"><span>                                                                    ....+++++++
+</span></span><span style="display:flex;"><span>                                                                    ....+++++++
+</span></span><span style="display:flex;"><span>                                                                    ....+++++++
+</span></span><span style="display:flex;"><span>Evaluated to 0.000000
+</span></span><span style="display:flex;"><span>ready&gt; ^D
+</span></span></code></pre></div><p>在此刻，你可能开始意识到 Kaleidoscope 是一个真实的并且强大的语言。It may not be self-similar：），但是它可以被用来绘制那些东西！</p>
 <p>我们现在总结本章。我们已经成功的扩展了我们的语言，在库中增加了扩展语言的能力，并且我们已经展示了如何在Kaleidoscope中构建一个简单有趣的应用。在此刻，Kaleidoscope 可以构建各种功能性的应用并且能够调用具有副作用的函数，但是它实际上无法定义并改变变量。</p>
 <p>引人注目的是，<strong>可变变量</strong>在许多语言中是一个重要的特性，在你的前端中没有SSA构造语法时，想要实现对可变变量的支持是不容易的。在下一章节，我们将会描述如何在你的前端，在不构建SSA的情况下添加<strong>对可变变量的支持</strong>。</p>
 <h1 id="66-full-code-listing">6.6 Full Code Listing</h1>
@@ -831,6 +829,10 @@ ready&gt; ^D
     <footer class="post-footer">
       
       <ul class="post-tags">
+        
+          <li><a href="/tags/llvm"><span class="tag">Llvm</span></a></li>
+        
+          <li><a href="/tags/kaleidoscope"><span class="tag">Kaleidoscope</span></a></li>
         
       </ul>
       
@@ -863,7 +865,7 @@ ready&gt; ^D
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

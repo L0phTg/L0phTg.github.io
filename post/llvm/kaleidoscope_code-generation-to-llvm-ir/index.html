@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -28,7 +28,7 @@
   <meta name="author" content="L0phTg">
   <meta name="description" content="translate from: http://llvm.org/docs/tutorial/LangImpl03.html
 介绍四个基本表达式和函数申明与定义的Codegen.
- ">
+">
 
   
   
@@ -37,7 +37,7 @@
     <meta name="twitter:title" content="Kaleidoscope: Code Generation to LLVM IR">
     <meta name="twitter:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl03.html
 介绍四个基本表达式和函数申明与定义的Codegen.
- ">
+">
     <meta name="twitter:image" content="/images/avatar.png">
   
 
@@ -46,14 +46,13 @@
   <meta property="og:title" content="Kaleidoscope: Code Generation to LLVM IR">
   <meta property="og:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl03.html
 介绍四个基本表达式和函数申明与定义的Codegen.
- ">
+">
   <meta property="og:url" content="http://L0phTg.top/post/llvm/kaleidoscope_code-generation-to-llvm-ir/">
   <meta property="og:image" content="/images/avatar.png">
 
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/llvm/kaleidoscope_code-generation-to-llvm-ir/">
@@ -243,8 +242,7 @@
     <article class="post-content"><p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl03.html">http://llvm.org/docs/tutorial/LangImpl03.html</a></p>
 <p>介绍四个基本表达式和函数申明与定义的Codegen.</p>
 <!-- raw HTML omitted -->
-<figure>
-    <img src="/docs-pic/llvm/Codegen.png" width="100%&#34;" height="100%"/> 
+<figure><img src="/docs-pic/llvm/Codegen.png" width="100%&#34;" height="100%"/>
 </figure>
 
 <h1 id="31-chapter-3-introduction">3.1 Chapter 3 Introduction</h1>
@@ -252,109 +250,109 @@
 <p><strong>please note</strong>: 本章和之后的代码是基于LLVM 3.7 and later. LLVM 3.6 和之前的版本将不会工作for this code. 也要注意, 你需要一个匹配你的LLVM Release版本的tutorial.</p>
 <h1 id="32-code-generation-setup">3.2 Code Generation Setup</h1>
 <p>为了产生LLVM IR, 我们想要一些简单的setup来start. 首先我们定义virtual code generation(codegen)方法在每一个AST类中.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/// ExprAST - Base class for all expression nodes.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExprAST</span> {
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-  <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>ExprAST() {}
-  <span style="color:#66d9ef">virtual</span> Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-};
-
-<span style="color:#75715e">/// NumberExprAST - Expression class for numeric literals like &#34;1.0&#34;.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NumberExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
-  <span style="color:#66d9ef">double</span> Val;
-
-<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-  NumberExprAST(<span style="color:#66d9ef">double</span> Val) <span style="color:#f92672">:</span> Val(Val) {}
-  <span style="color:#66d9ef">virtual</span> Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>();
-};
-</code></pre></div><p>codegen()表示为AST节点依赖它们来产生IR , 并且他们都返回一个<strong>Value</strong>对象(被用来表示&quot;Static Single Assigment(SSA) register&rdquo; or &ldquo;SSA value&quot;in LLVM).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// ExprAST - Base class for all expression nodes.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExprAST</span> {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>ExprAST() {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">virtual</span> Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/// NumberExprAST - Expression class for numeric literals like &#34;1.0&#34;.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">NumberExprAST</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprAST {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">double</span> Val;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  NumberExprAST(<span style="color:#66d9ef">double</span> Val) <span style="color:#f92672">:</span> Val(Val) {}
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">virtual</span> Value <span style="color:#f92672">*</span><span style="color:#a6e22e">codegen</span>();
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>codegen()表示为AST节点依赖它们来产生IR , 并且他们都返回一个<strong>Value</strong>对象(被用来表示&quot;Static Single Assigment(SSA) register&quot; or &ldquo;SSA value&quot;in LLVM).</p>
 <p>SSA值的最独特的方面是当相关指令执行时, 他们的值被计算. 并且在指令再次执行之前, 它不会获得新值. 换句话说, 没有方法来改变SSA值. 为了了解更多关于SSA的信息, please read up on <a href="https://l0phtg.github.io/post/llvm/static-single-assignment/">Static Single Assignment</a> - 一旦你理解了它, the concepts are really quite natural.</p>
 <p>请注意, 不是将虚方法添加到ExprAST的类层次结构中, 使用访问者模式或者其他方式对此进行建模也是有意义的.</p>
 <p>Again, 本教程将不再讨论良好的软件工程实践: 出于我们的目的, 添加虚拟方法是最简单的.</p>
 <p>我们想要的第二件事情, 是像我们在编写解析器时那样, 当发生错误时报告error. (例如, 对一个未声明参数的使用).</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> LLVMContext TheContext;
-<span style="color:#66d9ef">static</span> IRBuilder<span style="color:#f92672">&lt;</span><span style="color:#f92672">&gt;</span> Builder(TheContext);
-<span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span> TheModule;
-<span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>map<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string, Value <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> NamedValues;
-
-Value <span style="color:#f92672">*</span><span style="color:#a6e22e">LogErrorV</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>Str) {
-  LogError(Str);
-  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-}
-</code></pre></div><p>在代码产生阶段, 静态变量将会被使用. TheContext 是一个掌握了大量的核心LLVM data 结构不透明的对象, 例如the type and 常量value tables. 我们不必关注它的细节, 我们仅仅需要一个简单的实例, 直接将它传到我们需要的API中即可.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> LLVMContext TheContext;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> IRBuilder<span style="color:#f92672">&lt;&gt;</span> Builder(TheContext);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span> TheModule;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>map<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string, Value <span style="color:#f92672">*&gt;</span> NamedValues;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Value <span style="color:#f92672">*</span><span style="color:#a6e22e">LogErrorV</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>Str) {
+</span></span><span style="display:flex;"><span>  LogError(Str);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在代码产生阶段, 静态变量将会被使用. TheContext 是一个掌握了大量的核心LLVM data 结构不透明的对象, 例如the type and 常量value tables. 我们不必关注它的细节, 我们仅仅需要一个简单的实例, 直接将它传到我们需要的API中即可.</p>
 <p>The <strong>Builder object</strong> 帮助我们使产生IR这件事变得很容易. <strong>IRBuilder</strong>类的实例模板来<strong>跟踪当前插入指令的位置</strong>并且<strong>提供创建新指令的方法</strong>.</p>
-<p><strong>TheModule</strong> 是一个LLVM construct(包含函数和全局变量). In many ways, 它是一个LLVM IR用于包含代码的顶级结构.它将会掌控我们产生的IR的内存 (这就是为什么 codegen() method返回一个<strong>raw value</strong>*, 而不是**unique_ptr<!-- raw HTML omitted -->**).</p>
+<p><strong>TheModule</strong> 是一个LLVM construct(包含函数和全局变量). In many ways, 它是一个LLVM IR用于包含代码的顶级结构.它将会掌控我们产生的IR的内存 (这就是为什么 codegen() method返回一个<strong>raw value</strong>*, 而不是<strong>unique_ptr<!-- raw HTML omitted --></strong>).</p>
 <p><strong>The NamedValues map</strong> 会跟踪<strong>当前作用域</strong>中<strong>定义的值</strong>以及它们的LLVM表示形式. (换句话说, 它是代码的符号表). <code>在 Kaleidoscope的形式中, 能被引用的唯一的things 是函数参数. 因此, 当为函数体进行Codegen时, 函数参数将会存在于该map中</code>.</p>
 <p>有了这些基础知识, 我们可以开始讨论如何为每个表达式 generate code. 注意: this 假定已经设置了Builder来生成代码. 现在, 我们假设已经完成了, 我们将会just 用它来emit code.</p>
 <h1 id="33-expression-code-generation">3.3 Expression Code Generation</h1>
 <p>为每一个表达式产生LLVM code是非常直接的.</p>
 <h2 id="numexpr">numExpr</h2>
-<p>First we'll do <strong>numberic literals</strong>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>NumberExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#66d9ef">return</span> ConstantFP<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(TheContext, APFloat(Val));
-}
-</code></pre></div><p>在LLVM IR中, 数字常量用<strong>ConstantFP</strong>类来表示, (在内部保存APFloat的值)(
-APFloat 具有保存任意精度的浮点常数的能力). 这段代码基本就是创建并返回了一个<strong>ConstantFP</strong>. 注意 在LLVM IR中, 常量都是唯一的, 并且被共享. 出于这个原因, The <strong>API use the &ldquo;foo::(..)&ldquo;而不是 &ldquo;new foo(&hellip;)&rdquo; or &ldquo;foo::Create(..)&quot;</strong>.</p>
+<p>First we&rsquo;ll do <strong>numberic literals</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>NumberExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> ConstantFP<span style="color:#f92672">::</span>get(TheContext, APFloat(Val));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在LLVM IR中, 数字常量用<strong>ConstantFP</strong>类来表示, (在内部保存APFloat的值)(
+APFloat 具有保存任意精度的浮点常数的能力). 这段代码基本就是创建并返回了一个<strong>ConstantFP</strong>. 注意 在LLVM IR中, 常量都是唯一的, 并且被共享. 出于这个原因, The <strong>API use the &ldquo;foo::(..)&ldquo;而不是 &ldquo;new foo(&hellip;)&rdquo; or &ldquo;foo::Create(..)&rdquo;</strong>.</p>
 <h2 id="variableexpr">VariableExpr</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>VariableExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#75715e">// Look this variable up in the function.
-</span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>V <span style="color:#f92672">=</span> NamedValues[Name];
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>V)
-    LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unknown variable name</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">return</span> V;
-}
-</code></pre></div><p>使用LLVM对变量的引用也非常简单. 在我们simple Kaleidoscope中, 我们假定变量已经被emitted somewhere 并且它的值是可用的. 实际上,  In the namedValues map 的唯一的值是函数参数. 此代码只是检查指定的name是否在map中. (如果没有, 未知变量将会被引用) 并且返回value for it. 在未来的章节, we'll 将会在符号表和局部变量中增加<strong>Loop Induction variables</strong> (可以阅读第5章: 对 Loop 进行 codegen的部分).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>VariableExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Look this variable up in the function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Value <span style="color:#f92672">*</span>V <span style="color:#f92672">=</span> NamedValues[Name];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>V)
+</span></span><span style="display:flex;"><span>    LogErrorV(<span style="color:#e6db74">&#34;Unknown variable name&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> V;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>使用LLVM对变量的引用也非常简单. 在我们simple Kaleidoscope中, 我们假定变量已经被emitted somewhere 并且它的值是可用的. 实际上,  In the namedValues map 的唯一的值是函数参数. 此代码只是检查指定的name是否在map中. (如果没有, 未知变量将会被引用) 并且返回value for it. 在未来的章节, we&rsquo;ll 将会在符号表和局部变量中增加<strong>Loop Induction variables</strong> (可以阅读第5章: 对 Loop 进行 codegen的部分).</p>
 <h2 id="binaryexprast">BinaryExprAST</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>BinaryExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  Value <span style="color:#f92672">*</span>L <span style="color:#f92672">=</span> LHS<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-  Value <span style="color:#f92672">*</span>R <span style="color:#f92672">=</span> RHS<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>L <span style="color:#f92672">|</span><span style="color:#f92672">|</span> <span style="color:#f92672">!</span>R)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-
-  <span style="color:#66d9ef">switch</span> (Op) {
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">+</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> Builder.CreateFAdd(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">addtmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> Builder.CreateFSub(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">subtmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> Builder.CreateFMul(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">multmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">case</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">:</span>
-    L <span style="color:#f92672">=</span> Builder.CreateFCmpULT(L, R, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">cmptmp</span><span style="color:#e6db74">&#34;</span>);
-    <span style="color:#75715e">// Convert bool 0/1 to double 0.0 or 1.0
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> Builder.CreateUIToFP(L, Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext),
-                                <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">booltmp</span><span style="color:#e6db74">&#34;</span>);
-  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
-    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">invalid binary operator</span><span style="color:#e6db74">&#34;</span>);
-  }
-}
-</code></pre></div><p>二元操作符开始变得有趣.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>BinaryExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span>L <span style="color:#f92672">=</span> LHS<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>  Value <span style="color:#f92672">*</span>R <span style="color:#f92672">=</span> RHS<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>L <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>R)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (Op) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;+&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Builder.CreateFAdd(L, R, <span style="color:#e6db74">&#34;addtmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;-&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Builder.CreateFSub(L, R, <span style="color:#e6db74">&#34;subtmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;*&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Builder.CreateFMul(L, R, <span style="color:#e6db74">&#34;multmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;&lt;&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    L <span style="color:#f92672">=</span> Builder.CreateFCmpULT(L, R, <span style="color:#e6db74">&#34;cmptmp&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Convert bool 0/1 to double 0.0 or 1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> Builder.CreateUIToFP(L, Type<span style="color:#f92672">::</span>getDoubleTy(TheContext),
+</span></span><span style="display:flex;"><span>                                <span style="color:#e6db74">&#34;booltmp&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74">&#34;invalid binary operator&#34;</span>);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>二元操作符开始变得有趣.</p>
 <p>这里的基本思想: <code>我们递归地为表达式的左侧emit code, 然后是右侧, 然后我们计算二进制表达式的结果. 在这个代码中, 我们做一个简单的switch on the opcode来创建正确的LLVM 指令</code>.</p>
 <p>在上面的例子中, LLVM Builder类开始显示其值. <strong>IRBuilder知道在哪里插入新创建的指令, 你所做的就是要指定什么指令将会被创建</strong> (例如, 使用 <strong>CreateFAdd</strong>), which <strong>使用哪些操作数(L and R here)</strong> 并且optionally <strong>为生成的指令提供一个名字</strong>.</p>
 <p>关于LLVM, 一个不错的事情是名称就像一个提示.  例如, 如果上面的代码emit 多条 &ldquo;addtmp&rdquo; <strong>变量</strong>, LLVM将自动地为每个变量提供一个递增的, 独特的数字suffix(后缀). 指令的本地值名称purely可选择的, but 它的名称应该要更方便我们阅读.</p>
 <p>LLVM 指令是被严格的规则所限制: For Example, <strong>一个指令的左边和右边的操作符一定要有相同的类型</strong>, 并且add的<strong>结果类型一定要匹配操作数类型</strong>. 因为in Kaleidoscope所有的值都是doubles, this makes for very simple code for add, sub, mul.</p>
 <p>在另一方面, LLVM 指定 <strong>fcmp</strong> 指令总是返回一个 &ldquo;i1&rdquo; 值( 1 比特整型). 问题是 Kaleidoscope希望值是<strong>0.0</strong>或者<strong>1.0</strong>. 为了获得这些语义, 我们将<strong>fcmp指令</strong>与<strong>uitofp指令</strong>(unsigned integer to float point)结合起来. 该指令通过将它的输入整数转换为浮点值by 将输入视为无符号值. 相反, 如果我们使用<strong>sitofp指令</strong>, The kaleidoscope &lsquo;&lt;&rsquo; 操作符将会返回<strong>0.0</strong>和**-1.0**, 具体依赖于输入值.</p>
 <h2 id="callexprast">CallExprAST</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Value <span style="color:#f92672">*</span>CallExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#75715e">// Look up the name in the global module table. 在全局module table中寻找name
-</span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>CalleeF <span style="color:#f92672">=</span> TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getFunction(Callee);
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>CalleeF)
-    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Unknown function referenced</span><span style="color:#e6db74">&#34;</span>);
-
-  <span style="color:#75715e">// If argument mismatch error.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (CalleeF<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>arg_size() <span style="color:#f92672">!</span><span style="color:#f92672">=</span> Args.size())
-    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Incorrect # arguments passed</span><span style="color:#e6db74">&#34;</span>);
-
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>Value <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> ArgsV;
-  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">unsigned</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, e <span style="color:#f92672">=</span> Args.size(); i <span style="color:#f92672">!</span><span style="color:#f92672">=</span> e; <span style="color:#f92672">+</span><span style="color:#f92672">+</span>i) {
-    ArgsV.push_back(Args[i]<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen());
-    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ArgsV.back())
-      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-  }
-
-  <span style="color:#66d9ef">return</span> Builder.CreateCall(CalleeF, ArgsV, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">calltmp</span><span style="color:#e6db74">&#34;</span>);
-}
-</code></pre></div><p>使用LLVM来产生函数调用的codegen是相当简单直接的.</p>
-<p>上面的代码最开始会在LLVM Module's 符号表中 寻找函数的名称. 回想一下, LLVM Module是一个可以包含我们正在执行的JIT函数的容器. 通过给每一个函数指定与用户指定的相同的名称, 我们可以使用LLVM 符号表来解析我们的函数名称.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>CallExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Look up the name in the global module table. 在全局module table中寻找name
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>CalleeF <span style="color:#f92672">=</span> TheModule<span style="color:#f92672">-&gt;</span>getFunction(Callee);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>CalleeF)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74">&#34;Unknown function referenced&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If argument mismatch error.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (CalleeF<span style="color:#f92672">-&gt;</span>arg_size() <span style="color:#f92672">!=</span> Args.size())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogErrorV(<span style="color:#e6db74">&#34;Incorrect # arguments passed&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>Value <span style="color:#f92672">*&gt;</span> ArgsV;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">unsigned</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, e <span style="color:#f92672">=</span> Args.size(); i <span style="color:#f92672">!=</span> e; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>    ArgsV.push_back(Args[i]<span style="color:#f92672">-&gt;</span>codegen());
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>ArgsV.back())
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> Builder.CreateCall(CalleeF, ArgsV, <span style="color:#e6db74">&#34;calltmp&#34;</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>使用LLVM来产生函数调用的codegen是相当简单直接的.</p>
+<p>上面的代码最开始会在LLVM Module&rsquo;s 符号表中 寻找函数的名称. 回想一下, LLVM Module是一个可以包含我们正在执行的JIT函数的容器. 通过给每一个函数指定与用户指定的相同的名称, 我们可以使用LLVM 符号表来解析我们的函数名称.</p>
 <p>一旦我们有函数要调用, 我们递归地codegen(编码)每一个我们要传入的参数, 并且创建一个LLVM调用指令. 注意, LLVM默认使用本地的c调用规定, 允许这些调用来调用标准库函数(like &ldquo;sin&rdquo; and &ldquo;cos&rdquo;)是轻松的, 不需要任何额外的工作.</p>
 <p>这包含了我们对四个基本表达式(in Kaileidoscope)的处理. 当然, 你可以随意添加更多. 例如, 通过浏览 <a href="http://llvm.org/docs/LangRef.html">LLVM Language reference</a>. 你将会找到其他一些有趣的指令, 并且将他们加到我们的框架中是非常简单的.</p>
 <h1 id="34-function-code-generation">3.4 Function Code Generation</h1>
@@ -362,163 +360,163 @@ APFloat 具有保存任意精度的浮点常数的能力). 这段代码基本就
 <h2 id="prototypeast">PrototypeAST</h2>
 <p>首先, 我们先讨论函数申明的代码产生: 他们可以用于函数体, 也可以用于外部函数申明.</p>
 <p>The code starts with:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Function <span style="color:#f92672">*</span>PrototypeAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#75715e">// Make the function type:  double(double,double) etc.
-</span><span style="color:#75715e"></span>  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>Type<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> Doubles(Args.size(),
-                             Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext));
-  FunctionType <span style="color:#f92672">*</span>FT <span style="color:#f92672">=</span>
-    FunctionType<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(Type<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy(TheContext), Doubles, false);
-
-  Function <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span>
-    Function<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(FT, Function<span style="color:#f92672">:</span><span style="color:#f92672">:</span>ExternalLinkage, Name, TheModule.get());
-</code></pre></div><p>这段代码将大量的功能集成到几行. First注意, 这个函数返回了一个&rdquo;<strong>Function</strong>&ldquo;而不是&rdquo;<strong>Value</strong>&quot;. 因为&quot;prototype&quot;是在讨论函数的外部接口(而不是表达式计算的值), 当codegen时, 返回LLVM Function是有意义的.</p>
-<p><strong>FunctionType::get</strong>的调用创建<strong>FunctionType</strong>(that 被用于给定的声明). 由于Kaleidoscope中所有的函数参数都是double类型的, 第一行创建了一个&quot;N个double类型的vector&rdquo;. 然后使用<strong>FunctionType::get</strong>创建了接收N个double类型参数的函数. 返回一个double作为结果,(那不是可变参数(false表示这一点)). 注意 LLVM中类型是和常量一样唯一的, 所以你不用&quot;new a type&rdquo;, you &ldquo;get&rdquo; it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Function <span style="color:#f92672">*</span>PrototypeAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Make the function type:  double(double,double) etc.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>Type<span style="color:#f92672">*&gt;</span> Doubles(Args.size(),
+</span></span><span style="display:flex;"><span>                             Type<span style="color:#f92672">::</span>getDoubleTy(TheContext));
+</span></span><span style="display:flex;"><span>  FunctionType <span style="color:#f92672">*</span>FT <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    FunctionType<span style="color:#f92672">::</span>get(Type<span style="color:#f92672">::</span>getDoubleTy(TheContext), Doubles, false);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Function <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    Function<span style="color:#f92672">::</span>Create(FT, Function<span style="color:#f92672">::</span>ExternalLinkage, Name, TheModule.get());
+</span></span></code></pre></div><p>这段代码将大量的功能集成到几行. First注意, 这个函数返回了一个&rdquo;<strong>Function</strong>&ldquo;而不是&rdquo;<strong>Value</strong>&rdquo;. 因为&quot;prototype&quot;是在讨论函数的外部接口(而不是表达式计算的值), 当codegen时, 返回LLVM Function是有意义的.</p>
+<p><strong>FunctionType::get</strong>的调用创建<strong>FunctionType</strong>(that 被用于给定的声明). 由于Kaleidoscope中所有的函数参数都是double类型的, 第一行创建了一个&quot;N个double类型的vector&rdquo;. 然后使用<strong>FunctionType::get</strong>创建了接收N个double类型参数的函数. 返回一个double作为结果,(那不是可变参数(false表示这一点)). 注意 LLVM中类型是和常量一样唯一的, 所以你不用&quot;new a type&quot;, you &ldquo;get&rdquo; it.</p>
 <p>上面的最后一行实际上创建了与Prototype相对应的IR函数. 这表明了要使用的类型, 链接, 名称, 以及要插入的模块. &ldquo;external linkage&quot;意味着该函数可能在当前模块之外定义. and or 它能够被模块外面的函数所调用. 传入的名称是用户指定的名称: 由于指定了&quot;TheModule&rdquo;, 因此该名称在&quot;TheModule&quot;符号表中被注册.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Set names for all arguments. 设置所有参数的名称
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">unsigned</span> Idx <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : F<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>args())
-  Arg.setName(Args[Idx<span style="color:#f92672">+</span><span style="color:#f92672">+</span>]);
-
-<span style="color:#66d9ef">return</span> F;
-</code></pre></div><p>最后, 我们根据Prototype中的名称设置每个函数参数的名称. 这一步并不是严格需要的, 但是保持名称的一致是IR的可读性更强, 并允许后面的代码直接引用其名称的参数, 而不需要在PrototypeAST中查找他们.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Set names for all arguments. 设置所有参数的名称
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">unsigned</span> Idx <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : F<span style="color:#f92672">-&gt;</span>args())
+</span></span><span style="display:flex;"><span>  Arg.setName(Args[Idx<span style="color:#f92672">++</span>]);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> F;
+</span></span></code></pre></div><p>最后, 我们根据Prototype中的名称设置每个函数参数的名称. 这一步并不是严格需要的, 但是保持名称的一致是IR的可读性更强, 并允许后面的代码直接引用其名称的参数, 而不需要在PrototypeAST中查找他们.</p>
 <h2 id="functionast">FunctionAST</h2>
 <p>我们有一个没有函数体的function prototype.  这是LLVM IR表示函数申明的方式. 对于在Kaileidoscope中的extern表达式来说, 这正是我们想要表达的. 然而对于函数定义来说,我们需要codegen并且attach a 函数体:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-    <span style="color:#75715e">// First, check for an existing function from a previous &#39;extern&#39; declaration.
-</span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getFunction(Proto<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getName());
-
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
-    TheFunction <span style="color:#f92672">=</span> Proto<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>empty())
-    <span style="color:#66d9ef">return</span> (Function<span style="color:#f92672">*</span>)LogErrorV(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Function cannot be redefined.</span><span style="color:#e6db74">&#34;</span>);
-</code></pre></div><p>对于函数定义来说, 我们首先在TheModule的符号表中搜索此函数的现有版本.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// First, check for an existing function from a previous &#39;extern&#39; declaration.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> TheModule<span style="color:#f92672">-&gt;</span>getFunction(Proto<span style="color:#f92672">-&gt;</span>getName());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
+</span></span><span style="display:flex;"><span>    TheFunction <span style="color:#f92672">=</span> Proto<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction<span style="color:#f92672">-&gt;</span>empty())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> (Function<span style="color:#f92672">*</span>)LogErrorV(<span style="color:#e6db74">&#34;Function cannot be redefined.&#34;</span>);
+</span></span></code></pre></div><p>对于函数定义来说, 我们首先在TheModule的符号表中搜索此函数的现有版本.</p>
 <ul>
 <li>一种case是:using &ldquo;extern&rdquo; 语句时, 符号表就被创建了. 如果 Module::getFunction 返回 null, 则意味着不存在先前的版本, 所以我们就需要根据申明来进行Prototype Codegen.</li>
 <li>在另一种case中, 我们想要在我们开始之前, assert函数是empty(i.e. 还没有函数体)</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Create a new basic block to start insertion into.  创建一个新的basic block 来插入.
-</span><span style="color:#75715e"></span>BasicBlock <span style="color:#f92672">*</span>BB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Create(TheContext, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">entry</span><span style="color:#e6db74">&#34;</span>, TheFunction);
-Builder.SetInsertPoint(BB);
-
-<span style="color:#75715e">// Record the function arguments in the NamedValues map. 在NamedValue mao中记录函数参数.
-</span><span style="color:#75715e"></span>NamedValues.clear();
-<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>args())
-  NamedValues[Arg.getName()] <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>Arg;
-</code></pre></div><p>现在我们可以开始建立Builder了:</p>
-<p>第一行创建了一个<strong>new basic block(named &ldquo;entry&rdquo;)</strong>, 被直接插入到函数中. 第二行告诉我们新的指令应该被插在<strong>new basic block</strong>的末尾. 在LLVM中<code>Basic Block</code>(define the <strong>Control Flow Graph</strong>)是函数中重要的一部分. 因为我们没有任何控制流, 所以此时我们的函数只包含一个Block. <strong>we'll fix this in Chapter 5</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Create a new basic block to start insertion into.  创建一个新的basic block 来插入.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>BasicBlock <span style="color:#f92672">*</span>BB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">::</span>Create(TheContext, <span style="color:#e6db74">&#34;entry&#34;</span>, TheFunction);
+</span></span><span style="display:flex;"><span>Builder.SetInsertPoint(BB);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Record the function arguments in the NamedValues map. 在NamedValue mao中记录函数参数.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>NamedValues.clear();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : TheFunction<span style="color:#f92672">-&gt;</span>args())
+</span></span><span style="display:flex;"><span>  NamedValues[Arg.getName()] <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>Arg;
+</span></span></code></pre></div><p>现在我们可以开始建立Builder了:</p>
+<p>第一行创建了一个<strong>new basic block(named &ldquo;entry&rdquo;)</strong>, 被直接插入到函数中. 第二行告诉我们新的指令应该被插在<strong>new basic block</strong>的末尾. 在LLVM中<code>Basic Block</code>(define the <strong>Control Flow Graph</strong>)是函数中重要的一部分. 因为我们没有任何控制流, 所以此时我们的函数只包含一个Block. <strong>we&rsquo;ll fix this in Chapter 5</strong>.</p>
 <p>现在我们添加函数参数到<strong>NamedValues map</strong>中(当然了, 首先它会被清空) 以便于它们可以被VariableExprAST节点所获取.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">if</span> (Value <span style="color:#f92672">*</span>RetVal <span style="color:#f92672">=</span> Body<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen()) {
-  <span style="color:#75715e">// Finish off the function.
-</span><span style="color:#75715e"></span>  Builder.CreateRet(RetVal);
-
-  <span style="color:#75715e">// Validate the generated code, checking for consistency.
-</span><span style="color:#75715e"></span>  verifyFunction(<span style="color:#f92672">*</span>TheFunction);
-
-  <span style="color:#66d9ef">return</span> TheFunction;
-}
-</code></pre></div><ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (Value <span style="color:#f92672">*</span>RetVal <span style="color:#f92672">=</span> Body<span style="color:#f92672">-&gt;</span>codegen()) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Finish off the function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Builder.CreateRet(RetVal);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Validate the generated code, checking for consistency.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  verifyFunction(<span style="color:#f92672">*</span>TheFunction);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> TheFunction;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><ol>
 <li>一旦在<strong>设置了插入点</strong>, 并且填充了<strong>NamedValues</strong>之后, 我们调用codegen() 方法作为function的 root 表达式.</li>
 <li>如果没有error发生, <strong>this emits code</strong>计算表达式到 <strong>entry block</strong> 并返回计算出的值.</li>
 <li>假设没有error, 我们然后创建<strong>an LLVM ret instruction</strong> (表示函数完成).</li>
 <li>一旦函数被构建后, 我们就会调用<strong>verifyFunction</strong>(which provided by LLVM). 该函数对产生的IR做大量的一致性检测, 来确定是否我们的编译代码都是正确的. 使用它是相当重要地, 它能够捕获大量的bugs. 一旦一个函数完成并验证后, 我们就会返回它.</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">// Error reading body, remove function.
-</span><span style="color:#75715e"></span>  TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>eraseFromParent();
-  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-}
-</code></pre></div><p>最后剩下的唯一一件事情就是处理error case. 简单起见, 我们仅仅通过使用<strong>earseFromParent</strong>方法来删除我们Codegen的函数. 这允许用户重新定义他们之前输入错误的函数: 如果我们不删除它,  它将会继续保存在符号表中, 并且它还有body, 阻止我们之后定义.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>  <span style="color:#75715e">// Error reading body, remove function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFunction<span style="color:#f92672">-&gt;</span>eraseFromParent();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>最后剩下的唯一一件事情就是处理error case. 简单起见, 我们仅仅通过使用<strong>earseFromParent</strong>方法来删除我们Codegen的函数. 这允许用户重新定义他们之前输入错误的函数: 如果我们不删除它,  它将会继续保存在符号表中, 并且它还有body, 阻止我们之后定义.</p>
 <p>这代码有一个bug, 如果**FunctionAST::codegen()**方法发现了一个存在的IR Function. 它不会根据自己的申明来验证其签名. 这意味着: 一个更早的<code>extern</code>申明将会优先于函数定义的签名, 这可能导致codegen失败. 例如, 如果函数参数的名称不同.(what means ? 以后再研究)</p>
 <p>有很多方法可以解决这个问题, see what you can come up with! Here is a testcase:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>(a);     <span style="color:#960050;background-color:#1e0010">#</span> ok, defines foo.
-def foo(b) b;      <span style="color:#960050;background-color:#1e0010">#</span> Error: Unknown variable name. (decl <span style="color:#66d9ef">using</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">a</span><span style="color:#e6db74">&#39;</span> takes precedence).
-</code></pre></div><h1 id="35-driver-changes-and-closing-thoughts">3.5 Driver Changes and Closing Thoughts</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>(a);     <span style="color:#960050;background-color:#1e0010">#</span> ok, defines foo.
+</span></span><span style="display:flex;"><span>def foo(b) b;      <span style="color:#960050;background-color:#1e0010">#</span> Error: Unknown variable name. (decl <span style="color:#66d9ef">using</span> <span style="color:#e6db74">&#39;a&#39;</span> takes precedence).
+</span></span></code></pre></div><h1 id="35-driver-changes-and-closing-thoughts">3.5 Driver Changes and Closing Thoughts</h1>
 <p>到目前为止, 除了我们可以查看漂亮的LLVM调用之外, LLVM的Codegen并没有给我们带来太多的帮助. The sample code 将对codegen的调用插入到 &ldquo;HandleDefinition&rdquo;, &ldquo;HandleExtern&quot;等函数中, 然后dump out the LLVM IR.</p>
 <p>这里有一个简单的方法来查看LLVM IR. Ex:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#ae81ff">4</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">5</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span> expression:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @0() {
-entry:
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">9.000000e+00</span>
-}
-</code></pre></div><p>注意 解析器是如何将顶级表达式转换为我们的anonymous函数. 当我们在下一章添加JIT Support时, 这会很便利.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#ae81ff">4</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">5</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">top-level</span> expression:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @0() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">9.000000e+00</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>注意 解析器是如何将顶级表达式转换为我们的anonymous函数. 当我们在下一章添加JIT Support时, 这会很便利.</p>
 <p>另外, 代码是literally transcribed, 除了IRBuilder会进行简单的常量折叠外, 不会执行任何优化. 下一章, 我们将会添加一些隐式地优化.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#960050;background-color:#1e0010">a</span> <span style="color:#960050;background-color:#1e0010">b</span>) <span style="color:#960050;background-color:#1e0010">a</span>*<span style="color:#960050;background-color:#1e0010">a</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">2</span>*<span style="color:#960050;background-color:#1e0010">a</span>*<span style="color:#960050;background-color:#1e0010">b</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">b</span>*<span style="color:#960050;background-color:#1e0010">b</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> %b) {
-entry:
-  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %a, %a
-  %multmp1 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">2.000000e+00</span>, %a
-  %multmp2 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %multmp1, %b
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %multmp2
-  %multmp3 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %b, %b
-  %addtmp4 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %addtmp, %multmp3
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp4
-}
-</code></pre></div><p>这里展示了一些简单的表达式运算.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">b</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">r</span>(<span style="color:#960050;background-color:#1e0010">a</span>) <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#960050;background-color:#1e0010">a</span>, <span style="color:#ae81ff">4.0</span>) <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">b</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">r</span>(<span style="color:#ae81ff">31337</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> %a) {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>)
-  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.133700e+04</span>)
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp1
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-</code></pre></div><p>这里展示了一些函数调用.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#960050;background-color:#1e0010">a</span> <span style="color:#960050;background-color:#1e0010">b</span>) <span style="color:#960050;background-color:#1e0010">a</span>*<span style="color:#960050;background-color:#1e0010">a</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">2</span>*<span style="color:#960050;background-color:#1e0010">a</span>*<span style="color:#960050;background-color:#1e0010">b</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">b</span>*<span style="color:#960050;background-color:#1e0010">b</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> %b) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %a, %a
+</span></span><span style="display:flex;"><span>  %multmp1 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">2.000000e+00</span>, %a
+</span></span><span style="display:flex;"><span>  %multmp2 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %multmp1, %b
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %multmp2
+</span></span><span style="display:flex;"><span>  %multmp3 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %b, %b
+</span></span><span style="display:flex;"><span>  %addtmp4 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %addtmp, %multmp3
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp4
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里展示了一些简单的表达式运算.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">bar</span>(<span style="color:#960050;background-color:#1e0010">a</span>) <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#960050;background-color:#1e0010">a</span>, <span style="color:#ae81ff">4.0</span>) <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">bar</span>(<span style="color:#ae81ff">31337</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> %a) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>)
+</span></span><span style="display:flex;"><span>  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.133700e+04</span>)
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp1
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里展示了一些函数调用.</p>
 <p>Note 如果你调用它的话, 这个函数将会花大量时间来执行.</p>
 <p>在未来, 我们将会添加一些条件控制流来使递归变得可以使用.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">x</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">n</span> <span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">s</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> extern:
-<span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span>)
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">s</span>(<span style="color:#ae81ff">1.234</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span> expression:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @1() {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.234000e+00</span>)
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
-}
-</code></pre></div><p>这里展示了一个extern for libm &ldquo;cos&rdquo; 函数, and call to it:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">^</span><span style="color:#960050;background-color:#1e0010">D</span>
-<span style="color:#75715e">; ModuleID = &#39;my cool jit&#39;
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @0() {
-entry:
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>, <span style="color:#ae81ff">5.000000e+00</span>
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> %b) {
-entry:
-  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %a, %a
-  %multmp1 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">2.000000e+00</span>, %a
-  %multmp2 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %multmp1, %b
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %multmp2
-  %multmp3 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %b, %b
-  %addtmp4 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %addtmp, %multmp3
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp4
-}
-
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> %a) {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>)
-  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.133700e+04</span>)
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp1
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-
-<span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span>)
-
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @1() {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.234000e+00</span>)
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
-}
-</code></pre></div><p>当你退出demo时(在 linux 上通过CTRL+D,or  windows上通过CTRL+Z来发送EOF), 它将会显示该module产生的所有IR.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">extern</span> <span style="color:#960050;background-color:#1e0010">cos</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> extern:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">cos</span>(<span style="color:#ae81ff">1.234</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">top-level</span> expression:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @1() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.234000e+00</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这里展示了一个extern for libm &ldquo;cos&rdquo; 函数, and call to it:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">^D</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">; ModuleID = &#39;my cool jit&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @0() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>, <span style="color:#ae81ff">5.000000e+00</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> %b) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %a, %a
+</span></span><span style="display:flex;"><span>  %multmp1 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">2.000000e+00</span>, %a
+</span></span><span style="display:flex;"><span>  %multmp2 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %multmp1, %b
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %multmp2
+</span></span><span style="display:flex;"><span>  %multmp3 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %b, %b
+</span></span><span style="display:flex;"><span>  %addtmp4 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %addtmp, %multmp3
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp4
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> %a) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %a, <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>)
+</span></span><span style="display:flex;"><span>  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.133700e+04</span>)
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp1
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @1() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.234000e+00</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>当你退出demo时(在 linux 上通过CTRL+D,or  windows上通过CTRL+Z来发送EOF), 它将会显示该module产生的所有IR.</p>
 <p>这就是Kaleidoscope tutorial 第三章的内容.</p>
 <p>接下来, 我们会展示如何添加JIT Codegen和优化器支持, 以便于我们之后可以开始运行代码.</p>
 <h1 id="36-full-code-listing">3.6 Full Code Listing</h1>
@@ -562,7 +560,7 @@ entry:
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

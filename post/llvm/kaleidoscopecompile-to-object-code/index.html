@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -56,7 +56,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/llvm/kaleidoscopecompile-to-object-code/">
@@ -234,112 +233,116 @@
     <article class="post-content"><p>translate from:http://llvm.org/docs/tutorial/LangImpl08.html</p>
 <p>本章为“LLVM Tutorial”的第八章：将代码编译为目标对象文件。</p>
 <p>本章内容比较简单。</p>
-<h1 id="81-">8.1 第八章介绍</h1>
-<p>欢迎来到**“通过LLVM实现一个语言”**教程的第八章。本章描述了**如何将我们Kaleidoscope程序编译为目标文件**。</p>
-<h1 id="82-">8.2 选择一个目标</h1>
+<h1 id="81-第八章介绍">8.1 第八章介绍</h1>
+<p>欢迎来到**“通过LLVM实现一个语言”<strong>教程的第八章。本章描述了</strong>如何将我们Kaleidoscope程序编译为目标文件**。</p>
+<h1 id="82-选择一个目标">8.2 选择一个目标</h1>
 <p>LLVM本身支持交叉编译。你可以将项目编译为适用于你当前机器的架构（或者其它架构）的程序，都是很容易完成的。在本教程中，我们将会编译程序为当前机器的架构。</p>
 <p>为了指定我们要编译目标的架构，我们使用一个名为“target triple”的字符串。它的形式为 &lt;arch&gt;&lt;sub&gt;-&lt;vendor&gt;-&lt;sys&gt;-&lt;abi&gt; (阅读<a href="http://clang.llvm.org/docs/CrossCompilation.html#target-triple">交叉编译文档</a>)。</p>
 <p>举个例子，我们可以通过运行下面这条命令看到当前平台架构：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang --version | grep Target
-Target: x86_64-unknown-linux-gnu
-</code></pre></div><p>因为你的架构和操作系统可能和我的不一样，所以在你的机器上运行该命令可能显示出不同的结果。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ clang --version | grep Target
+</span></span><span style="display:flex;"><span>Target: x86_64-unknown-linux-gnu
+</span></span></code></pre></div><p>因为你的架构和操作系统可能和我的不一样，所以在你的机器上运行该命令可能显示出不同的结果。</p>
 <p>幸运地是，我们不需要硬编码一个target triple（目标三元组）来表示当前机器。LLVM提供一个函数：<em>sys::getDefaultTargetTriple</em> ，调用该函数可以得到当前机器的target triple。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> TargetTriple <span style="color:#f92672">=</span> sys<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDefaultTargetTriple();
-</code></pre></div><p>LLVM不要求我们链接所有目标平台。例如，如果我们只是使用JIT，我们就不需要汇编代码生成。同样地，如果我们仅针对某些体系结构，我们可以只链接这些体系结构。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> TargetTriple <span style="color:#f92672">=</span> sys<span style="color:#f92672">::</span>getDefaultTargetTriple();
+</span></span></code></pre></div><p>LLVM不要求我们链接所有目标平台。例如，如果我们只是使用JIT，我们就不需要汇编代码生成。同样地，如果我们仅针对某些体系结构，我们可以只链接这些体系结构。</p>
 <p>例如，为了生成目标对象代码，我们将初始化所有的目标：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">InitializeAllTargetInfos();
-InitializeAllTargets();
-InitializeAllTargetMCs();
-InitializeAllAsmParsers();
-InitializeAllAsmPrinters();
-</code></pre></div><p>我们现在能够使用我们target triple来获得目标平台的Target：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string Error;
-<span style="color:#66d9ef">auto</span> Target <span style="color:#f92672">=</span> TargetRegistry<span style="color:#f92672">:</span><span style="color:#f92672">:</span>lookupTarget(TargetTriple, Error);
-
-<span style="color:#75715e">// Print an error and exit if we couldn&#39;t find the requested target.
-</span><span style="color:#75715e"></span><span style="color:#75715e">// This generally occurs if we&#39;ve forgotten to initialise the
-</span><span style="color:#75715e"></span><span style="color:#75715e">// TargetRegistry or we have a bogus target triple.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Target) {
-  errs() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> Error;
-  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
-}
-</code></pre></div><h1 id="83-">8.3 目标机器</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>InitializeAllTargetInfos();
+</span></span><span style="display:flex;"><span>InitializeAllTargets();
+</span></span><span style="display:flex;"><span>InitializeAllTargetMCs();
+</span></span><span style="display:flex;"><span>InitializeAllAsmParsers();
+</span></span><span style="display:flex;"><span>InitializeAllAsmPrinters();
+</span></span></code></pre></div><p>我们现在能够使用我们target triple来获得目标平台的Target：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>std<span style="color:#f92672">::</span>string Error;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> Target <span style="color:#f92672">=</span> TargetRegistry<span style="color:#f92672">::</span>lookupTarget(TargetTriple, Error);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Print an error and exit if we couldn&#39;t find the requested target.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// This generally occurs if we&#39;ve forgotten to initialise the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// TargetRegistry or we have a bogus target triple.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>Target) {
+</span></span><span style="display:flex;"><span>  errs() <span style="color:#f92672">&lt;&lt;</span> Error;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="83-目标机器">8.3 目标机器</h1>
 <p>我们还需要一个<em>TargetMachine</em>. 此类提供了我们当前机器的完整机器描述。如果我们想要指定一个特定的特性（例如SSE）或指定的CPU（例如intel的Sandylake），我们现在就可以开始了。</p>
 <p>我们可以通过llc，来获得LLVM包含的特性和CPU。例如，我们指定目标架构为x86:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ llvm-as &lt; /dev/null | llc -march<span style="color:#f92672">=</span>x86 -mattr<span style="color:#f92672">=</span>help
-Available CPUs <span style="color:#66d9ef">for</span> this target:
-
-  amdfam10      - Select the amdfam10 processor.
-  athlon        - Select the athlon processor.
-  athlon-4      - Select the athlon-4 processor.
-  ...
-
-Available features <span style="color:#66d9ef">for</span> this target:
-
-  16bit-mode            - 16-bit mode <span style="color:#f92672">(</span>i8086<span style="color:#f92672">)</span>.
-  32bit-mode            - 32-bit mode <span style="color:#f92672">(</span>80386<span style="color:#f92672">)</span>.
-  3dnow                 - Enable 3DNow! instructions.
-  3dnowa                - Enable 3DNow! Athlon instructions.
-  ...
-</code></pre></div><p>对于我们的示例，我们将使用没有任何额外特性、选项或者重定位模型的通用CPU。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> CPU <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">generic</span><span style="color:#e6db74">&#34;</span>;
-<span style="color:#66d9ef">auto</span> Features <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>;
-
-TargetOptions opt;
-<span style="color:#66d9ef">auto</span> RM <span style="color:#f92672">=</span> Optional<span style="color:#f92672">&lt;</span>Reloc<span style="color:#f92672">:</span><span style="color:#f92672">:</span>Model<span style="color:#f92672">&gt;</span>();
-<span style="color:#66d9ef">auto</span> TargetMachine <span style="color:#f92672">=</span> Target<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createTargetMachine(TargetTriple, CPU, Features, opt, RM);
-</code></pre></div><h1 id="84-">8.4 配置模块</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ llvm-as &lt; /dev/null | llc -march<span style="color:#f92672">=</span>x86 -mattr<span style="color:#f92672">=</span>help
+</span></span><span style="display:flex;"><span>Available CPUs <span style="color:#66d9ef">for</span> this target:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  amdfam10      - Select the amdfam10 processor.
+</span></span><span style="display:flex;"><span>  athlon        - Select the athlon processor.
+</span></span><span style="display:flex;"><span>  athlon-4      - Select the athlon-4 processor.
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Available features <span style="color:#66d9ef">for</span> this target:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  16bit-mode            - 16-bit mode <span style="color:#f92672">(</span>i8086<span style="color:#f92672">)</span>.
+</span></span><span style="display:flex;"><span>  32bit-mode            - 32-bit mode <span style="color:#f92672">(</span>80386<span style="color:#f92672">)</span>.
+</span></span><span style="display:flex;"><span>  3dnow                 - Enable 3DNow! instructions.
+</span></span><span style="display:flex;"><span>  3dnowa                - Enable 3DNow! Athlon instructions.
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><p>对于我们的示例，我们将使用没有任何额外特性、选项或者重定位模型的通用CPU。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> CPU <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;generic&#34;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> Features <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>TargetOptions opt;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> RM <span style="color:#f92672">=</span> Optional<span style="color:#f92672">&lt;</span>Reloc<span style="color:#f92672">::</span>Model<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> TargetMachine <span style="color:#f92672">=</span> Target<span style="color:#f92672">-&gt;</span>createTargetMachine(TargetTriple, CPU, Features, opt, RM);
+</span></span></code></pre></div><h1 id="84-配置模块">8.4 配置模块</h1>
 <p>我们现在开始准备配置我们的模块，以指定<em>Target</em>和<em>data layout</em>数据布局。严格来说，这不是必要的，但是<a href="http://llvm.org/docs/Frontend/PerformanceTips.html">前端性能指南</a>推荐我们这样做。在知道了<em>Target</em>目标和<em>data layout</em>数据布局后，会很大程度上帮助我们提高优化能力。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setDataLayout(TargetMachine<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createDataLayout());
-TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setTargetTriple(TargetTriple);
-</code></pre></div><h1 id="85-emit-object-code">8.5 Emit Object Code</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>TheModule<span style="color:#f92672">-&gt;</span>setDataLayout(TargetMachine<span style="color:#f92672">-&gt;</span>createDataLayout());
+</span></span><span style="display:flex;"><span>TheModule<span style="color:#f92672">-&gt;</span>setTargetTriple(TargetTriple);
+</span></span></code></pre></div><h1 id="85-emit-object-code">8.5 Emit Object Code</h1>
 <p>我们现在准备生成obj代码！ 让我们定义生成的文件位置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">auto</span> Filename <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">output.o</span><span style="color:#e6db74">&#34;</span>;
-std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>error_code EC;
-raw_fd_ostream <span style="color:#a6e22e">dest</span>(Filename, EC, sys<span style="color:#f92672">:</span><span style="color:#f92672">:</span>fs<span style="color:#f92672">:</span><span style="color:#f92672">:</span>F_None);
-
-<span style="color:#66d9ef">if</span> (EC) {
-  errs() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Could not open file: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> EC.message();
-  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
-}
-</code></pre></div><p>最后，我们定义了一个pass来生成obf代码。然后我们运行该pass:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">legacy<span style="color:#f92672">:</span><span style="color:#f92672">:</span>PassManager pass;
-<span style="color:#66d9ef">auto</span> FileType <span style="color:#f92672">=</span> TargetMachine<span style="color:#f92672">:</span><span style="color:#f92672">:</span>CGFT_ObjectFile;
-
-<span style="color:#66d9ef">if</span> (TargetMachine<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addPassesToEmitFile(pass, dest, <span style="color:#66d9ef">nullptr</span>, FileType)) {
-  errs() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">TargetMachine can&#39;t emit a file of this type</span><span style="color:#e6db74">&#34;</span>;
-  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
-}
-
-pass.run(<span style="color:#f92672">*</span>TheModule);
-dest.flush();
-</code></pre></div><h1 id="86-">8.6 将它们放在一起</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> Filename <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;output.o&#34;</span>;
+</span></span><span style="display:flex;"><span>std<span style="color:#f92672">::</span>error_code EC;
+</span></span><span style="display:flex;"><span>raw_fd_ostream <span style="color:#a6e22e">dest</span>(Filename, EC, sys<span style="color:#f92672">::</span>fs<span style="color:#f92672">::</span>F_None);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (EC) {
+</span></span><span style="display:flex;"><span>  errs() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Could not open file: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> EC.message();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>最后，我们定义了一个pass来生成obf代码。然后我们运行该pass:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>legacy<span style="color:#f92672">::</span>PassManager pass;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">auto</span> FileType <span style="color:#f92672">=</span> TargetMachine<span style="color:#f92672">::</span>CGFT_ObjectFile;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (TargetMachine<span style="color:#f92672">-&gt;</span>addPassesToEmitFile(pass, dest, <span style="color:#66d9ef">nullptr</span>, FileType)) {
+</span></span><span style="display:flex;"><span>  errs() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;TargetMachine can&#39;t emit a file of this type&#34;</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pass.run(<span style="color:#f92672">*</span>TheModule);
+</span></span><span style="display:flex;"><span>dest.flush();
+</span></span></code></pre></div><h1 id="86-将它们放在一起">8.6 将它们放在一起</h1>
 <p>我们做的工作成功了吗？让我们测试一下！我们需要编译我们的代码，但是注意<code>llvm-config</code>指定的参数与前面的章节是不同的：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang++ -g -O3 toy.cpp <span style="color:#e6db74">`</span>llvm-config --cxxflags --ldflags --system-libs --libs all<span style="color:#e6db74">`</span> -o toy
-</code></pre></div><p>让我们运行它，并定义一个计算平均值的函数。当你输入完成的时候，按 Ctrl-D。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./toy
-ready&gt; def average<span style="color:#f92672">(</span>x y<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>x + y<span style="color:#f92672">)</span> * 0.5;
-^D
-Wrote output.o
-</code></pre></div><p>我们生成了一个目标文件！为了测试它是否是生成正确，让我们编写一个简单的程序并且将它与我们的输出相链接。这里是源代码：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">extern</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C</span><span style="color:#e6db74">&#34;</span> {
-    <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">average</span>(<span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">double</span>);
-}
-
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
-    std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>cout <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">average of 3.0 and 4.0: </span><span style="color:#e6db74">&#34;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> average(<span style="color:#ae81ff">3.0</span>, <span style="color:#ae81ff">4.0</span>) <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>endl;
-}
-</code></pre></div><p>我们将我们的程序链接为output.o并且检查结果是否符合我们的预期：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ clang++ main.cpp output.o -o main
-$ ./main
-average of 3.0 and 4.0: 3.5
-</code></pre></div><h1 id="full-code-listing">Full Code Listing</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ clang++ -g -O3 toy.cpp <span style="color:#e6db74">`</span>llvm-config --cxxflags --ldflags --system-libs --libs all<span style="color:#e6db74">`</span> -o toy
+</span></span></code></pre></div><p>让我们运行它，并定义一个计算平均值的函数。当你输入完成的时候，按 Ctrl-D。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ./toy
+</span></span><span style="display:flex;"><span>ready&gt; def average<span style="color:#f92672">(</span>x y<span style="color:#f92672">)</span> <span style="color:#f92672">(</span>x + y<span style="color:#f92672">)</span> * 0.5;
+</span></span><span style="display:flex;"><span>^D
+</span></span><span style="display:flex;"><span>Wrote output.o
+</span></span></code></pre></div><p>我们生成了一个目标文件！为了测试它是否是生成正确，让我们编写一个简单的程序并且将它与我们的输出相链接。这里是源代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">double</span> <span style="color:#a6e22e">average</span>(<span style="color:#66d9ef">double</span>, <span style="color:#66d9ef">double</span>);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;average of 3.0 and 4.0: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> average(<span style="color:#ae81ff">3.0</span>, <span style="color:#ae81ff">4.0</span>) <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>我们将我们的程序链接为output.o并且检查结果是否符合我们的预期：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ clang++ main.cpp output.o -o main
+</span></span><span style="display:flex;"><span>$ ./main
+</span></span><span style="display:flex;"><span>average of 3.0 and 4.0: 3.5
+</span></span></code></pre></div><h1 id="full-code-listing">Full Code Listing</h1>
 <p><a href="http://llvm.org/docs/tutorial/LangImpl08.html#full-code-listing">http://llvm.org/docs/tutorial/LangImpl08.html#full-code-listing</a></p></article>
     <footer class="post-footer">
       
       <ul class="post-tags">
+        
+          <li><a href="/tags/llvm"><span class="tag">Llvm</span></a></li>
+        
+          <li><a href="/tags/kaleidoscope"><span class="tag">Kaleidoscope</span></a></li>
         
       </ul>
       
@@ -372,7 +375,7 @@ average of 3.0 and 4.0: 3.5
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

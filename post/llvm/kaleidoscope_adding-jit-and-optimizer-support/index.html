@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -28,7 +28,7 @@
   <meta name="author" content="L0phTg">
   <meta name="description" content="translate from: http://llvm.org/docs/tutorial/LangImpl04.html
 本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.
-graph TBsubgraph callfuncall(&#34;foo(1);&#34;)endsubgraph exprnodeExpr(&#34;1&#43;2;&#34;)endjitAddModule[&#34;JIT中 添加此Module&#34;]jitRemoveModule[&#34;JIT中 删除此Module&#34;]anoCodegen[&#34;执行 匿名函数Codegen&#34;]AnonymousCall[&#34;匿名函数包装&#34;]optimizeFunc[&#34;执行 Pass优化&#34;]nodeExpr -- AnonymousCallfuncall -- AnonymousCallAnonymousCall -- anoCodegenanoCodegen -- jitAddModulejitAddModule -- optimizeFuncoptimizeFunc -- exec[&#34;JIT 运行此表达式, 并计算值&#34;]exec -- jitRemoveModulesubgraph func definitionnodeFoo(&#34;def foo(x) x&#43;1;&#34;)funcCodegen[&#34;执行 函数定义Codegen&#34;]nodeFoo -- funcCodegenendfuncCodegen -- jitAddFuncModule[&#34;JIT中 添加此Module&#34;]jitAddFuncModule -- initPassManager[&#34;执行 Pass优化&#34;]subgraph externnodeExtern(&#34;extern sin(x);&#34;)protoCodegen[&#34;执行 函数申明Codegen&#34;]nodeExtern -- protoCodegenendstyle jitAddModule fill:#f9fstyle jitRemoveModule fill:#f9fstyle jitAddFuncModule fill:#f9fstyle optimizeFunc fill:#ccff66style initPassManager fill:#ccff66style exec fill:#ff3300">
+graph TB subgraph call funcall(&#34;foo(1);&#34;) end subgraph expr nodeExpr(&#34;1&#43;2;&#34;) end jitAddModule[&#34;JIT中 添加此Module&#34;] jitRemoveModule[&#34;JIT中 删除此Module&#34;] anoCodegen[&#34;执行 匿名函数Codegen&#34;] AnonymousCall[&#34;匿名函数包装&#34;] optimizeFunc[&#34;执行 Pass优化&#34;] nodeExpr --&gt; AnonymousCall funcall --&gt; AnonymousCall AnonymousCall --&gt; anoCodegen anoCodegen --&gt; jitAddModule jitAddModule --&gt; optimizeFunc optimizeFunc --&gt; exec[&#34;JIT 运行此表达式, 并计算值&#34;] exec --&gt; jitRemoveModule subgraph func definition nodeFoo(&#34;def foo(x) x&#43;1;&#34;) funcCodegen[&#34;执行 函数定义Codegen&#34;] nodeFoo --&gt; funcCodegen end funcCodegen --&gt; jitAddFuncModule[&#34;JIT中 添加此Module&#34;] jitAddFuncModule --&gt; initPassManager[&#34;执行 Pass优化&#34;] subgraph extern nodeExtern(&#34;extern sin(x);&#34;) protoCodegen[&#34;执行 函数申明Codegen&#34;] nodeExtern --&gt; protoCodegen end style jitAddModule fill:#f9f style jitRemoveModule fill:#f9f style jitAddFuncModule fill:#f9f style optimizeFunc fill:#ccff66 style initPassManager fill:#ccff66 style exec fill:#ff3300 ">
 
   
   
@@ -37,7 +37,7 @@ graph TBsubgraph callfuncall(&#34;foo(1);&#34;)endsubgraph exprnodeExpr(&#3
     <meta name="twitter:title" content="Kaleidoscope: Adding JIT and Optimizer Support">
     <meta name="twitter:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl04.html
 本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.
-graph TBsubgraph callfuncall(&#34;foo(1);&#34;)endsubgraph exprnodeExpr(&#34;1&#43;2;&#34;)endjitAddModule[&#34;JIT中 添加此Module&#34;]jitRemoveModule[&#34;JIT中 删除此Module&#34;]anoCodegen[&#34;执行 匿名函数Codegen&#34;]AnonymousCall[&#34;匿名函数包装&#34;]optimizeFunc[&#34;执行 Pass优化&#34;]nodeExpr -- AnonymousCallfuncall -- AnonymousCallAnonymousCall -- anoCodegenanoCodegen -- jitAddModulejitAddModule -- optimizeFuncoptimizeFunc -- exec[&#34;JIT 运行此表达式, 并计算值&#34;]exec -- jitRemoveModulesubgraph func definitionnodeFoo(&#34;def foo(x) x&#43;1;&#34;)funcCodegen[&#34;执行 函数定义Codegen&#34;]nodeFoo -- funcCodegenendfuncCodegen -- jitAddFuncModule[&#34;JIT中 添加此Module&#34;]jitAddFuncModule -- initPassManager[&#34;执行 Pass优化&#34;]subgraph externnodeExtern(&#34;extern sin(x);&#34;)protoCodegen[&#34;执行 函数申明Codegen&#34;]nodeExtern -- protoCodegenendstyle jitAddModule fill:#f9fstyle jitRemoveModule fill:#f9fstyle jitAddFuncModule fill:#f9fstyle optimizeFunc fill:#ccff66style initPassManager fill:#ccff66style exec fill:#ff3300">
+graph TB subgraph call funcall(&#34;foo(1);&#34;) end subgraph expr nodeExpr(&#34;1&#43;2;&#34;) end jitAddModule[&#34;JIT中 添加此Module&#34;] jitRemoveModule[&#34;JIT中 删除此Module&#34;] anoCodegen[&#34;执行 匿名函数Codegen&#34;] AnonymousCall[&#34;匿名函数包装&#34;] optimizeFunc[&#34;执行 Pass优化&#34;] nodeExpr --&gt; AnonymousCall funcall --&gt; AnonymousCall AnonymousCall --&gt; anoCodegen anoCodegen --&gt; jitAddModule jitAddModule --&gt; optimizeFunc optimizeFunc --&gt; exec[&#34;JIT 运行此表达式, 并计算值&#34;] exec --&gt; jitRemoveModule subgraph func definition nodeFoo(&#34;def foo(x) x&#43;1;&#34;) funcCodegen[&#34;执行 函数定义Codegen&#34;] nodeFoo --&gt; funcCodegen end funcCodegen --&gt; jitAddFuncModule[&#34;JIT中 添加此Module&#34;] jitAddFuncModule --&gt; initPassManager[&#34;执行 Pass优化&#34;] subgraph extern nodeExtern(&#34;extern sin(x);&#34;) protoCodegen[&#34;执行 函数申明Codegen&#34;] nodeExtern --&gt; protoCodegen end style jitAddModule fill:#f9f style jitRemoveModule fill:#f9f style jitAddFuncModule fill:#f9f style optimizeFunc fill:#ccff66 style initPassManager fill:#ccff66 style exec fill:#ff3300 ">
     <meta name="twitter:image" content="/images/avatar.png">
   
 
@@ -46,14 +46,13 @@ graph TBsubgraph callfuncall(&#34;foo(1);&#34;)endsubgraph exprnodeExpr(&#3
   <meta property="og:title" content="Kaleidoscope: Adding JIT and Optimizer Support">
   <meta property="og:description" content="translate from: http://llvm.org/docs/tutorial/LangImpl04.html
 本文介绍使用LLVM Pass对产生的LLVM IR进行优化, 以及为我们的Kaleidoscope添加JIT.
-graph TBsubgraph callfuncall(&#34;foo(1);&#34;)endsubgraph exprnodeExpr(&#34;1&#43;2;&#34;)endjitAddModule[&#34;JIT中 添加此Module&#34;]jitRemoveModule[&#34;JIT中 删除此Module&#34;]anoCodegen[&#34;执行 匿名函数Codegen&#34;]AnonymousCall[&#34;匿名函数包装&#34;]optimizeFunc[&#34;执行 Pass优化&#34;]nodeExpr -- AnonymousCallfuncall -- AnonymousCallAnonymousCall -- anoCodegenanoCodegen -- jitAddModulejitAddModule -- optimizeFuncoptimizeFunc -- exec[&#34;JIT 运行此表达式, 并计算值&#34;]exec -- jitRemoveModulesubgraph func definitionnodeFoo(&#34;def foo(x) x&#43;1;&#34;)funcCodegen[&#34;执行 函数定义Codegen&#34;]nodeFoo -- funcCodegenendfuncCodegen -- jitAddFuncModule[&#34;JIT中 添加此Module&#34;]jitAddFuncModule -- initPassManager[&#34;执行 Pass优化&#34;]subgraph externnodeExtern(&#34;extern sin(x);&#34;)protoCodegen[&#34;执行 函数申明Codegen&#34;]nodeExtern -- protoCodegenendstyle jitAddModule fill:#f9fstyle jitRemoveModule fill:#f9fstyle jitAddFuncModule fill:#f9fstyle optimizeFunc fill:#ccff66style initPassManager fill:#ccff66style exec fill:#ff3300">
+graph TB subgraph call funcall(&#34;foo(1);&#34;) end subgraph expr nodeExpr(&#34;1&#43;2;&#34;) end jitAddModule[&#34;JIT中 添加此Module&#34;] jitRemoveModule[&#34;JIT中 删除此Module&#34;] anoCodegen[&#34;执行 匿名函数Codegen&#34;] AnonymousCall[&#34;匿名函数包装&#34;] optimizeFunc[&#34;执行 Pass优化&#34;] nodeExpr --&gt; AnonymousCall funcall --&gt; AnonymousCall AnonymousCall --&gt; anoCodegen anoCodegen --&gt; jitAddModule jitAddModule --&gt; optimizeFunc optimizeFunc --&gt; exec[&#34;JIT 运行此表达式, 并计算值&#34;] exec --&gt; jitRemoveModule subgraph func definition nodeFoo(&#34;def foo(x) x&#43;1;&#34;) funcCodegen[&#34;执行 函数定义Codegen&#34;] nodeFoo --&gt; funcCodegen end funcCodegen --&gt; jitAddFuncModule[&#34;JIT中 添加此Module&#34;] jitAddFuncModule --&gt; initPassManager[&#34;执行 Pass优化&#34;] subgraph extern nodeExtern(&#34;extern sin(x);&#34;) protoCodegen[&#34;执行 函数申明Codegen&#34;] nodeExtern --&gt; protoCodegen end style jitAddModule fill:#f9f style jitRemoveModule fill:#f9f style jitAddFuncModule fill:#f9f style optimizeFunc fill:#ccff66 style initPassManager fill:#ccff66 style exec fill:#ff3300 ">
   <meta property="og:url" content="http://L0phTg.top/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/">
   <meta property="og:image" content="/images/avatar.png">
 
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/llvm/kaleidoscope_adding-jit-and-optimizer-support/">
@@ -290,51 +289,51 @@ graph TB
 <p>a. 创建PassManager来对Pass进行管理.</p>
 <p>b. 为了可以通过FunctionPassManager来对顶级表达式做优化, 我们将每个顶级表达式都视为一个匿名函数. 并将每一个匿名函数作为一个module单独在JIT中处理, 计算完后在JIT中移除该module.</p>
 <p>c. 为了不在jit处理顶级函数调用表达式时移除我们定义的函数. 我们将每个定义的函数都放在一个单独的jit module中.</p>
-<h1 id="chapter-4-">Chapter 4 介绍</h1>
+<h1 id="chapter-4-介绍">Chapter 4 介绍</h1>
 <p>Welcome to Chapter 4 of the &ldquo;Implementing an language with LLVM&rdquo; tutorial. Chapter 1-3 描述了一个简单语言的实现并且为产生LLVM IR添加了支持.</p>
 <p>本章描述两个新的技术: <strong>添加优化支持 to your language</strong>, 和 <strong>添加JIT编译支持</strong>.</p>
 <p>这些新增的内容将会展示如何为Kaleidoscope提供更nice, efficient code.</p>
 <h1 id="trivial-constant-folding">Trivial Constant Folding</h1>
 <p>我们在第三章的展示是优雅的, 并且很容易扩展. 不幸地是, 它不能产生优秀的代码. The IR Builder, 当编译代码的时候, 它确实给了我们很明显的优化.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span>(<span style="color:#66d9ef">x</span>) <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
-entry:
-        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.000000e+00</span>, %x
-        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-</code></pre></div><p>上面的代码不是根据字面的AST直接转换的.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">test</span>(<span style="color:#66d9ef">x</span>) <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.000000e+00</span>, %x
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>上面的代码不是根据字面的AST直接转换的.</p>
 <p>如果按照输入的表达式字面值进行生成 IR, 应该是下面这样.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span>(<span style="color:#66d9ef">x</span>) <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
-entry:
-        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">2.000000e+00</span>, <span style="color:#ae81ff">1.000000e+00</span>
-        %addtmp1 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %addtmp, %x
-        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp1
-}
-</code></pre></div><p><strong>常量折叠</strong>, 正如我们上面看到的. 这是一个非常普遍的和非常重要的优化: 以至于许多语言的实现者在其AST表示中就已经实现了常量折叠.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">test</span>(<span style="color:#66d9ef">x</span>) <span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">2.000000e+00</span>, <span style="color:#ae81ff">1.000000e+00</span>
+</span></span><span style="display:flex;"><span>        %addtmp1 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %addtmp, %x
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp1
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><strong>常量折叠</strong>, 正如我们上面看到的. 这是一个非常普遍的和非常重要的优化: 以至于许多语言的实现者在其AST表示中就已经实现了常量折叠.</p>
 <p>在LLVM中, 你<code>不需要在AST中支持常量折叠</code>. 由于所有build LLVM IR的调用都是通过LLVM IRBuilder, 当你调用它的时候, <code>Builder会自动检查是否可以进行常量折叠</code>. 如果可以进行常量折叠, 它会直接进行操作并且返回一个常量而不是一条指令.</p>
 <p>Well, that was easy. 在实践中, 当产生像上面这样的代码的时候,  我们推荐使用<strong>IRBuilder</strong>. 它的使用没有语法开销(你不需要在任何地方执行常量检查, 这将会使你的编译器很丑陋). 并且它在一些情况下, 会大大减少LLVM IR的数量.(特别是对于有大量<strong>宏的预处理</strong>or <strong>很多常量的使用</strong>)</p>
 <p>在另一方面, IRBuilder被以下事实所限制 that 它在构建代码时将所有的分析与代码内联.</p>
 <p>如果你执行一个稍微复杂的例子:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span>(<span style="color:#66d9ef">x</span>) (<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span>)*(<span style="color:#66d9ef">x</span><span style="color:#960050;background-color:#1e0010">+</span>(<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span>))<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
-entry:
-        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.000000e+00</span>, %x
-        %addtmp1 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">3.000000e+00</span>
-        %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %addtmp, %addtmp1
-        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %multmp
-}
-</code></pre></div><p>在该情况下, LHS和RHS 是相同的值.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">test</span>(<span style="color:#66d9ef">x</span>) (<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span>)*(<span style="color:#66d9ef">x</span><span style="color:#960050;background-color:#1e0010">+</span>(<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span>))<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">3.000000e+00</span>, %x
+</span></span><span style="display:flex;"><span>        %addtmp1 = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">3.000000e+00</span>
+</span></span><span style="display:flex;"><span>        %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %addtmp, %addtmp1
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %multmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在该情况下, LHS和RHS 是相同的值.</p>
 <p>我们其实是希望产生下面这样的 IR:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">tmp <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>;       
-result <span style="color:#f92672">=</span> tmp <span style="color:#f92672">*</span> tmp; 
-</code></pre></div><p>来代替 执行&rdquo;<strong>x+3</strong>&ldquo;两次.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>tmp <span style="color:#f92672">=</span> x <span style="color:#f92672">+</span> <span style="color:#ae81ff">3</span>;       
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> tmp <span style="color:#f92672">*</span> tmp; 
+</span></span></code></pre></div><p>来代替 执行&quot;<strong>x+3</strong>&ldquo;两次.</p>
 <p>不幸地是, 没有大量的本地分析能够检测并纠正这一点. 这需要两个转换:</p>
 <ol>
-<li>表达式的重新转换(to make the add's lexically identical).</li>
+<li>表达式的重新转换(to make the add&rsquo;s lexically identical).</li>
 <li>公共的子表达式删除(CES) 来 删除冗余的添加指令.</li>
 </ol>
 <p>幸运的是, <code>LLVM 提供大量的优化来供你使用,所有的优化以&quot;passes&quot;的形式存在</code>.</p>
@@ -343,101 +342,101 @@ result <span style="color:#f92672">=</span> tmp <span style="color:#f92672">*</s
 <p>Due to the transition to the new PassManager infrastructure this tutorial is based on llvm::legacy::FunctionPassManager which can be found in LegacyPassManager.h. For the purpose of the this tutorial the above should be used until the pass manager transition is complete.</p>
 </blockquote>
 <p>LLVM 提供了很多优化passes, 它可以做执行很多不同类型的操作并具有不同的权衡. 不像其他的系统一样, LLVM并不认为一组优化可以对所有语言和所有的情景适用. LLVM允许编译器实现者决定要使用什么样的优化, 按怎样的顺序, 或者在什么情景下.</p>
-<p>作为一个具体的例子, LLVM 支持 &ldquo;<strong>whole module passes</strong>&quot;, which它看起来像很大的代码 (经常是整个文件, but 如果运行在链接时, 这可能是整个项目中的重要的一部分). 它也支持并包含&quot;pre-function&rdquo; passes which 一次操作一个函数, without looking at other function.</p>
+<p>作为一个具体的例子, LLVM 支持 &ldquo;<strong>whole module passes</strong>&rdquo;, which它看起来像很大的代码 (经常是整个文件, but 如果运行在链接时, 这可能是整个项目中的重要的一部分). 它也支持并包含&quot;pre-function&rdquo; passes which 一次操作一个函数, without looking at other function.</p>
 <p>想要了解更多关于pass的信息以及他们是怎么样运行的. see <a href="http://llvm.org/docs/WritingAnLLVMPass.html">Write An LLVM PASS</a>文档和<a href="http://llvm.org/docs/Passes.html">List of LLVM Passes</a>.</p>
-<p>对于Kaleidoscope来说, 我们目前正在动态生成函数, 一次一个. 当用户输入它们时. We aren't shooting for the ultimate optimization experience in this setting, 但是我们也更想更快的抓住简单快捷的东西. 因此, 当用户输入时, 我们将会选择为每个函数都进行优化. 如果我们想要做一个&quot;static Kaleidoscope compiler&rdquo;, 我们将正常使用我们现在有的代码, 除了把优化推迟到整个文件被解析之后.</p>
-<p>为了让每个函数都进行优化, 我们需要设置一个**<a href="http://llvm.org/docs/WritingAnLLVMPass.html#what-passmanager-doesr">FunctionPassManager</a>**来hold and organize 我们想要运行的LLVM 优化. 一旦我们有了这个, 我们就可以添加一组优化来执行. 对于每个我们想要优化的模块, 我们都需要一个**FunctionPassManager**, 所以我们将会写一个函数来创建并且初始化我们的**module**和**pass manager**.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">InitializeModuleAndPassManager</span>(<span style="color:#66d9ef">void</span>) {
-  <span style="color:#75715e">// Open a new module. 打开一个新的module
-</span><span style="color:#75715e"></span>  TheModule <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">my cool jit</span><span style="color:#e6db74">&#34;</span>, TheContext);
-
-  <span style="color:#75715e">// Create a new pass manager attached to it. 创建一个新的pass manager并且关联到我们的module中
-</span><span style="color:#75715e"></span>  TheFPM <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>FunctionPassManager<span style="color:#f92672">&gt;</span>(TheModule.get());
-
-  <span style="color:#75715e">// Do simple &#34;peephole&#34; optimizations and bit-twiddling optzns.
-</span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createInstructionCombiningPass());
-  <span style="color:#75715e">// Reassociate expressions.	重新关联表达式
-</span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createReassociatePass());
-  <span style="color:#75715e">// Eliminate Common SubExpressions.	消除公共的子表达式
-</span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createGVNPass());
-  <span style="color:#75715e">// Simplify the control flow graph (deleting unreachable blocks, etc). 简化控制流(例如: 删除到达不了的blocks)
-</span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>add(createCFGSimplificationPass());
-
-  TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>doInitialization();
-}
-</code></pre></div><p>该代码初始化全局module <strong>TheModule</strong>, 和函数pass manager <strong>TheFPM</strong>(which attached to TheModule). 一旦pass manager 被 set up, 我们使用一系列&rdquo;<strong>add</strong>&ldquo;调用来加入 <strong>一堆LLVM passes</strong>.</p>
-<p>在这个例子中, 我们选择增加四个优化passes. 我们这里选择的pass是一组相当标准的&rdquo;<strong>cleanup</strong>&rdquo; 优化 (对大多数代码都是适用的). 我不会深挖它们的实现, 请相信我, they are a good starting place :)</p>
+<p>对于Kaleidoscope来说, 我们目前正在动态生成函数, 一次一个. 当用户输入它们时. We aren&rsquo;t shooting for the ultimate optimization experience in this setting, 但是我们也更想更快的抓住简单快捷的东西. 因此, 当用户输入时, 我们将会选择为每个函数都进行优化. 如果我们想要做一个&quot;static Kaleidoscope compiler&quot;, 我们将正常使用我们现在有的代码, 除了把优化推迟到整个文件被解析之后.</p>
+<p>为了让每个函数都进行优化, 我们需要设置一个**<a href="http://llvm.org/docs/WritingAnLLVMPass.html#what-passmanager-doesr">FunctionPassManager</a><strong>来hold and organize 我们想要运行的LLVM 优化. 一旦我们有了这个, 我们就可以添加一组优化来执行. 对于每个我们想要优化的模块, 我们都需要一个</strong>FunctionPassManager**, 所以我们将会写一个函数来创建并且初始化我们的<strong>module</strong>和<strong>pass manager</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">InitializeModuleAndPassManager</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Open a new module. 打开一个新的module
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheModule <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74">&#34;my cool jit&#34;</span>, TheContext);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Create a new pass manager attached to it. 创建一个新的pass manager并且关联到我们的module中
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>FunctionPassManager<span style="color:#f92672">&gt;</span>(TheModule.get());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Do simple &#34;peephole&#34; optimizations and bit-twiddling optzns.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-&gt;</span>add(createInstructionCombiningPass());
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Reassociate expressions.	重新关联表达式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-&gt;</span>add(createReassociatePass());
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Eliminate Common SubExpressions.	消除公共的子表达式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-&gt;</span>add(createGVNPass());
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Simplify the control flow graph (deleting unreachable blocks, etc). 简化控制流(例如: 删除到达不了的blocks)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-&gt;</span>add(createCFGSimplificationPass());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  TheFPM<span style="color:#f92672">-&gt;</span>doInitialization();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>该代码初始化全局module <strong>TheModule</strong>, 和函数pass manager <strong>TheFPM</strong>(which attached to TheModule). 一旦pass manager 被 set up, 我们使用一系列&quot;<strong>add</strong>&ldquo;调用来加入 <strong>一堆LLVM passes</strong>.</p>
+<p>在这个例子中, 我们选择增加四个优化passes. 我们这里选择的pass是一组相当标准的&rdquo;<strong>cleanup</strong>&quot; 优化 (对大多数代码都是适用的). 我不会深挖它们的实现, 请相信我, they are a good starting place :)</p>
 <p>一旦PassManager被 set up, 我们就需要使用它.    在我们的新函数被构造之后(in FunctionAST::codegen()), 在 returned to the client之前, we do this by running it.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">if</span> (Value <span style="color:#f92672">*</span>RetVal <span style="color:#f92672">=</span> Body<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen()) {
-  <span style="color:#75715e">// Finish off the function.
-</span><span style="color:#75715e"></span>  Builder.CreateRet(RetVal);
-
-  <span style="color:#75715e">// Validate the generated code, checking for consistency.
-</span><span style="color:#75715e"></span>  verifyFunction(<span style="color:#f92672">*</span>TheFunction);
-
-  <span style="color:#75715e">// Optimize the function.
-</span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>run(<span style="color:#f92672">*</span>TheFunction);
-
-  <span style="color:#66d9ef">return</span> TheFunction;
-}
-</code></pre></div><p>正如你看到的, 这是相当直接的. The <strong>FunctionPassManager</strong>优化并更新LLVM Funtion* in place, 改进他们的body.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (Value <span style="color:#f92672">*</span>RetVal <span style="color:#f92672">=</span> Body<span style="color:#f92672">-&gt;</span>codegen()) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Finish off the function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Builder.CreateRet(RetVal);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Validate the generated code, checking for consistency.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  verifyFunction(<span style="color:#f92672">*</span>TheFunction);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Optimize the function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM<span style="color:#f92672">-&gt;</span>run(<span style="color:#f92672">*</span>TheFunction);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> TheFunction;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>正如你看到的, 这是相当直接的. The <strong>FunctionPassManager</strong>优化并更新LLVM Funtion* in place, 改进他们的body.</p>
 <p>有了这个, 我们可以再次尝试我们的test:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span>(<span style="color:#66d9ef">x</span>) (<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span>)*(<span style="color:#66d9ef">x</span><span style="color:#960050;background-color:#1e0010">+</span>(<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span>))<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
-entry:
-        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">3.000000e+00</span>
-        %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %addtmp, %addtmp
-        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %multmp
-}
-</code></pre></div><p>正如我们期待的,  我们现在得到了不错的, 优化后的代码, 这个函数的每次运行都只有一个浮点add指令.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">test</span>(<span style="color:#66d9ef">x</span>) (<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#66d9ef">x</span>)*(<span style="color:#66d9ef">x</span><span style="color:#960050;background-color:#1e0010">+</span>(<span style="color:#ae81ff">1</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">2</span>))<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @test(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>        %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">3.000000e+00</span>
+</span></span><span style="display:flex;"><span>        %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %addtmp, %addtmp
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %multmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>正如我们期待的,  我们现在得到了不错的, 优化后的代码, 这个函数的每次运行都只有一个浮点add指令.</p>
 <p>LLVM 提供了大量的优化, 可以被用在当前的情况下. <code>Some [pass文档](http://llvm.org/docs/Passes.html)可以获得</code>, 但是那不是全部.  另一个不错的想法是: <code>可以阅读clang启动时运行的pass</code>.</p>
 <p><code>The **opt** 允许你从命令行来对pass进行测试</code>, 所以你可以看看它到底做了些什么.</p>
-<p>现在我们的前端代码已经很NB了, let's talk about executing it!</p>
+<p>现在我们的前端代码已经很NB了, let&rsquo;s talk about executing it!</p>
 <h1 id="adding-a-jit-compiler">Adding a JIT Compiler</h1>
 <p>LLVM IR中提供的代码可以应用各种工具. 例如, 你可以对它进行优化(as we did above), 你能dump it out in 文本或者二进制格式, 你可以编译代码到 assembly file(.s) for some target, 或者你能够JIT compiler it.</p>
-<p>LLVM IR表示的好处是: 它是在编译器中, 许多不同部分的&quot;common currency&rdquo;.</p>
+<p>LLVM IR表示的好处是: 它是在编译器中, 许多不同部分的&quot;common currency&quot;.</p>
 <p>在本节, <strong>我们将会为我们的解释器添加JIT支持</strong>. 添加JIT基本思想是:</p>
 <ul>
 <li>我们想要现在这样用户输入函数体, 但是就要立刻计算他们输入的顶级表达式. 例如, 如果他们输入 &ldquo;1+2&rdquo;,  我们应该 <strong>立即让他输出</strong> 3.</li>
 <li>如果他们定义了一个函数, 他们应该能够被<strong>从命令行上被调用</strong>.</li>
 </ul>
 <p>为了做这个, 我们首先要准备环境来为本机目标创建代码并申明和初始化JIT. 这可以通过调用 <code>InitializeNativeTarget*</code> 函数来做, 并且添加一个JIT的全局变量, 并在main中初始化:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>KaleidoscopeJIT<span style="color:#f92672">&gt;</span> TheJIT;
-...
-<span style="color:#66d9ef">int</span> main() {
-  InitializeNativeTarget();
-  InitializeNativeTargetAsmPrinter();
-  InitializeNativeTargetAsmParser();
-
-  <span style="color:#75715e">// Install standard binary operators.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 1 is lowest precedence.
-</span><span style="color:#75715e"></span>  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">&lt;</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
-  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">+</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
-  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">-</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
-  BinopPrecedence[<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">*</span><span style="color:#e6db74">&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">40</span>; <span style="color:#75715e">// highest.
-</span><span style="color:#75715e"></span>
-  <span style="color:#75715e">// Prime the first token.
-</span><span style="color:#75715e"></span>  fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">ready&gt; </span><span style="color:#e6db74">&#34;</span>);
-  getNextToken();
-
-  TheJIT <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>KaleidoscopeJIT<span style="color:#f92672">&gt;</span>();
-
-  <span style="color:#75715e">// Run the main &#34;interpreter loop&#34; now.
-</span><span style="color:#75715e"></span>  MainLoop();
-
-  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>我们还需要为JIT设置data layout(数据布局):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">InitializeModuleAndPassManager</span>(<span style="color:#66d9ef">void</span>) {
-  <span style="color:#75715e">// Open a new module.
-</span><span style="color:#75715e"></span>  TheModule <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">my cool jit</span><span style="color:#e6db74">&#34;</span>, TheContext);
-  TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setDataLayout(TheJIT<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getTargetMachine().createDataLayout());
-
-  <span style="color:#75715e">// Create a new pass manager attached to it.
-</span><span style="color:#75715e"></span>  TheFPM <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>FunctionPassManager<span style="color:#f92672">&gt;</span>(TheModule.get());
-  ...
-</code></pre></div><p>Kaleidoscope JIT类是一个专门为这个tutorial构建的simple JIT, 可以在 <code>llvm-src/examples/Kaleidoscope/include/Kaleidoscope.h</code>这里找到. 在之后的章节, 我们将会看到它是怎么样工作的并且给它扩展一些新特性, 但是现在我们假设它是直接给定的.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>KaleidoscopeJIT<span style="color:#f92672">&gt;</span> TheJIT;
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> main() {
+</span></span><span style="display:flex;"><span>  InitializeNativeTarget();
+</span></span><span style="display:flex;"><span>  InitializeNativeTargetAsmPrinter();
+</span></span><span style="display:flex;"><span>  InitializeNativeTargetAsmParser();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Install standard binary operators.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 1 is lowest precedence.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  BinopPrecedence[<span style="color:#e6db74">&#39;&lt;&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>;
+</span></span><span style="display:flex;"><span>  BinopPrecedence[<span style="color:#e6db74">&#39;+&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
+</span></span><span style="display:flex;"><span>  BinopPrecedence[<span style="color:#e6db74">&#39;-&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">20</span>;
+</span></span><span style="display:flex;"><span>  BinopPrecedence[<span style="color:#e6db74">&#39;*&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">40</span>; <span style="color:#75715e">// highest.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Prime the first token.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  fprintf(stderr, <span style="color:#e6db74">&#34;ready&gt; &#34;</span>);
+</span></span><span style="display:flex;"><span>  getNextToken();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  TheJIT <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>KaleidoscopeJIT<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Run the main &#34;interpreter loop&#34; now.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  MainLoop();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>我们还需要为JIT设置data layout(数据布局):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">InitializeModuleAndPassManager</span>(<span style="color:#66d9ef">void</span>) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Open a new module.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheModule <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>Module<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74">&#34;my cool jit&#34;</span>, TheContext);
+</span></span><span style="display:flex;"><span>  TheModule<span style="color:#f92672">-&gt;</span>setDataLayout(TheJIT<span style="color:#f92672">-&gt;</span>getTargetMachine().createDataLayout());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Create a new pass manager attached to it.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  TheFPM <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>FunctionPassManager<span style="color:#f92672">&gt;</span>(TheModule.get());
+</span></span><span style="display:flex;"><span>  ...
+</span></span></code></pre></div><p>Kaleidoscope JIT类是一个专门为这个tutorial构建的simple JIT, 可以在 <code>llvm-src/examples/Kaleidoscope/include/Kaleidoscope.h</code>这里找到. 在之后的章节, 我们将会看到它是怎么样工作的并且给它扩展一些新特性, 但是现在我们假设它是直接给定的.</p>
 <p>它的API 是非常简单的:</p>
 <ul>
 <li><strong>addModule</strong> 会在JIT中增加一个LLVM IR module, 使其功能是可以执行的;</li>
@@ -445,226 +444,225 @@ entry:
 <li><strong>findSymbol</strong>允许我们查找编译代码的指针.</li>
 </ul>
 <p>我们可以改变我们的解析顶级表达式的代码, 在其中添加对这几个简单API的调用.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HandleTopLevelExpression</span>() {
-  <span style="color:#75715e">// Evaluate a top-level expression into an anonymous function. 将顶级表达式计算为匿名函数
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> FnAST <span style="color:#f92672">=</span> ParseTopLevelExpr()) {
-    <span style="color:#66d9ef">if</span> (FnAST<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen()) {
-
-      <span style="color:#75715e">// JIT the module containing the anonymous expression, keeping a handle so
-</span><span style="color:#75715e"></span>      <span style="color:#75715e">// we can free it later.
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">auto</span> H <span style="color:#f92672">=</span> TheJIT<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addModule(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(TheModule));
-      InitializeModuleAndPassManager();
-
-      <span style="color:#75715e">// Search the JIT for the __anon_expr symbol.
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">auto</span> ExprSymbol <span style="color:#f92672">=</span> TheJIT<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>findSymbol(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">__anon_expr</span><span style="color:#e6db74">&#34;</span>);
-      assert(ExprSymbol <span style="color:#f92672">&amp;</span><span style="color:#f92672">&amp;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Function not found</span><span style="color:#e6db74">&#34;</span>);
-
-      <span style="color:#75715e">// Get the symbol&#39;s address and cast it to the right type (takes no
-</span><span style="color:#75715e"></span>      <span style="color:#75715e">// arguments, returns a double) so we can call it as a native function.
-</span><span style="color:#75715e"></span>      <span style="color:#75715e">// 得到symbol的地址, 并且将它转换为正确的类型(无参数, 返回值为double类型)
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">double</span> (<span style="color:#f92672">*</span>FP)() <span style="color:#f92672">=</span> (<span style="color:#66d9ef">double</span> (<span style="color:#f92672">*</span>)())(intptr_t)ExprSymbol.getAddress();
-      fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Evaluated to %f</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, FP());
-
-      <span style="color:#75715e">// Delete the anonymous expression module from the JIT.
-</span><span style="color:#75715e"></span>      TheJIT<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>removeModule(H);
-    }
-</code></pre></div><p>如果<strong>parsing</strong> and <strong>codegen</strong> 成功, 下一步是将包含顶级表达式的module添加到JIT. 我们通过调用<strong>addModule</strong>来 do this, 调用addModule会触发对此module中的所有函数进行codegen,  并且返回一个handle(在之后删除此module时会用到). 一旦module已经被加到JIT中, 它不再被修改,  所以现在我们可以调用**InitializeModuleAndPassManager()**来打开一个module, 以便于hold subsequent code (后续的代码).</p>
-<p>一旦我们将模块添加到JIT中, 我们需要获得指向最终生成代码的指针. 我们通过调用JIT's <strong>findSymbol</strong>方法来做这个, and 传递顶级表达式的名称: <strong>__anon_expr</strong>. 由于我们刚刚添加了这个函数, 所以我们确定findSymbol一定会返回结果.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HandleTopLevelExpression</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Evaluate a top-level expression into an anonymous function. 将顶级表达式计算为匿名函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> FnAST <span style="color:#f92672">=</span> ParseTopLevelExpr()) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (FnAST<span style="color:#f92672">-&gt;</span>codegen()) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// JIT the module containing the anonymous expression, keeping a handle so
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// we can free it later.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">auto</span> H <span style="color:#f92672">=</span> TheJIT<span style="color:#f92672">-&gt;</span>addModule(std<span style="color:#f92672">::</span>move(TheModule));
+</span></span><span style="display:flex;"><span>      InitializeModuleAndPassManager();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Search the JIT for the __anon_expr symbol.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">auto</span> ExprSymbol <span style="color:#f92672">=</span> TheJIT<span style="color:#f92672">-&gt;</span>findSymbol(<span style="color:#e6db74">&#34;__anon_expr&#34;</span>);
+</span></span><span style="display:flex;"><span>      assert(ExprSymbol <span style="color:#f92672">&amp;&amp;</span> <span style="color:#e6db74">&#34;Function not found&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Get the symbol&#39;s address and cast it to the right type (takes no
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// arguments, returns a double) so we can call it as a native function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#75715e">// 得到symbol的地址, 并且将它转换为正确的类型(无参数, 返回值为double类型)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">double</span> (<span style="color:#f92672">*</span>FP)() <span style="color:#f92672">=</span> (<span style="color:#66d9ef">double</span> (<span style="color:#f92672">*</span>)())(intptr_t)ExprSymbol.getAddress();
+</span></span><span style="display:flex;"><span>      fprintf(stderr, <span style="color:#e6db74">&#34;Evaluated to %f</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, FP());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Delete the anonymous expression module from the JIT.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      TheJIT<span style="color:#f92672">-&gt;</span>removeModule(H);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>如果<strong>parsing</strong> and <strong>codegen</strong> 成功, 下一步是将包含顶级表达式的module添加到JIT. 我们通过调用<strong>addModule</strong>来 do this, 调用addModule会触发对此module中的所有函数进行codegen,  并且返回一个handle(在之后删除此module时会用到). 一旦module已经被加到JIT中, 它不再被修改,  所以现在我们可以调用**InitializeModuleAndPassManager()**来打开一个module, 以便于hold subsequent code (后续的代码).</p>
+<p>一旦我们将模块添加到JIT中, 我们需要获得指向最终生成代码的指针. 我们通过调用JIT&rsquo;s <strong>findSymbol</strong>方法来做这个, and 传递顶级表达式的名称: <strong>__anon_expr</strong>. 由于我们刚刚添加了这个函数, 所以我们确定findSymbol一定会返回结果.</p>
 <p>下一步, 我们通过调用<strong>getAddress()<strong>on the symbol来获取</strong>__anoy_expr</strong>函数的内存地址. 回想一下, 我们将顶级表达式编译为一个 self-contained LLVM function(不带参数, 并且返回double). 因为 LLVM JIT 编译器匹配本地平台的ABI, 这意味着你可以将结果指针强制转换为该类型的函数指针并调用它. This means, JIT编译的代码和静态链接到应用程序的本地机器码没有区别.</p>
 <p>最终, 由于我们不支持 re-evaluation 顶级表达式, 当我们完成时, 我们从JIT中移除该module来释放相关的内存.</p>
 <p>回忆一下 , 我们之前创建的几行代码(<strong>InitializeModuleAndPassManager</strong>)  is still open and waiting for new code to be added.(????)</p>
-<p>With just these two changes, let's see Kaleidoscope works how!</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#ae81ff">4</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">5</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span> expression:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @0() {
-entry:
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">9.000000e+00</span>
-}
-
-<span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">9.000000</span>
-</code></pre></div><p>这看起来基本是有效的, The dump of the function展示了&quot;没有参数并总是返回double类型&rdquo;, we synthesize for 每一个输入的顶级表达式.</p>
+<p>With just these two changes, let&rsquo;s see Kaleidoscope works how!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#ae81ff">4</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">5</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">top-level</span> expression:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @0() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">9.000000e+00</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">9.000000</span>
+</span></span></code></pre></div><p>这看起来基本是有效的, The dump of the function展示了&quot;没有参数并总是返回double类型&quot;, we synthesize for 每一个输入的顶级表达式.</p>
 <p>这展示了最基本的功能, 但是我们还可以如何做更多呢?</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#66d9ef">c</span>(<span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">y</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">y</span>*<span style="color:#ae81ff">2</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @testfunc(<span style="color:#66d9ef">double</span> %x, <span style="color:#66d9ef">double</span> %y) {
-entry:
-  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %y, <span style="color:#ae81ff">2.000000e+00</span>
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %x
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">10</span>)<span style="color:#75715e">;		#注意: 由于此刻testfunc的函数定义与testfunc的函数调用的匿名表达式在同一个module, 所以此刻调用testfunc之后会删除testfunc的函数定义.
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span> expression:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @1() {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @testfunc(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>, <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.000000e+01</span>)
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
-}
-
-<span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">24.000000</span>
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">10</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">L</span><span style="color:#960050;background-color:#1e0010">L</span><span style="color:#960050;background-color:#1e0010">V</span><span style="color:#960050;background-color:#1e0010">M</span> ERROR: <span style="color:#960050;background-color:#1e0010">P</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">g</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">m</span> <span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">external</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> <span style="color:#960050;background-color:#1e0010">&#39;</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#66d9ef">c</span><span style="color:#960050;background-color:#1e0010">&#39;</span> <span style="color:#960050;background-color:#1e0010">w</span><span style="color:#960050;background-color:#1e0010">h</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">h</span> <span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">t</span> <span style="color:#960050;background-color:#1e0010">b</span><span style="color:#960050;background-color:#1e0010">e</span> <span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span>!
-</code></pre></div><p>函数定义和调用都正常工作了, 但是最后一行出现了一点问题. 该调用看起来是有效的, so what happened?</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">testfun</span><span style="color:#66d9ef">c</span>(<span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">y</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">y</span>*<span style="color:#ae81ff">2</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @testfunc(<span style="color:#66d9ef">double</span> %x, <span style="color:#66d9ef">double</span> %y) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %y, <span style="color:#ae81ff">2.000000e+00</span>
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %x
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">testfun</span><span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">10</span>)<span style="color:#75715e">;		#注意: 由于此刻testfunc的函数定义与testfunc的函数调用的匿名表达式在同一个module, 所以此刻调用testfunc之后会删除testfunc的函数定义.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">top-level</span> expression:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @1() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @testfunc(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>, <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">1.000000e+01</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">24.000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">testfun</span><span style="color:#66d9ef">c</span>(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">10</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">LLVM</span> ERROR: <span style="color:#960050;background-color:#1e0010">Program</span> <span style="color:#960050;background-color:#1e0010">used</span> <span style="color:#66d9ef">external</span> <span style="color:#960050;background-color:#1e0010">function</span> <span style="color:#960050;background-color:#1e0010">&#39;testfun</span><span style="color:#66d9ef">c</span><span style="color:#960050;background-color:#1e0010">&#39;</span> <span style="color:#960050;background-color:#1e0010">which</span> <span style="color:#960050;background-color:#1e0010">could</span> <span style="color:#960050;background-color:#1e0010">not</span> <span style="color:#960050;background-color:#1e0010">be</span> <span style="color:#960050;background-color:#1e0010">resolved</span>!
+</span></span></code></pre></div><p>函数定义和调用都正常工作了, 但是最后一行出现了一点问题. 该调用看起来是有效的, so what happened?</p>
 <p>正如你从API看到的那样, module是JIT分配的单元, and <strong>testfunc</strong>是相同的module中的一部分(它包含匿名表达式). 当我们从JIT中移除module以便于释放匿名表达式的内存时, 我们<strong>删除了testfunc的定义</strong>. 然后, 当我们试图调用第二次调用testfunc时, JIT找不到该函数的定义.</p>
 <p>最简单的fix this的方法是: <code>将匿名表达式放在与函数定义不同的module中</code>. 只要每个被调用的函数都有一个原型, JIT很乐意解决跨模块边界的函数调用, 并在调用之前添加到JIT中. 通过把匿名表达式放到不同的module下, 我们可以删除它并且不影响其他的函数.</p>
 <p>事实上, 我们将更进一步, 将每个函数放到它自己的module中. 这样做可以允许我们利用KaileidoscopeJIT的有用的属性 that (will 使我们的环境更REPL-like: 函数能够被多次添加到JIT中)(与每个函数一定有一个定义的模块不同).</p>
 <p>当你在KaleidoscopeJIT中查找符号时, 它将返回最新的定义:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">1</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %x) {
-entry:
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">1.000000e+00</span>
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">3.000000</span>
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">2</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %x) {
-entry:
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">2.000000e+00</span>
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">4.000000</span>
-
-</code></pre></div><p>为了让每个函数都存在自己的模块中, 我们需要一个方法来re-generate以前的函数声明到每个我们打开的新模块中:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"> <span style="color:#66d9ef">static</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>unique_ptr<span style="color:#f92672">&lt;</span>KaleidoscopeJIT<span style="color:#f92672">&gt;</span> TheJIT;
-
-...
-
-Function <span style="color:#f92672">*</span>getFunction(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string Name) {
-  <span style="color:#75715e">// First, see if the function has already been added to the current module.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// 首先, 观察是否函数已经被添加到当前module中.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span> TheModule<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getFunction(Name))
-    <span style="color:#66d9ef">return</span> F;
-
-  <span style="color:#75715e">// If not, check whether we can codegen the declaration from some existing
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// prototype.
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// if not, 检查是否我们可以codegen
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> FI <span style="color:#f92672">=</span> FunctionProtos.find(Name);
-  <span style="color:#66d9ef">if</span> (FI <span style="color:#f92672">!</span><span style="color:#f92672">=</span> FunctionProtos.end())
-    <span style="color:#66d9ef">return</span> FI<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>second<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen();
-
-  <span style="color:#75715e">// If no existing prototype exists, return null.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-}
-...
-
-Value <span style="color:#f92672">*</span>CallExprAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#75715e">// Look up the name in the global module table.
-</span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>CalleeF <span style="color:#f92672">=</span> getFunction(Callee);
-
-...
-
-Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">:</span><span style="color:#f92672">:</span>codegen() {
-  <span style="color:#75715e">// Transfer ownership of the prototype to the FunctionProtos map, but keep a
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// reference to it for use below.
-</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>P <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>Proto;
-  FunctionProtos[Proto<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getName()] <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(Proto);
-  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> getFunction(P.getName());
-  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
-</code></pre></div><p>为了实现这个目的, 我们首先会添加一个新的全局变量: <strong>FunctionProtos</strong>,  它包含每个函数的最新声明.  我们将添加一个方便的方法, <strong>getFunction()</strong>, 来替换对<strong>TheModule-&gt;getFunction()<strong>的调用. 我们的便利的方法在TheModule中搜索现有的存在的函数声明, 如果找不到函数声明, 则回退到从FunctionProtos生成一个新的声明.  In <strong>CallExprAST::codegen()</strong> 我们 just 需要替换对TheModule-&gt;getFunction()的调用. 在</strong>FunctionAST::codegen()<strong>中, 我们首先需要更新</strong>FunctionProtos map</strong>, 然后调用 <strong>getFunction()</strong>. 通过这样做, 我们总是可以在当前module中获得任何以前声明的函数的函数声明.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">1</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">1.000000e+00</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">3.000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">2</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">2.000000e+00</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">4.000000</span>
+</span></span></code></pre></div><p>为了让每个函数都存在自己的模块中, 我们需要一个方法来re-generate以前的函数声明到每个我们打开的新模块中:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span> <span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>KaleidoscopeJIT<span style="color:#f92672">&gt;</span> TheJIT;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Function <span style="color:#f92672">*</span>getFunction(std<span style="color:#f92672">::</span>string Name) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// First, see if the function has already been added to the current module.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// 首先, 观察是否函数已经被添加到当前module中.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">*</span>F <span style="color:#f92672">=</span> TheModule<span style="color:#f92672">-&gt;</span>getFunction(Name))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> F;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If not, check whether we can codegen the declaration from some existing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// prototype.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// if not, 检查是否我们可以codegen
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> FI <span style="color:#f92672">=</span> FunctionProtos.find(Name);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (FI <span style="color:#f92672">!=</span> FunctionProtos.end())
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> FI<span style="color:#f92672">-&gt;</span>second<span style="color:#f92672">-&gt;</span>codegen();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If no existing prototype exists, return null.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Value <span style="color:#f92672">*</span>CallExprAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Look up the name in the global module table.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Function <span style="color:#f92672">*</span>CalleeF <span style="color:#f92672">=</span> getFunction(Callee);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Function <span style="color:#f92672">*</span>FunctionAST<span style="color:#f92672">::</span>codegen() {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Transfer ownership of the prototype to the FunctionProtos map, but keep a
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// reference to it for use below.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>P <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>Proto;
+</span></span><span style="display:flex;"><span>  FunctionProtos[Proto<span style="color:#f92672">-&gt;</span>getName()] <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>move(Proto);
+</span></span><span style="display:flex;"><span>  Function <span style="color:#f92672">*</span>TheFunction <span style="color:#f92672">=</span> getFunction(P.getName());
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>TheFunction)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span></code></pre></div><p>为了实现这个目的, 我们首先会添加一个新的全局变量: <strong>FunctionProtos</strong>,  它包含每个函数的最新声明.  我们将添加一个方便的方法, <strong>getFunction()</strong>, 来替换对<strong>TheModule-&gt;getFunction()<strong>的调用. 我们的便利的方法在TheModule中搜索现有的存在的函数声明, 如果找不到函数声明, 则回退到从FunctionProtos生成一个新的声明.  In <strong>CallExprAST::codegen()</strong> 我们 just 需要替换对TheModule-&gt;getFunction()的调用. 在</strong>FunctionAST::codegen()<strong>中, 我们首先需要更新</strong>FunctionProtos map</strong>, 然后调用 <strong>getFunction()</strong>. 通过这样做, 我们总是可以在当前module中获得任何以前声明的函数的函数声明.</p>
 <p>我们也需要更新 <strong>HandleDefinition</strong> and <strong>HandleExtern</strong>:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HandleDefinition</span>() {
-  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> FnAST <span style="color:#f92672">=</span> ParseDefinition()) {
-    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">*</span>FnIR <span style="color:#f92672">=</span> FnAST<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen()) {
-      fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read function definition:</span><span style="color:#e6db74">&#34;</span>);
-      FnIR<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>print(errs());
-      fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-      TheJIT<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>addModule(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(TheModule));
-      InitializeModuleAndPassManager();
-    }
-  } <span style="color:#66d9ef">else</span> {
-    <span style="color:#75715e">// Skip token for error recovery.
-</span><span style="color:#75715e"></span>     getNextToken();
-  }
-}
-
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HandleExtern</span>() {
-  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> ProtoAST <span style="color:#f92672">=</span> ParseExtern()) {
-    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">*</span>FnIR <span style="color:#f92672">=</span> ProtoAST<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>codegen()) {
-      fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Read extern: </span><span style="color:#e6db74">&#34;</span>);
-      FnIR<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>print(errs());
-      fprintf(stderr, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-      FunctionProtos[ProtoAST<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getName()] <span style="color:#f92672">=</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(ProtoAST);
-    }
-  } <span style="color:#66d9ef">else</span> {
-    <span style="color:#75715e">// Skip token for error recovery.
-</span><span style="color:#75715e"></span>    getNextToken();
-  }
-}
- 
-</code></pre></div><p>在HandleDefinition中, 我们添加了两行代码来将定义的函数传递给JIT, 并打开一个new module. In HandleExtern, 我们只需要添加一行来增加函数原型到<strong>FunctionProtos</strong>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HandleDefinition</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> FnAST <span style="color:#f92672">=</span> ParseDefinition()) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">*</span>FnIR <span style="color:#f92672">=</span> FnAST<span style="color:#f92672">-&gt;</span>codegen()) {
+</span></span><span style="display:flex;"><span>      fprintf(stderr, <span style="color:#e6db74">&#34;Read function definition:&#34;</span>);
+</span></span><span style="display:flex;"><span>      FnIR<span style="color:#f92672">-&gt;</span>print(errs());
+</span></span><span style="display:flex;"><span>      fprintf(stderr, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>      TheJIT<span style="color:#f92672">-&gt;</span>addModule(std<span style="color:#f92672">::</span>move(TheModule));
+</span></span><span style="display:flex;"><span>      InitializeModuleAndPassManager();
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Skip token for error recovery.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>     getNextToken();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HandleExtern</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> ProtoAST <span style="color:#f92672">=</span> ParseExtern()) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">*</span>FnIR <span style="color:#f92672">=</span> ProtoAST<span style="color:#f92672">-&gt;</span>codegen()) {
+</span></span><span style="display:flex;"><span>      fprintf(stderr, <span style="color:#e6db74">&#34;Read extern: &#34;</span>);
+</span></span><span style="display:flex;"><span>      FnIR<span style="color:#f92672">-&gt;</span>print(errs());
+</span></span><span style="display:flex;"><span>      fprintf(stderr, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>      FunctionProtos[ProtoAST<span style="color:#f92672">-&gt;</span>getName()] <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>move(ProtoAST);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Skip token for error recovery.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    getNextToken();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span> 
+</span></span></code></pre></div><p>在HandleDefinition中, 我们添加了两行代码来将定义的函数传递给JIT, 并打开一个new module. In HandleExtern, 我们只需要添加一行来增加函数原型到<strong>FunctionProtos</strong>.</p>
 <p>在做了这些改变之后, 让我们再次尝试我的REPL (这次我删除了匿名函数的dump, you should get the idea by now :):</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">1</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">3.000000</span>
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">2</span><span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">4.000000</span>
-</code></pre></div><p>即使这些功能很简单, 我们也可以得到surprisingly powerful capbilities - check this out:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-LLVM" data-lang="LLVM"><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">x</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">n</span> <span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">n</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> extern:
-<span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @sin(<span style="color:#66d9ef">double</span>)
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">x</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">n</span> <span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">s</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> extern:
-<span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span>)
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">n</span>(<span style="color:#ae81ff">1.0</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span> expression:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @2() {
-entry:
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">0x3FEAED548F090CEE</span>
-}
-
-<span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">0.841471</span>
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">f</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#66d9ef">x</span>) <span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">n</span>(<span style="color:#66d9ef">x</span>)*<span style="color:#960050;background-color:#1e0010">s</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">n</span>(<span style="color:#66d9ef">x</span>) <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">s</span>(<span style="color:#66d9ef">x</span>)*<span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">s</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">n</span><span style="color:#960050;background-color:#1e0010">c</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">i</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">n</span> definition:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %x) {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @sin(<span style="color:#66d9ef">double</span> %x)
-  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp
-  %calltmp2 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span> %x)
-  %multmp4 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %calltmp2, %calltmp2
-  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %multmp4
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
-}
-
-<span style="color:#960050;background-color:#1e0010">r</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span><span style="color:#960050;background-color:#1e0010">y</span>&gt; <span style="color:#960050;background-color:#1e0010">f</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">o</span>(<span style="color:#ae81ff">4.0</span>)<span style="color:#75715e">;
-</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">R</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">o</span><span style="color:#960050;background-color:#1e0010">p</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">l</span> expression:
-<span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @3() {
-entry:
-  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>)
-  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
-}
-
-<span style="color:#960050;background-color:#1e0010">E</span><span style="color:#960050;background-color:#1e0010">v</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">l</span><span style="color:#960050;background-color:#1e0010">u</span><span style="color:#960050;background-color:#1e0010">a</span><span style="color:#960050;background-color:#1e0010">t</span><span style="color:#960050;background-color:#1e0010">e</span><span style="color:#960050;background-color:#1e0010">d</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">1.000000</span>
-</code></pre></div><p>whoa, JIT是怎么知道 <strong>sin</strong>和 <strong>cos</strong>的呢?</p>
-<p>答案是相当简单的: The kaleidoscopeJIT 有一个直接的符号解析规则, 用于查找当前给定模块中不可用的符号:  首先它搜索添加到JIT中的所有模块, 从最新的到以前的为了找到最新的定义. 如果JIT中找不到定义, 它将会在自身进程上运行 &ldquo;dlsym(sin)&quot;. 由于 &ldquo;<strong>sin</strong>&ldquo;是在JIT的地址空间中定义的, 它只是简单的patches up calls 在模块中, 以直接调用到libm版本的sin.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">1</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">3.000000</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#66d9ef">x</span>) <span style="color:#66d9ef">x</span> <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#ae81ff">2</span><span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#ae81ff">2</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">4.000000</span>
+</span></span></code></pre></div><p>即使这些功能很简单, 我们也可以得到surprisingly powerful capbilities - check this out:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">extern</span> <span style="color:#960050;background-color:#1e0010">sin</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> extern:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @sin(<span style="color:#66d9ef">double</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">extern</span> <span style="color:#960050;background-color:#1e0010">cos</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> extern:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">sin</span>(<span style="color:#ae81ff">1.0</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">top-level</span> expression:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @2() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">0x3FEAED548F090CEE</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">0.841471</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">def</span> <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#66d9ef">x</span>) <span style="color:#960050;background-color:#1e0010">sin</span>(<span style="color:#66d9ef">x</span>)*<span style="color:#960050;background-color:#1e0010">sin</span>(<span style="color:#66d9ef">x</span>) <span style="color:#960050;background-color:#1e0010">+</span> <span style="color:#960050;background-color:#1e0010">cos</span>(<span style="color:#66d9ef">x</span>)*<span style="color:#960050;background-color:#1e0010">cos</span>(<span style="color:#66d9ef">x</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">function</span> definition:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @sin(<span style="color:#66d9ef">double</span> %x)
+</span></span><span style="display:flex;"><span>  %multmp = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %calltmp, %calltmp
+</span></span><span style="display:flex;"><span>  %calltmp2 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @cos(<span style="color:#66d9ef">double</span> %x)
+</span></span><span style="display:flex;"><span>  %multmp4 = <span style="color:#66d9ef">fmul</span> <span style="color:#66d9ef">double</span> %calltmp2, %calltmp2
+</span></span><span style="display:flex;"><span>  %addtmp = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %multmp, %multmp4
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %addtmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">ready</span>&gt; <span style="color:#960050;background-color:#1e0010">foo</span>(<span style="color:#ae81ff">4.0</span>)<span style="color:#75715e">;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010">Read</span> <span style="color:#960050;background-color:#1e0010">top-level</span> expression:
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @3() {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.000000e+00</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %calltmp
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">Evaluated</span> <span style="color:#66d9ef">to</span> <span style="color:#ae81ff">1.000000</span>
+</span></span></code></pre></div><p>whoa, JIT是怎么知道 <strong>sin</strong>和 <strong>cos</strong>的呢?</p>
+<p>答案是相当简单的: The kaleidoscopeJIT 有一个直接的符号解析规则, 用于查找当前给定模块中不可用的符号:  首先它搜索添加到JIT中的所有模块, 从最新的到以前的为了找到最新的定义. 如果JIT中找不到定义, 它将会在自身进程上运行 &ldquo;dlsym(sin)&rdquo;. 由于 &ldquo;<strong>sin</strong>&ldquo;是在JIT的地址空间中定义的, 它只是简单的patches up calls 在模块中, 以直接调用到libm版本的sin.</p>
 <p>但是在某些情况下,  这甚至会做更多: 正如 <strong>sin</strong>和 <strong>cos</strong> 是标准的数学函数, 当我们使用 **sin(1.0)**进行常量调用时, the constant folder会直接计算调用的结果.</p>
 <p>在未来, 我们将会看到如何调整符号解析规则以启用各种有用的特性,  <strong>from security (限制JIT代码可以使用的符号集合), to基于符号名称的动态代码执行, and even lazy complication</strong>.</p>
 <p>符号解析规则的一个好处是: 我们可以通过写任意的c++代码来扩展语言.</p>
 <p>For example, if we add:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#</span><span style="color:#75715e">ifdef _WIN32</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define DLLEXPORT __declspec(dllexport)</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">else</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">define DLLEXPORT</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#75715e">#</span><span style="color:#75715e">endif</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">/// putchard - putchar that takes a double and returns 0.
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">C</span><span style="color:#e6db74">&#34;</span> DLLEXPORT <span style="color:#66d9ef">double</span> putchard(<span style="color:#66d9ef">double</span> X) {
-  fputc((<span style="color:#66d9ef">char</span>)X, stderr);
-  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>注意: 对于 windows, 我们实际上需要导出函数, 因为dynamic symbol loader将会使用<strong>GetProcAddress</strong>来寻找symbol.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#ifdef _WIN32
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define DLLEXPORT __declspec(dllexport)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#define DLLEXPORT
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/// putchard - putchar that takes a double and returns 0.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> DLLEXPORT <span style="color:#66d9ef">double</span> putchard(<span style="color:#66d9ef">double</span> X) {
+</span></span><span style="display:flex;"><span>  fputc((<span style="color:#66d9ef">char</span>)X, stderr);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>注意: 对于 windows, 我们实际上需要导出函数, 因为dynamic symbol loader将会使用<strong>GetProcAddress</strong>来寻找symbol.</p>
 <p>现在我们可以通过输入: &ldquo;extern putchard(x); putchard(20);&rdquo; 产生简单的输出到控制台上. 类似的代码可以被用来实现 I/O, 控制台输入, 和其他许多Kaleidoscope的特性.</p>
 <p>这就是JIT和优化器的教程.</p>
 <p>此时, 我们能够编译一个非图灵完备的编程语言, 优化并且JIT编译它 in a user-driver way.</p>
@@ -710,7 +708,7 @@ entry:
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

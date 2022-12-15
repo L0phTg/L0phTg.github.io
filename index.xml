@@ -6,11 +6,7 @@
     <description>Recent content on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Wed, 03 Mar 2021 15:44:43 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 03 Mar 2021 15:44:43 +0800</lastBuildDate><atom:link href="http://L0phTg.top/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>About</title>
       <link>http://L0phTg.top/about/</link>
@@ -20,15 +16,15 @@
       <description>佛系青年，平时在家，会追追剧，看看电影，偶尔练字，学会儿英语。
 电视剧
 历史剧
- &amp;lt;楚汉争霸&amp;gt; &amp;lt;大秦帝国系列&amp;gt; &amp;lt;汉武大帝&amp;gt;  古装剧
- &amp;lt;庆余年&amp;gt;  近代剧：
- &amp;lt;伟大的转折&amp;gt;，四渡赤水，和最后一集的总结，是经典。  喜剧：
- &amp;lt;爱情公寓&amp;gt; &amp;lt;延禧攻略&amp;gt;  现代剧
- &amp;lt;人民的名义&amp;gt; &amp;lt;破冰行动&amp;gt;  美剧
- &amp;lt;硅谷&amp;gt; &amp;lt;黑客军团&amp;gt; - &amp;lt;MR.Robot&amp;gt; &amp;lt;西部世界&amp;gt; &amp;lt;权力的游戏&amp;gt; &amp;lt;绝命毒师&amp;gt;  电影
+&amp;lt;楚汉争霸&amp;gt; &amp;lt;大秦帝国系列&amp;gt; &amp;lt;汉武大帝&amp;gt; 古装剧
+&amp;lt;庆余年&amp;gt; 近代剧：
+&amp;lt;伟大的转折&amp;gt;，四渡赤水，和最后一集的总结，是经典。 喜剧：
+&amp;lt;爱情公寓&amp;gt; &amp;lt;延禧攻略&amp;gt; 现代剧
+&amp;lt;人民的名义&amp;gt; &amp;lt;破冰行动&amp;gt; 美剧
+&amp;lt;硅谷&amp;gt; &amp;lt;黑客军团&amp;gt; - &amp;lt;MR.Robot&amp;gt; &amp;lt;西部世界&amp;gt; &amp;lt;权力的游戏&amp;gt; &amp;lt;绝命毒师&amp;gt; 电影
 记得第一次看电影是在高二，看的是&amp;lt;中国合伙人&amp;gt;，对当时的我有不小的影响。
 近代史:
- &amp;lt;末代皇帝&amp;gt;  </description>
+&amp;lt;末代皇帝&amp;gt; </description>
     </item>
     
     <item>
@@ -80,8 +76,7 @@
       <guid>http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/</guid>
       <description>&lt;p&gt;能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？&lt;/p&gt;
 &lt;p&gt;这就是我们的接下来要聊的话题：半线性结构：树。&lt;/p&gt;
-&lt;figure&gt;
-    &lt;img src=&#34;http://L0phTg.top/docs-pic/ds/tree-arch.png&#34; width=&#34;70%&#34; height=&#34;50%&#34;/&gt; 
+&lt;figure&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/ds/tree-arch.png&#34; width=&#34;70%&#34; height=&#34;50%&#34;/&gt;
 &lt;/figure&gt;</description>
     </item>
     
@@ -179,7 +174,7 @@
 &lt;li&gt;
 &lt;p&gt;迭代变量。&lt;/p&gt;
 &lt;p&gt;在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。&lt;/p&gt;
-&lt;p&gt;具体到Kaleidoscope语法层面，我们通过&#39;=&#39;运算符达到对已经定义变量的改变。&lt;/p&gt;
+&lt;p&gt;具体到Kaleidoscope语法层面，我们通过&amp;rsquo;=&amp;lsquo;运算符达到对已经定义变量的改变。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/li&gt;
@@ -321,8 +316,7 @@ graph TB
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
-&lt;figure&gt;
-    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;/&gt; 
+&lt;figure&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;/&gt;
 &lt;/figure&gt;</description>
     </item>
     
@@ -396,8 +390,7 @@ graph TB
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
-&lt;figure&gt;
-    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; width=&#34;100%&amp;#34;&#34; height=&#34;100%&#34;/&gt; 
+&lt;figure&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; width=&#34;100%&amp;#34;&#34; height=&#34;100%&#34;/&gt;
 &lt;/figure&gt;</description>
     </item>
     
@@ -451,15 +444,15 @@ graph TB
       <guid>http://L0phTg.top/post/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</guid>
       <description>&lt;p&gt;在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!&lt;/p&gt;
 &lt;p&gt;所以你输入了下面的几行命令&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#hahaha&lt;/span&gt;
-$sudo apt remove python
-$sudo apt remove python3
-$sudo apt remove pip
-$sudo apt remove pip3
-&lt;span style=&#34;color:#75715e&#34;&gt;#一定删除的不彻底, 我要彻底删除&lt;/span&gt;
-$sudo apt autoremove -f 
-看到要删除600+M, 毅然决然的按了 y.
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#hahaha&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove python
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove python3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove pip
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove pip3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#一定删除的不彻底, 我要彻底删除&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt autoremove -f 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;看到要删除600+M, 毅然决然的按了 y.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip;&lt;/p&gt;
 &lt;p&gt;Bingo 然后你看到了我这篇文章.&lt;/p&gt;</description>
     </item>
     
@@ -492,7 +485,7 @@ $sudo apt autoremove -f
       <guid>http://L0phTg.top/post/pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
       <description>&lt;p&gt;记录自己Pixel1刷机流程.&lt;/p&gt;
 &lt;p&gt;相关网站&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Requirements
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Requirements
 https://source.android.google.cn/setup/build/requirements.html#binaries
 
 https://source.android.com/setup/build/running

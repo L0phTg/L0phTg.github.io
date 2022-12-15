@@ -6,14 +6,14 @@
 
   
   <title>
-  Tag → BigData
+  Tag → Bigdata
   
    | L0phTg&#39;s Blog
 </title>
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -49,7 +49,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/tags/bigdata/">
@@ -181,7 +180,7 @@
       
         <li class="menu-item
           
-           is-active
+          
           ">
           <a href="/tags/">Tags</a>
         </li>
@@ -213,6 +212,54 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/" class="post-link">使用docker搭建spark集群</a></h3>
+    <p class="post-meta">@L0phTg · Mar 3, 2021 · 3 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>运行环境:</p>
+<ul>
+<li>vmware workstation</li>
+<li>ubuntu18.04</li>
+</ul>
+<p>创建了三个docker容器，分别为master、slave1、slave2：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>ip</th>
+<th>hadoop/spark用户名</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>master</td>
+<td>172.17.0.2</td>
+<td>spark</td>
+</tr>
+<tr>
+<td>slave1</td>
+<td>172.17.0.3</td>
+<td>spark</td>
+</tr>
+<tr>
+<td>slave2</td>
+<td>172.17.0.4</td>
+<td>spark</td>
+</tr>
+</tbody>
+</table>
+<p>三个容器都通过useradd创建了用户名为spark的用户，来配置集群大数据环境的用户。</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="http://L0phTg.top/post/bigdata/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="http://L0phTg.top/post/bigdata/spark%E7%AC%94%E8%AE%B0/" class="post-link">Spark笔记</a></h3>
     <p class="post-meta">@L0phTg · Jan 5, 2020 · 4 min read</p>
   </header>
@@ -229,12 +276,30 @@
 </article>
 
       
+        <article class="post-entry">
+  <header class="post-header">
+    <h3 class="post-title"><a href="http://L0phTg.top/post/bigdata/hive%E7%AC%94%E8%AE%B0/" class="post-link">Hive笔记</a></h3>
+    <p class="post-meta">@L0phTg · Jan 5, 2020 · 7 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>2020年，新年快乐！
+重新搭建了下博客，开始定期更新模式。</p>
+<p>本文是前段时间阅读&laquo;hive权威指南&raquo;总结的笔记。</p>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="http://L0phTg.top/post/bigdata/hive%E7%AC%94%E8%AE%B0/">Read More →</a>
+  </footer>
+</article>
+
+      
      
     
   </section>
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

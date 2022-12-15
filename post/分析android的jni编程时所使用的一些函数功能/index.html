@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -56,7 +56,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/%E5%88%86%E6%9E%90android%E7%9A%84jni%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/">
@@ -228,7 +227,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">基本类型</a></li>
+    <li><a href="#基本类型">基本类型</a></li>
   </ul>
 </nav>
   </div>
@@ -238,69 +237,69 @@
     <article class="post-content"><p>分析<strong>jni调用时</strong>的一些函数及其函数功能.</p>
 <p>如 GetEnv &hellip;</p>
 <p>本文已长草.</p>
-<h2 id="heading">基本类型</h2>
+<h2 id="基本类型">基本类型</h2>
 <p>&lt;jni.h&gt;文件存放的位置在\Android\sdk\ndk-bundle\platforms\android-24\arch-arm\usr\include\jni.h</p>
 <p>现在来看一下jni.h头文件中内容:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jobject</span> {};										<span style="color:#66d9ef">typedef</span> _jobject<span style="color:#f92672">*</span>       jobject;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jclass</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};						<span style="color:#66d9ef">typedef</span> _jclass<span style="color:#f92672">*</span>        jclass;       	
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jstring</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};                    <span style="color:#66d9ef">typedef</span> _jstring<span style="color:#f92672">*</span>       jstring;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jarray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};                     <span style="color:#66d9ef">typedef</span> _jarray<span style="color:#f92672">*</span>        jarray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jobjectArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                <span style="color:#66d9ef">typedef</span> _jobjectArray<span style="color:#f92672">*</span>  jobjectArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jbooleanArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};               <span style="color:#66d9ef">typedef</span> _jbooleanArray<span style="color:#f92672">*</span> jbooleanArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jbyteArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                  <span style="color:#66d9ef">typedef</span> _jbyteArray<span style="color:#f92672">*</span>    jbyteArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jcharArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                  <span style="color:#66d9ef">typedef</span> _jcharArray<span style="color:#f92672">*</span>    jcharArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jshortArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                 <span style="color:#66d9ef">typedef</span> _jshortArray<span style="color:#f92672">*</span>   jshortArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jintArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                   <span style="color:#66d9ef">typedef</span> _jintArray<span style="color:#f92672">*</span>     jintArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jlongArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                  <span style="color:#66d9ef">typedef</span> _jlongArray<span style="color:#f92672">*</span>    jlongArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jfloatArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                 <span style="color:#66d9ef">typedef</span> _jfloatArray<span style="color:#f92672">*</span>   jfloatArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jdoubleArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                <span style="color:#66d9ef">typedef</span> _jdoubleArray<span style="color:#f92672">*</span>  jdoubleArray;
-	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jthrowable</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};					<span style="color:#66d9ef">typedef</span> _jthrowable<span style="color:#f92672">*</span>    jthrowable;
-</code></pre></div><p>从右边的typedef可以看出,每一个Jni中的cpp类型都有一个Java中的类型与之相对应.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jobject</span> {};										<span style="color:#66d9ef">typedef</span> _jobject<span style="color:#f92672">*</span>       jobject;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jclass</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};						<span style="color:#66d9ef">typedef</span> _jclass<span style="color:#f92672">*</span>        jclass;       	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jstring</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};                    <span style="color:#66d9ef">typedef</span> _jstring<span style="color:#f92672">*</span>       jstring;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jarray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};                     <span style="color:#66d9ef">typedef</span> _jarray<span style="color:#f92672">*</span>        jarray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jobjectArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                <span style="color:#66d9ef">typedef</span> _jobjectArray<span style="color:#f92672">*</span>  jobjectArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jbooleanArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};               <span style="color:#66d9ef">typedef</span> _jbooleanArray<span style="color:#f92672">*</span> jbooleanArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jbyteArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                  <span style="color:#66d9ef">typedef</span> _jbyteArray<span style="color:#f92672">*</span>    jbyteArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jcharArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                  <span style="color:#66d9ef">typedef</span> _jcharArray<span style="color:#f92672">*</span>    jcharArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jshortArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                 <span style="color:#66d9ef">typedef</span> _jshortArray<span style="color:#f92672">*</span>   jshortArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jintArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                   <span style="color:#66d9ef">typedef</span> _jintArray<span style="color:#f92672">*</span>     jintArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jlongArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                  <span style="color:#66d9ef">typedef</span> _jlongArray<span style="color:#f92672">*</span>    jlongArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jfloatArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                 <span style="color:#66d9ef">typedef</span> _jfloatArray<span style="color:#f92672">*</span>   jfloatArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jdoubleArray</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jarray {};                <span style="color:#66d9ef">typedef</span> _jdoubleArray<span style="color:#f92672">*</span>  jdoubleArray;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">_jthrowable</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> _jobject {};					<span style="color:#66d9ef">typedef</span> _jthrowable<span style="color:#f92672">*</span>    jthrowable;
+</span></span></code></pre></div><p>从右边的typedef可以看出,每一个Jni中的cpp类型都有一个Java中的类型与之相对应.</p>
 <p>这里我们重点分析经常看到的_JNIEnv,_JavaVM,JNIEnv,JavaVM</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_JNIEnv</span>;
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_JavaVM</span>;
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">JNINativeInterface</span><span style="color:#f92672">*</span> C_JNIEnv;
-
-<span style="color:#75715e">#</span><span style="color:#75715e">if defined(__cplusplus)</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> _JNIEnv JNIEnv;
-<span style="color:#66d9ef">typedef</span> _JavaVM JavaVM;
-<span style="color:#75715e">#</span><span style="color:#75715e">else</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">JNINativeInterface</span><span style="color:#f92672">*</span> JNIEnv;
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">JNIInvokeInterface</span><span style="color:#f92672">*</span> JavaVM;
-<span style="color:#75715e">#</span><span style="color:#75715e">endif</span><span style="color:#75715e">
-</span></code></pre></div><p>JNINativeInterface为Native层的接口函数指针表, Jni中的本地函数通过这些接口来调用java层的函数.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_JNIEnv</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_JavaVM</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">JNINativeInterface</span><span style="color:#f92672">*</span> C_JNIEnv;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#if defined(__cplusplus)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> _JNIEnv JNIEnv;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> _JavaVM JavaVM;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">JNINativeInterface</span><span style="color:#f92672">*</span> JNIEnv;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">JNIInvokeInterface</span><span style="color:#f92672">*</span> JavaVM;
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#endif
+</span></span></span></code></pre></div><p>JNINativeInterface为Native层的接口函数指针表, Jni中的本地函数通过这些接口来调用java层的函数.</p>
 <p>_JNIEnv是一个object, 包含一个指向JNINativeInterface的指针变量function和一些接口函数.</p>
 <p>JNIEnv在cpp中的定义为_JNIEnv, 在c中的定义为 struct JNINativeInterface*.</p>
 <p>JNIEnv: 每一个线程中都有一个属于自己线程的env, 且只在创建自己的线程内有效, 不能跨线程传递.</p>
 <p>下面分析JavaVM:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">struct</span> _JavaVM {										                       <span style="color:#66d9ef">struct</span> JNIInvokeInterface {			                                       
-    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> JNIInvokeInterface<span style="color:#f92672">*</span> functions;                                 <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>       reserved0;
-                                                                               	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>       reserved1;
-																				<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>       reserved2;
-	<span style="color:#960050;background-color:#1e0010">#</span><span style="color:#66d9ef">if</span> defined(__cplusplus)                                                   	       
-	jint DestroyJavaVM()                                                       
-	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>DestroyJavaVM(this); }                                 	jint        (<span style="color:#f92672">*</span>DestroyJavaVM)(JavaVM<span style="color:#f92672">*</span>);
-	jint <span style="color:#a6e22e">AttachCurrentThread</span>(JNIEnv<span style="color:#f92672">*</span><span style="color:#f92672">*</span> p_env, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> thr_args)                   	jint        (<span style="color:#f92672">*</span>AttachCurrentThread)(JavaVM<span style="color:#f92672">*</span>, JNIEnv<span style="color:#f92672">*</span><span style="color:#f92672">*</span>, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>);
-	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>AttachCurrentThread(this, p_env, thr_args); }          	jint        (<span style="color:#f92672">*</span>DetachCurrentThread)(JavaVM<span style="color:#f92672">*</span>);
-	jint <span style="color:#a6e22e">DetachCurrentThread</span>()                                                 	jint        (<span style="color:#f92672">*</span>GetEnv)(JavaVM<span style="color:#f92672">*</span>, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span>, jint);
-	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>DetachCurrentThread(this); }                           	jint        (<span style="color:#f92672">*</span>AttachCurrentThreadAsDaemon)(JavaVM<span style="color:#f92672">*</span>, JNIEnv<span style="color:#f92672">*</span><span style="color:#f92672">*</span>, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>);
-	jint <span style="color:#a6e22e">GetEnv</span>(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span><span style="color:#f92672">*</span> env, jint version)                                      };
-	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>GetEnv(this, env, version); }
-	jint AttachCurrentThreadAsDaemon(JNIEnv<span style="color:#f92672">*</span><span style="color:#f92672">*</span> p_env, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> thr_args)
-	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>AttachCurrentThreadAsDaemon(this, p_env, thr_args); }
-	<span style="color:#960050;background-color:#1e0010">#</span>endif <span style="color:#75715e">/*__cplusplus*/</span>
-};
-</code></pre></div><p>JavaVM在cpp中定义为_JavaVM, 在c中定义为指向JNIInvokeInterface的指针.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> _JavaVM {										                       <span style="color:#66d9ef">struct</span> JNIInvokeInterface {			                                       
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">struct</span> JNIInvokeInterface<span style="color:#f92672">*</span> functions;                                 <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>       reserved0;
+</span></span><span style="display:flex;"><span>                                                                               	<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>       reserved1;
+</span></span><span style="display:flex;"><span>																				<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>       reserved2;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">#if defined(__cplusplus)                                                   	       
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	jint <span style="color:#a6e22e">DestroyJavaVM</span>()                                                       
+</span></span><span style="display:flex;"><span>	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">DestroyJavaVM</span>(this); }                                 	<span style="color:#a6e22e">jint</span>        (<span style="color:#f92672">*</span>DestroyJavaVM)(JavaVM<span style="color:#f92672">*</span>);
+</span></span><span style="display:flex;"><span>	jint <span style="color:#a6e22e">AttachCurrentThread</span>(JNIEnv<span style="color:#f92672">**</span> p_env, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> thr_args)                   	<span style="color:#a6e22e">jint</span>        (<span style="color:#f92672">*</span>AttachCurrentThread)(JavaVM<span style="color:#f92672">*</span>, JNIEnv<span style="color:#f92672">**</span>, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>);
+</span></span><span style="display:flex;"><span>	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">AttachCurrentThread</span>(this, p_env, thr_args); }          	<span style="color:#a6e22e">jint</span>        (<span style="color:#f92672">*</span>DetachCurrentThread)(JavaVM<span style="color:#f92672">*</span>);
+</span></span><span style="display:flex;"><span>	jint <span style="color:#a6e22e">DetachCurrentThread</span>()                                                 	<span style="color:#a6e22e">jint</span>        (<span style="color:#f92672">*</span>GetEnv)(JavaVM<span style="color:#f92672">*</span>, <span style="color:#66d9ef">void</span><span style="color:#f92672">**</span>, jint);
+</span></span><span style="display:flex;"><span>	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">DetachCurrentThread</span>(this); }                           	<span style="color:#a6e22e">jint</span>        (<span style="color:#f92672">*</span>AttachCurrentThreadAsDaemon)(JavaVM<span style="color:#f92672">*</span>, JNIEnv<span style="color:#f92672">**</span>, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span>);
+</span></span><span style="display:flex;"><span>	jint <span style="color:#a6e22e">GetEnv</span>(<span style="color:#66d9ef">void</span><span style="color:#f92672">**</span> env, jint version)                                      };
+</span></span><span style="display:flex;"><span>	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">GetEnv</span>(this, env, version); }
+</span></span><span style="display:flex;"><span>	jint <span style="color:#a6e22e">AttachCurrentThreadAsDaemon</span>(JNIEnv<span style="color:#f92672">**</span> p_env, <span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> thr_args)
+</span></span><span style="display:flex;"><span>	{ <span style="color:#66d9ef">return</span> functions<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">AttachCurrentThreadAsDaemon</span>(this, p_env, thr_args); }
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">#endif </span><span style="color:#75715e">/*__cplusplus*/</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>};
+</span></span></code></pre></div><p>JavaVM在cpp中定义为_JavaVM, 在c中定义为指向JNIInvokeInterface的指针.
 JavaVM只有一个, 因为它是java虚拟机在Jni中的表示.</p>
 <p>在用ida加载.apk中.so文件时会发现识别出来的native函数是这样的:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">	<span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__fastcall</span> <span style="color:#a6e22e">Java_com_njctf_mobile_easycrack_MainActivity_parseText</span>(<span style="color:#66d9ef">int</span> a1, <span style="color:#66d9ef">int</span> a2, <span style="color:#66d9ef">int</span> a3);
-</code></pre></div><p>java层的函数调用是这样的:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">native</span> String <span style="color:#a6e22e">parseText</span><span style="color:#f92672">(</span>String arg1<span style="color:#f92672">)</span><span style="color:#f92672">;</span> 
-</code></pre></div><p>而这里的a1就是我们的env, a2就是jobject或者jclass, a3就是String arg1了.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__fastcall</span> <span style="color:#a6e22e">Java_com_njctf_mobile_easycrack_MainActivity_parseText</span>(<span style="color:#66d9ef">int</span> a1, <span style="color:#66d9ef">int</span> a2, <span style="color:#66d9ef">int</span> a3);
+</span></span></code></pre></div><p>java层的函数调用是这样的:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>	<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">native</span> String <span style="color:#a6e22e">parseText</span><span style="color:#f92672">(</span>String arg1<span style="color:#f92672">);</span> 
+</span></span></code></pre></div><p>而这里的a1就是我们的env, a2就是jobject或者jclass, a3就是String arg1了.
 我们在导入&lt;jni.h&gt;头文件和添加了Structures之后, 就可以对ida中的参数类型和参数名字进行修改了.</p>
 <p>修改之后的结果:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__fastcall</span> <span style="color:#a6e22e">Java_com_njctf_mobile_easycrack_MainActivity_parseText</span>(_JNIEnv <span style="color:#f92672">*</span>env, jobject <span style="color:#f92672">*</span>obj, jstring inputString);
-</code></pre></div></article>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#66d9ef">__fastcall</span> <span style="color:#a6e22e">Java_com_njctf_mobile_easycrack_MainActivity_parseText</span>(_JNIEnv <span style="color:#f92672">*</span>env, jobject <span style="color:#f92672">*</span>obj, jstring inputString);
+</span></span></code></pre></div></article>
     <footer class="post-footer">
       
       <ul class="post-tags">
@@ -340,7 +339,7 @@ JavaVM只有一个, 因为它是java虚拟机在Jni中的表示.</p>
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

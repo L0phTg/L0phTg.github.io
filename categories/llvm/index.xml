@@ -6,11 +6,7 @@
     <description>Recent content in llvm on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Wed, 26 Jun 2019 16:04:38 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/categories/llvm/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 26 Jun 2019 16:04:38 +0800</lastBuildDate><atom:link href="http://L0phTg.top/categories/llvm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</title>
       <link>http://L0phTg.top/post/llvm/kaleidoscopeconclusion-and-other-useful-llvm-tidbits/</link>
@@ -63,7 +59,7 @@
 &lt;li&gt;
 &lt;p&gt;迭代变量。&lt;/p&gt;
 &lt;p&gt;在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。&lt;/p&gt;
-&lt;p&gt;具体到Kaleidoscope语法层面，我们通过&#39;=&#39;运算符达到对已经定义变量的改变。&lt;/p&gt;
+&lt;p&gt;具体到Kaleidoscope语法层面，我们通过&amp;rsquo;=&amp;lsquo;运算符达到对已经定义变量的改变。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;/li&gt;
@@ -157,8 +153,7 @@ graph TB
 &lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;
 &lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
-&lt;figure&gt;
-    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;/&gt; 
+&lt;figure&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;/&gt;
 &lt;/figure&gt;</description>
     </item>
     
@@ -232,8 +227,7 @@ graph TB
       <description>&lt;p&gt;translate from: &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl03.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl03.html&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;介绍四个基本表达式和函数申明与定义的Codegen.&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
-&lt;figure&gt;
-    &lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; width=&#34;100%&amp;#34;&#34; height=&#34;100%&#34;/&gt; 
+&lt;figure&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/llvm/Codegen.png&#34; width=&#34;100%&amp;#34;&#34; height=&#34;100%&#34;/&gt;
 &lt;/figure&gt;</description>
     </item>
     

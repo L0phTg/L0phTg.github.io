@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -53,7 +53,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/">
@@ -225,17 +224,17 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#heading">背景</a></li>
-    <li><a href="#heading-1">选择</a></li>
-    <li><a href="#heading-2">装机过程</a></li>
-    <li><a href="#heading-3">下来就是激动人心的时刻了</a>
+    <li><a href="#背景">背景</a></li>
+    <li><a href="#选择">选择</a></li>
+    <li><a href="#装机过程">装机过程</a></li>
+    <li><a href="#下来就是激动人心的时刻了">下来就是激动人心的时刻了</a>
       <ul>
-        <li><a href="#nvimspacevim">配置nvim/spacevim</a></li>
-        <li><a href="#zshoh-my-zsh">配置zsh/oh-my-zsh</a></li>
-        <li><a href="#tools">安装tools</a></li>
+        <li><a href="#配置nvimspacevim">配置nvim/spacevim</a></li>
+        <li><a href="#配置zshoh-my-zsh">配置zsh/oh-my-zsh</a></li>
+        <li><a href="#安装tools">安装tools</a></li>
       </ul>
     </li>
-    <li><a href="#heading-4">总结</a></li>
+    <li><a href="#总结">总结</a></li>
   </ul>
 </nav>
   </div>
@@ -245,22 +244,21 @@
     <article class="post-content"><p>17年使用了一段时间deepin系统, 这里简单记录一些使用心得(现在已转ubuntu.</p>
 <p>主要就是<strong>装机的过程</strong>, 以及<strong>装机后的效果展示</strong>.</p>
 <p><img src="/deepin/desktop.png" alt=""></p>
-<h2 id="heading">背景</h2>
+<h2 id="背景">背景</h2>
 <p>最近一直在码代码和写.md, 深刻体会到在windows上办公有多么艰难. 安装了一下<code>spacevim/neovim</code>后, 意识到了高效率的办公会给人带来很大的乐趣. 所以, 在遇到了很多与环境配置相关的问题(却解决不了之后), 毅然决定更换系统.</p>
-<h2 id="heading-1">选择</h2>
+<h2 id="选择">选择</h2>
 <p>犹豫了一天到底是该装<code>Ubuntu16.04</code>还是<code>deepin</code>(<code>导致上课前, 忘了给舍友刷卡...</code>).最终还是经不住deepin<code>绚丽的UI设计</code>的诱惑, 决定尝试一下<code>deepin</code>.(<strong>没错, 颜值在我心中就是这么重要</strong>)</p>
-<h2 id="heading-2">装机过程</h2>
+<h2 id="装机过程">装机过程</h2>
 <p>装机过程很简单, 下载好官方的镜像源, 之后检验一下<strong>md5</strong>.</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$checksum  
-
-</code></pre></div><p>然后用<strong>官方的启动盘制作工具</strong>把U盘装入deepin, 重启时插入U盘, 设置为U盘启动就可以了.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$checksum  
+</span></span></code></pre></div><p>然后用<strong>官方的启动盘制作工具</strong>把U盘装入deepin, 重启时插入U盘, 设置为U盘启动就可以了.</p>
 <p><strong>重点来了</strong>, 因为我不想用windows10了, 所以直接把系统装在c盘中, 因为原来的系统有<strong>3个分区, 所以装机时不用格式化 D 盘 和 E 盘</strong>(<code>我的E盘有7/8个虚拟机文件, 在装好deepin后, 依然可以正常使用</code>)</p>
 <p>装机总结:</p>
 <ul>
 <li>deepin系统装入c盘.</li>
 <li>D盘, E盘可以不用格式化.(当然, 如果电脑里没啥重要文件的, skip it)</li>
 </ul>
-<h2 id="heading-3">下来就是激动人心的时刻了</h2>
+<h2 id="下来就是激动人心的时刻了">下来就是激动人心的时刻了</h2>
 <p>先放几张图:</p>
 <p>桌面</p>
 <p><img src="/deepin/desktop.png" alt=""></p>
@@ -269,15 +267,15 @@
 <p>我们最爱的vim</p>
 <p><img src="/deepin/vimMarkdownPreview.png" alt=""></p>
 <p>当然, 还有很多其它的不错的设计, 这里就不多放图了.</p>
-<h3 id="nvimspacevim">配置nvim/spacevim</h3>
+<h3 id="配置nvimspacevim">配置nvim/spacevim</h3>
 <p>依赖项:</p>
 <ul>
 <li>python支持: 建议先<code>pip install neovim</code>和<code>pip3 install neovim</code>.</li>
 <li>font支持: (读者可以自行查看readme进行安装) git地址: <code>https://github.com/powerline/fonts.git</code> , 用来更好的显示vim界面(字体, 状态栏&hellip;).</li>
 <li>tagbar支持: 安装 <code>ctags</code>.</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">sudo apt install ctags
-</code></pre></div><p><strong>安装</strong>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt install ctags
+</span></span></code></pre></div><p><strong>安装</strong>:</p>
 <ul>
 <li>
 <p>neovim安装: <code>sudo apt install neovim</code></p>
@@ -296,29 +294,29 @@
 <ul>
 <li>默认预览浏览器为<code>google-chrome</code>:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">let g:mkdp_path_to_chrome <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;google-chrome&#39;</span>
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>let g:mkdp_path_to_chrome <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;google-chrome&#39;</span>
+</span></span></code></pre></div><ul>
 <li>映射预览为<code>F4</code>:</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">nmap &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;MarkdownPreview        <span style="color:#e6db74">&#34; for normal mode
-</span><span style="color:#e6db74">imap &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;MarkdownPreview        &#34;</span> <span style="color:#66d9ef">for</span> insert mode
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nmap &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;MarkdownPreview        <span style="color:#e6db74">&#34; for normal mode
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">imap &lt;silent&gt; &lt;F4&gt; &lt;Plug&gt;MarkdownPreview        &#34;</span> <span style="color:#66d9ef">for</span> insert mode
+</span></span></code></pre></div><ol start="2">
 <li>设置状态栏分隔符为箭头:</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">let g:spacevim_statusline_separator <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;arrow&#39;</span>
-</code></pre></div><h3 id="zshoh-my-zsh">配置zsh/oh-my-zsh</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>let g:spacevim_statusline_separator <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;arrow&#39;</span>
+</span></span></code></pre></div><h3 id="配置zshoh-my-zsh">配置zsh/oh-my-zsh</h3>
 <ol>
 <li>安装zsh</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo apt install zsh
-</code></pre></div><ol start="2">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt install zsh
+</span></span></code></pre></div><ol start="2">
 <li>安装oh-my-zsh</li>
 </ol>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sh -c <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
-</code></pre></div><p>具体的配置看个人喜好.</p>
-<h3 id="tools">安装tools</h3>
-<p><a href="https://github.com/PikachuHy/..">https://github.com/PikachuHy/..</a>.       <code>一位大佬写的net工具,  大家懂得</code></p>
-<h2 id="heading-4">总结</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sh -c <span style="color:#e6db74">&#34;</span><span style="color:#66d9ef">$(</span>curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh<span style="color:#66d9ef">)</span><span style="color:#e6db74">&#34;</span>
+</span></span></code></pre></div><p>具体的配置看个人喜好.</p>
+<h3 id="安装tools">安装tools</h3>
+<p><a href="https://github.com/PikachuHy/">https://github.com/PikachuHy/</a>&hellip;       <code>一位大佬写的net工具,  大家懂得</code></p>
+<h2 id="总结">总结</h2>
 <p>总之, <code>deepin</code>还是带给我很大的惊喜的.  <code>deepin终端</code>, <code>深度截图</code>, 还可以愉快的使用网络, 开心的在linux下办公hahahahaha.</p></article>
     <footer class="post-footer">
       
@@ -357,7 +355,7 @@
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -56,7 +56,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/llvm/kaleidoscopeadding-debug-information/">
@@ -234,237 +233,241 @@
     <article class="post-content"><p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl09.html">http://llvm.org/docs/tutorial/LangImpl09.html</a></p>
 <p>唔，最后两个章节有点难产。</p>
 <p>本章主要介绍：为Kaleidoscope添加调试信息支持。</p>
-<h1 id="91-">9.1 第九章介绍</h1>
+<h1 id="91-第九章介绍">9.1 第九章介绍</h1>
 <p>欢迎来到“使用LLVM来实现一门语言”教程的第九章。在第一章到第八章的内容中，我们已经用函数和变量构建了一个不错的编程语言。<strong>但是如果在程序出现问题的情况下，会发生什么呢？我们该如何调试我们的程序呢？</strong></p>
 <p>源码级的调试会使用格式化的数据，这些数据会帮助调试器将二进制的文件和机器的状态翻译回程序员编写的代码。在LLVM中，我们使用被叫做<a href="http://dwarfstd.org/">DWARF</a>。DWARF是一种紧凑的编码，它可以表示出变量类型、源代码位置和变量的位置。</p>
 <p>本章的主要内容：为了获取到调试信息，并且将调试信息转换为DWARF格式，我们将看到各种各样你必须添加到编程语言中的内容。</p>
 <p>警告：因为现在我们无法通过JIT来对程序进行调试，所以我们需要将我们的程序编译为小的并且独立的程序。作为其中的一部分，我们将对语言的运行以及程序的编译方式做一些修改。这意味着我们将拥有一个用Kaleidoscope编写的简单程序而不是交互式的JIT程序。但是它有一个限制，即我们一次只有一个“顶级”命令来减少必要的改变次数。</p>
 <p>下面是我们将要编译的程序：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fib</span>(x)
-  <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span> then
-    <span style="color:#ae81ff">1</span>
-  <span style="color:#66d9ef">else</span>
-    fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span>fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>);
-
-fib(<span style="color:#ae81ff">10</span>)
-</code></pre></div><h1 id="92-">9.2 为什么这是个困难的问题</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fib</span>(x)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">3</span> then
+</span></span><span style="display:flex;"><span>    <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span>fib(x<span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>fib(<span style="color:#ae81ff">10</span>)
+</span></span></code></pre></div><h1 id="92-为什么这是个困难的问题">9.2 为什么这是个困难的问题</h1>
 <p>生成调试信息是一个困难的问题，主要有几个不同的原因 &mdash;- 这些原因大多数主要围绕优化代码。</p>
 <ul>
 <li>第一，编译器优化<strong>使想要保持源代码的位置不变更困难</strong>。在LLVM IR中，我们记录每个IR指令的源代码位置。优化 passes 应该记录新创建指令的对应的源代码位置。但是针对合并的指令，我们只能记录一个源代码位置 &mdash;- 当跳过优化程序时，这会引发一个程序跳转。</li>
 <li>第二，优化模块会使用很多种方式来移动变量（改变变量的位置），例如与其它变量共享内存。</li>
 </ul>
 <p>为了达到本教程的目的，我们会避免优化（下面我们会采用一些方式来避免优化）。</p>
-<h1 id="93-">9.3 提前编译模式</h1>
+<h1 id="93-提前编译模式">9.3 提前编译模式</h1>
 <p>为了突出对源语言增加调试信息的各个方面，而不必担心JIT的复杂性，我们将对Kaleidoscope做一些改变来支持<strong>将前端产生的IR编译为一个简单的独立程序</strong>，你可以执行、调试和查看结果。</p>
 <p>编译IR emitted by 前端 into 一个简单独立的程序that 你可以执行，调试 and see results。</p>
 <p>首先，我们将包含顶级语句的匿名函数作为我们的&quot;main&quot;函数：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#f92672">-</span>    <span style="color:#66d9ef">auto</span> Proto <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&gt;</span>());
-<span style="color:#f92672">+</span>    <span style="color:#66d9ef">auto</span> Proto <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">main</span><span style="color:#e6db74">&#34;</span>, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&gt;</span>());
-</code></pre></div><p>只需要简单地改变它的名字就可以了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#f92672">-</span>    <span style="color:#66d9ef">auto</span> Proto <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74">&#34;&#34;</span>, std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span>());
+</span></span><span style="display:flex;"><span><span style="color:#f92672">+</span>    <span style="color:#66d9ef">auto</span> Proto <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>PrototypeAST<span style="color:#f92672">&gt;</span>(<span style="color:#e6db74">&#34;main&#34;</span>, std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span>());
+</span></span></code></pre></div><p>只需要简单地改变它的名字就可以了。</p>
 <p>然后我们要删除所有的与命令行相关的代码：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">@@ -1129,7 +1129,6 @@ static void HandleTopLevelExpression<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
- /// top ::<span style="color:#f92672">=</span> definition | external | expression | <span style="color:#e6db74">&#39;;&#39;</span>
- static void MainLoop<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-   <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
--    fprintf<span style="color:#f92672">(</span>stderr, <span style="color:#e6db74">&#34;ready&gt; &#34;</span><span style="color:#f92672">)</span>;
-     switch <span style="color:#f92672">(</span>CurTok<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-     <span style="color:#66d9ef">case</span> tok_eof:
-       <span style="color:#66d9ef">return</span>;
-@@ -1184,7 +1183,6 @@ int main<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-   BinopPrecedence<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;*&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> 40; // highest.
-
-   // Prime the first token.
--  fprintf<span style="color:#f92672">(</span>stderr, <span style="color:#e6db74">&#34;ready&gt; &#34;</span><span style="color:#f92672">)</span>;
-   getNextToken<span style="color:#f92672">(</span><span style="color:#f92672">)</span>;
-</code></pre></div><p>最后我们将会<strong>禁用所有的优化passes和JIT</strong>，以便在我们完成解析和生成代码之后唯一会发生的事情是LLVM IR将会转到标准错误：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">@@ -1108,17 +1108,8 @@ static void HandleExtern<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
- static void HandleTopLevelExpression<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-   // Evaluate a top-level expression into an anonymous <span style="color:#66d9ef">function</span>.
-   <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>auto FnAST <span style="color:#f92672">=</span> ParseTopLevelExpr<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
--    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>auto *FnIR <span style="color:#f92672">=</span> FnAST-&gt;codegen<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
--      // We<span style="color:#960050;background-color:#1e0010">&#39;</span>re just doing this to make sure it executes.
--      TheExecutionEngine-&gt;finalizeObject<span style="color:#f92672">(</span><span style="color:#f92672">)</span>;
--      // JIT the <span style="color:#66d9ef">function</span>, returning a <span style="color:#66d9ef">function</span> pointer.
--      void *FPtr <span style="color:#f92672">=</span> TheExecutionEngine-&gt;getPointerToFunction<span style="color:#f92672">(</span>FnIR<span style="color:#f92672">)</span>;
--
--      // Cast it to the right type <span style="color:#f92672">(</span>takes no arguments, returns a double<span style="color:#f92672">)</span> so we
--      // can call it as a native <span style="color:#66d9ef">function</span>.
--      double <span style="color:#f92672">(</span>*FP<span style="color:#f92672">)</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>double <span style="color:#f92672">(</span>*<span style="color:#f92672">)</span><span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span><span style="color:#f92672">(</span>intptr_t<span style="color:#f92672">)</span>FPtr;
--      // Ignore the <span style="color:#66d9ef">return</span> value <span style="color:#66d9ef">for</span> this.
--      <span style="color:#f92672">(</span>void<span style="color:#f92672">)</span>FP;
-+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>!F-&gt;codegen<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-+      fprintf<span style="color:#f92672">(</span>stderr, <span style="color:#e6db74">&#34;Error generating code for top level expr&#34;</span><span style="color:#f92672">)</span>;
-     <span style="color:#f92672">}</span>
-   <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
-     // Skip token <span style="color:#66d9ef">for</span> error recovery.
-@@ -1439,11 +1459,11 @@ int main<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-   // target lays out data structures.
-   TheModule-&gt;setDataLayout<span style="color:#f92672">(</span>TheExecutionEngine-&gt;getDataLayout<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>;
-   OurFPM.add<span style="color:#f92672">(</span>new DataLayoutPass<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>;
-+#if 0
-   OurFPM.add<span style="color:#f92672">(</span>createBasicAliasAnalysisPass<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>;
-   // Promote allocas to registers.
-   OurFPM.add<span style="color:#f92672">(</span>createPromoteMemoryToRegisterPass<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>;
-@@ -1218,7 +1210,7 @@ int main<span style="color:#f92672">(</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-   OurFPM.add<span style="color:#f92672">(</span>createGVNPass<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>;
-   // Simplify the control flow graph <span style="color:#f92672">(</span>deleting unreachable blocks, etc<span style="color:#f92672">)</span>.
-   OurFPM.add<span style="color:#f92672">(</span>createCFGSimplificationPass<span style="color:#f92672">(</span><span style="color:#f92672">)</span><span style="color:#f92672">)</span>;
--
-+  <span style="color:#75715e">#endif</span>
-   OurFPM.doInitialization<span style="color:#f92672">(</span><span style="color:#f92672">)</span>;
-
-   // Set the global so the code gen can use this.
-</code></pre></div><p>这相对较小的更改使我们能够通过此命令行将我们的Kaleidoscope语言编译为可执行程序：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">Kaleidoscope-Ch9 &lt; fib.ks | &amp; clang -x ir -
-</code></pre></div><p>运行这条命令，会在当前目录中生成a.out/ a.exe。</p>
-<h1 id="94-">9.4 编译单元</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>@@ -1129,7 +1129,6 @@ static void HandleTopLevelExpression<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> /// top ::<span style="color:#f92672">=</span> definition | external | expression | <span style="color:#e6db74">&#39;;&#39;</span>
+</span></span><span style="display:flex;"><span> static void MainLoop<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>1<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>-    fprintf<span style="color:#f92672">(</span>stderr, <span style="color:#e6db74">&#34;ready&gt; &#34;</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>     switch <span style="color:#f92672">(</span>CurTok<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">case</span> tok_eof:
+</span></span><span style="display:flex;"><span>       <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>@@ -1184,7 +1183,6 @@ int main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   BinopPrecedence<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;*&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> 40; // highest.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   // Prime the first token.
+</span></span><span style="display:flex;"><span>-  fprintf<span style="color:#f92672">(</span>stderr, <span style="color:#e6db74">&#34;ready&gt; &#34;</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>   getNextToken<span style="color:#f92672">()</span>;
+</span></span></code></pre></div><p>最后我们将会<strong>禁用所有的优化passes和JIT</strong>，以便在我们完成解析和生成代码之后唯一会发生的事情是LLVM IR将会转到标准错误：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>@@ -1108,17 +1108,8 @@ static void HandleExtern<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span> static void HandleTopLevelExpression<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   // Evaluate a top-level expression into an anonymous <span style="color:#66d9ef">function</span>.
+</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>auto FnAST <span style="color:#f92672">=</span> ParseTopLevelExpr<span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>auto *FnIR <span style="color:#f92672">=</span> FnAST-&gt;codegen<span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>-      // We<span style="color:#960050;background-color:#1e0010">&#39;</span>re just doing this to make sure it executes.
+</span></span><span style="display:flex;"><span>-      TheExecutionEngine-&gt;finalizeObject<span style="color:#f92672">()</span>;
+</span></span><span style="display:flex;"><span>-      // JIT the <span style="color:#66d9ef">function</span>, returning a <span style="color:#66d9ef">function</span> pointer.
+</span></span><span style="display:flex;"><span>-      void *FPtr <span style="color:#f92672">=</span> TheExecutionEngine-&gt;getPointerToFunction<span style="color:#f92672">(</span>FnIR<span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>-      // Cast it to the right type <span style="color:#f92672">(</span>takes no arguments, returns a double<span style="color:#f92672">)</span> so we
+</span></span><span style="display:flex;"><span>-      // can call it as a native <span style="color:#66d9ef">function</span>.
+</span></span><span style="display:flex;"><span>-      double <span style="color:#f92672">(</span>*FP<span style="color:#f92672">)()</span> <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>double <span style="color:#f92672">(</span>*<span style="color:#f92672">)())(</span>intptr_t<span style="color:#f92672">)</span>FPtr;
+</span></span><span style="display:flex;"><span>-      // Ignore the <span style="color:#66d9ef">return</span> value <span style="color:#66d9ef">for</span> this.
+</span></span><span style="display:flex;"><span>-      <span style="color:#f92672">(</span>void<span style="color:#f92672">)</span>FP;
+</span></span><span style="display:flex;"><span>+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>!F-&gt;codegen<span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>+      fprintf<span style="color:#f92672">(</span>stderr, <span style="color:#e6db74">&#34;Error generating code for top level expr&#34;</span><span style="color:#f92672">)</span>;
+</span></span><span style="display:flex;"><span>     <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>     // Skip token <span style="color:#66d9ef">for</span> error recovery.
+</span></span><span style="display:flex;"><span>@@ -1439,11 +1459,11 @@ int main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   // target lays out data structures.
+</span></span><span style="display:flex;"><span>   TheModule-&gt;setDataLayout<span style="color:#f92672">(</span>TheExecutionEngine-&gt;getDataLayout<span style="color:#f92672">())</span>;
+</span></span><span style="display:flex;"><span>   OurFPM.add<span style="color:#f92672">(</span>new DataLayoutPass<span style="color:#f92672">())</span>;
+</span></span><span style="display:flex;"><span>+#if <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>   OurFPM.add<span style="color:#f92672">(</span>createBasicAliasAnalysisPass<span style="color:#f92672">())</span>;
+</span></span><span style="display:flex;"><span>   // Promote allocas to registers.
+</span></span><span style="display:flex;"><span>   OurFPM.add<span style="color:#f92672">(</span>createPromoteMemoryToRegisterPass<span style="color:#f92672">())</span>;
+</span></span><span style="display:flex;"><span>@@ -1218,7 +1210,7 @@ int main<span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>   OurFPM.add<span style="color:#f92672">(</span>createGVNPass<span style="color:#f92672">())</span>;
+</span></span><span style="display:flex;"><span>   // Simplify the control flow graph <span style="color:#f92672">(</span>deleting unreachable blocks, etc<span style="color:#f92672">)</span>.
+</span></span><span style="display:flex;"><span>   OurFPM.add<span style="color:#f92672">(</span>createCFGSimplificationPass<span style="color:#f92672">())</span>;
+</span></span><span style="display:flex;"><span>-
+</span></span><span style="display:flex;"><span>+  <span style="color:#75715e">#endif</span>
+</span></span><span style="display:flex;"><span>   OurFPM.doInitialization<span style="color:#f92672">()</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   // Set the global so the code gen can use this.
+</span></span></code></pre></div><p>这相对较小的更改使我们能够通过此命令行将我们的Kaleidoscope语言编译为可执行程序：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>Kaleidoscope-Ch9 &lt; fib.ks | &amp; clang -x ir -
+</span></span></code></pre></div><p>运行这条命令，会在当前目录中生成a.out/ a.exe。</p>
+<h1 id="94-编译单元">9.4 编译单元</h1>
 <p>DWARF中一段代码的顶级容器是一个编译单元。它包含单个翻译单元的类型和函数数据（读取：源代码的一个文件）。所以我们需要做的第一件事是为fib.ks文件构造一个编译单元。</p>
 <h1 id="95-dwarf-emission-setup">9.5 DWARF Emission Setup</h1>
 <p>与<code>IRBuilder</code>类似，我们有一个<a href="http://llvm.org/doxygen/classllvm_1_1DIBuilder.html">DIBuilder</a>类，可以帮助构建LLVM IR文件调试所需的原始数据。<code>DIBuilder</code>与<code>IRBuilder</code>类似，只是名字更好听一点。要想使用<code>DIBuilder</code>，需要你对DWARF有所了解，但是如果你仔细阅读有关<a href="http://llvm.org/docs/SourceLevelDebugging.html">元数据格式</a>的文档，那么就对<code>DIBuilder</code>会更加了解。我们将使用该类来构造所有的我们的IR级描述。它的构造需要一个模块，所以我们需要在构建模块后不久就构建它。我们会把它作为一个全局静态变量，这样会使它更容易使用。</p>
 <p>接下来，我们将创建一个小容器来缓存我们的一些经常使用的数据。第一个就是我们的编译单元，我也会为我们的类型编写一些代码，因为我们不必担心多个类型表达式（我们的类型只有double）：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">static</span> DIBuilder <span style="color:#f92672">*</span>DBuilder;
-
-<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DebugInfo</span> {
-  DICompileUnit <span style="color:#f92672">*</span>TheCU;
-  DIType <span style="color:#f92672">*</span>DblTy;
-
-  DIType <span style="color:#f92672">*</span><span style="color:#a6e22e">getDoubleTy</span>();
-} KSDbgInfo;
-
-DIType <span style="color:#f92672">*</span>DebugInfo<span style="color:#f92672">:</span><span style="color:#f92672">:</span>getDoubleTy() {
-  <span style="color:#66d9ef">if</span> (DblTy)
-    <span style="color:#66d9ef">return</span> DblTy;
-
-  DblTy <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createBasicType(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">double</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">64</span>, dwarf<span style="color:#f92672">:</span><span style="color:#f92672">:</span>DW_ATE_float);
-  <span style="color:#66d9ef">return</span> DblTy;
-}
-</code></pre></div><p>然后在我们构建模块时的'main'中：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">DBuilder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DIBuilder(<span style="color:#f92672">*</span>TheModule);
-
-KSDbgInfo.TheCU <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createCompileUnit(
-    dwarf<span style="color:#f92672">:</span><span style="color:#f92672">:</span>DW_LANG_C, DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">fib.ks</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">.</span><span style="color:#e6db74">&#34;</span>),
-    <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Kaleidoscope Compiler</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">&#34;</span>, <span style="color:#ae81ff">0</span>);
-</code></pre></div><p>这里有几点需要注意。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">static</span> DIBuilder <span style="color:#f92672">*</span>DBuilder;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DebugInfo</span> {
+</span></span><span style="display:flex;"><span>  DICompileUnit <span style="color:#f92672">*</span>TheCU;
+</span></span><span style="display:flex;"><span>  DIType <span style="color:#f92672">*</span>DblTy;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  DIType <span style="color:#f92672">*</span><span style="color:#a6e22e">getDoubleTy</span>();
+</span></span><span style="display:flex;"><span>} KSDbgInfo;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>DIType <span style="color:#f92672">*</span>DebugInfo<span style="color:#f92672">::</span>getDoubleTy() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (DblTy)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> DblTy;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  DblTy <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-&gt;</span>createBasicType(<span style="color:#e6db74">&#34;double&#34;</span>, <span style="color:#ae81ff">64</span>, dwarf<span style="color:#f92672">::</span>DW_ATE_float);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> DblTy;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>然后在我们构建模块时的&rsquo;main&rsquo;中：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>DBuilder <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> DIBuilder(<span style="color:#f92672">*</span>TheModule);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>KSDbgInfo.TheCU <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-&gt;</span>createCompileUnit(
+</span></span><span style="display:flex;"><span>    dwarf<span style="color:#f92672">::</span>DW_LANG_C, DBuilder<span style="color:#f92672">-&gt;</span>createFile(<span style="color:#e6db74">&#34;fib.ks&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>),
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;Kaleidoscope Compiler&#34;</span>, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#ae81ff">0</span>);
+</span></span></code></pre></div><p>这里有几点需要注意。</p>
 <ul>
 <li>第一，当我们为一种叫做Kaleidoscope的语言生成一个编译单元时，我们会用到C语言常量。这是因为调式器不一定理解它无法识别的语言的调用约定或默认ABI，并且我们在<strong>LLVM代码生成中遵循C ABI约定</strong>，因此它是最准确的。这确保了我们可以实际<strong>调用来自调试器的函数</strong>，并且让他们执行。</li>
 <li>第二，你将会在调用 <code>createCompileUnit</code> 时看到 &ldquo;fib.ks&rdquo;。这是一个默认的硬编码值，因为我们使用shell重定向来将我们的源码放入Kaleidoscope编译器中。在前端中，你通常有一个输入文件名，并且它最终即会转到那里。</li>
 </ul>
-<p>作为通过 <em>DIBuilder</em> 生成调试信息的一部分，最后一件事情是我们需要'finalize'调试信息。原因是DIBuilder底层API的一部分，但请确保在main结束时执行此操作：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>finalize();
-</code></pre></div><h1 id="96-">9.6 函数</h1>
-<p>现在我们有了我们的编译单元和源码的位置，我们可以在调试信息中添加函数定义。所以在 <code>PrototypeAST::codegen()</code>中，我们添加了几行代码来描述子程序的上下文，在该例子中上下文是&quot;File&rdquo;，以及函数本身的实际定义。</p>
+<p>作为通过 <em>DIBuilder</em> 生成调试信息的一部分，最后一件事情是我们需要&rsquo;finalize&rsquo;调试信息。原因是DIBuilder底层API的一部分，但请确保在main结束时执行此操作：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>DBuilder<span style="color:#f92672">-&gt;</span>finalize();
+</span></span></code></pre></div><h1 id="96-函数">9.6 函数</h1>
+<p>现在我们有了我们的编译单元和源码的位置，我们可以在调试信息中添加函数定义。所以在 <code>PrototypeAST::codegen()</code>中，我们添加了几行代码来描述子程序的上下文，在该例子中上下文是&quot;File&quot;，以及函数本身的实际定义。</p>
 <p>所以上下文：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">DIFile <span style="color:#f92672">*</span>Unit <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createFile(KSDbgInfo.TheCU.getFilename(),
-                                    KSDbgInfo.TheCU.getDirectory());
-</code></pre></div><p>给我们一个 <strong>DIFile</strong> 并且询问我们上面创建的编译单元，来获取我们当前所在的目录和文件名字。然后，现在，我们使用 0 的一些源位置（因为我们的AST当前没有源位置信息）并且构造我们的函数定义：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">DIScope <span style="color:#f92672">*</span>FContext <span style="color:#f92672">=</span> Unit;
-<span style="color:#66d9ef">unsigned</span> LineNo <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-<span style="color:#66d9ef">unsigned</span> ScopeLine <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-DISubprogram <span style="color:#f92672">*</span>SP <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createFunction(
-    FContext, P.getName(), StringRef(), Unit, LineNo,
-    CreateFunctionType(TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>arg_size(), Unit),
-    false <span style="color:#75715e">/* internal linkage */</span>, true <span style="color:#75715e">/* definition */</span>, ScopeLine,
-    DINode<span style="color:#f92672">:</span><span style="color:#f92672">:</span>FlagPrototyped, false);
-TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>setSubprogram(SP);
-</code></pre></div><p>我们现在有了一个 <code>DISubprogram</code>，它包含了对该函数的所有元数据的引用。</p>
-<h1 id="97-">9.7 源代码位置</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>DIFile <span style="color:#f92672">*</span>Unit <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-&gt;</span>createFile(KSDbgInfo.TheCU.getFilename(),
+</span></span><span style="display:flex;"><span>                                    KSDbgInfo.TheCU.getDirectory());
+</span></span></code></pre></div><p>给我们一个 <strong>DIFile</strong> 并且询问我们上面创建的编译单元，来获取我们当前所在的目录和文件名字。然后，现在，我们使用 0 的一些源位置（因为我们的AST当前没有源位置信息）并且构造我们的函数定义：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>DIScope <span style="color:#f92672">*</span>FContext <span style="color:#f92672">=</span> Unit;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> LineNo <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> ScopeLine <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>DISubprogram <span style="color:#f92672">*</span>SP <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-&gt;</span>createFunction(
+</span></span><span style="display:flex;"><span>    FContext, P.getName(), StringRef(), Unit, LineNo,
+</span></span><span style="display:flex;"><span>    CreateFunctionType(TheFunction<span style="color:#f92672">-&gt;</span>arg_size(), Unit),
+</span></span><span style="display:flex;"><span>    false <span style="color:#75715e">/* internal linkage */</span>, true <span style="color:#75715e">/* definition */</span>, ScopeLine,
+</span></span><span style="display:flex;"><span>    DINode<span style="color:#f92672">::</span>FlagPrototyped, false);
+</span></span><span style="display:flex;"><span>TheFunction<span style="color:#f92672">-&gt;</span>setSubprogram(SP);
+</span></span></code></pre></div><p>我们现在有了一个 <code>DISubprogram</code>，它包含了对该函数的所有元数据的引用。</p>
+<h1 id="97-源代码位置">9.7 源代码位置</h1>
 <p>对于调试信息来说，最重要的事情是<strong>准确的源代码位置</strong> &ndash; 这样就可以将源代码映射回来。我们现在有一个问题就是<strong>Kaleidoscope 在词法分析器和解析器中没有记录任何源代码位置信息</strong>，所以我们需要添加它：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SourceLocation</span> {
-  <span style="color:#66d9ef">int</span> Line;
-  <span style="color:#66d9ef">int</span> Col;
-};
-<span style="color:#66d9ef">static</span> SourceLocation CurLoc;
-<span style="color:#66d9ef">static</span> SourceLocation LexLoc <span style="color:#f92672">=</span> {<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>};
-
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">advance</span>() {
-  <span style="color:#66d9ef">int</span> LastChar <span style="color:#f92672">=</span> getchar();
-
-  <span style="color:#66d9ef">if</span> (LastChar <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\n</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">|</span><span style="color:#f92672">|</span> LastChar <span style="color:#f92672">=</span><span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\r</span><span style="color:#e6db74">&#39;</span>) {
-    LexLoc.Line<span style="color:#f92672">+</span><span style="color:#f92672">+</span>;
-    LexLoc.Col <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-  } <span style="color:#66d9ef">else</span>
-    LexLoc.Col<span style="color:#f92672">+</span><span style="color:#f92672">+</span>;
-  <span style="color:#66d9ef">return</span> LastChar;
-}
-</code></pre></div><p>在这组代码中，我们添加了一些关于<strong>如何跟踪“源文件”的行和列</strong>的功能。因为我们词法分析其会记录每个token，所以我们设置我们目前的“词汇定位”设置为token开头的行和列。我们通过使用新的advance() 重载所有之前对 <em>getchar()</em> 的调用来跟踪信息，然后我们将所有AST类添加到源位置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExprAST</span> {
-  SourceLocation Loc;
-
-  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-    ExprAST(SourceLocation Loc <span style="color:#f92672">=</span> CurLoc) <span style="color:#f92672">:</span> Loc(Loc) {}
-    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>ExprAST() {}
-    <span style="color:#66d9ef">virtual</span> Value<span style="color:#f92672">*</span> <span style="color:#a6e22e">codegen</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getLine</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Loc.Line; }
-    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCol</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Loc.Col; }
-    <span style="color:#66d9ef">virtual</span> raw_ostream <span style="color:#f92672">&amp;</span>dump(raw_ostream <span style="color:#f92672">&amp;</span>out, <span style="color:#66d9ef">int</span> ind) {
-      <span style="color:#66d9ef">return</span> out <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">:</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> getLine() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">:</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> getCol() <span style="color:#f92672">&lt;</span><span style="color:#f92672">&lt;</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">\n</span><span style="color:#e6db74">&#39;</span>;
-    }
-</code></pre></div><p>当我们创建一个新的表达式时，我们会传递下去：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">LHS <span style="color:#f92672">=</span> llvm<span style="color:#f92672">:</span><span style="color:#f92672">:</span>make_unique<span style="color:#f92672">&lt;</span>BinaryExprAST<span style="color:#f92672">&gt;</span>(BinLoc, BinOp, std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(LHS),
-                                       std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>move(RHS));
-</code></pre></div><p>为我们的每个表达式和变量提供了位置信息。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">SourceLocation</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> Line;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> Col;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> SourceLocation CurLoc;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> SourceLocation LexLoc <span style="color:#f92672">=</span> {<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">advance</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> LastChar <span style="color:#f92672">=</span> getchar();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (LastChar <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;\n&#39;</span> <span style="color:#f92672">||</span> LastChar <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;\r&#39;</span>) {
+</span></span><span style="display:flex;"><span>    LexLoc.Line<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>    LexLoc.Col <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    LexLoc.Col<span style="color:#f92672">++</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> LastChar;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在这组代码中，我们添加了一些关于<strong>如何跟踪“源文件”的行和列</strong>的功能。因为我们词法分析其会记录每个token，所以我们设置我们目前的“词汇定位”设置为token开头的行和列。我们通过使用新的advance() 重载所有之前对 <em>getchar()</em> 的调用来跟踪信息，然后我们将所有AST类添加到源位置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExprAST</span> {
+</span></span><span style="display:flex;"><span>  SourceLocation Loc;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    ExprAST(SourceLocation Loc <span style="color:#f92672">=</span> CurLoc) <span style="color:#f92672">:</span> Loc(Loc) {}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> <span style="color:#f92672">~</span>ExprAST() {}
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> Value<span style="color:#f92672">*</span> <span style="color:#a6e22e">codegen</span>() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getLine</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Loc.Line; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">getCol</span>() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> Loc.Col; }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">virtual</span> raw_ostream <span style="color:#f92672">&amp;</span>dump(raw_ostream <span style="color:#f92672">&amp;</span>out, <span style="color:#66d9ef">int</span> ind) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> out <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">&lt;&lt;</span> getLine() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#39;:&#39;</span> <span style="color:#f92672">&lt;&lt;</span> getCol() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#39;\n&#39;</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>当我们创建一个新的表达式时，我们会传递下去：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>LHS <span style="color:#f92672">=</span> llvm<span style="color:#f92672">::</span>make_unique<span style="color:#f92672">&lt;</span>BinaryExprAST<span style="color:#f92672">&gt;</span>(BinLoc, BinOp, std<span style="color:#f92672">::</span>move(LHS),
+</span></span><span style="display:flex;"><span>                                       std<span style="color:#f92672">::</span>move(RHS));
+</span></span></code></pre></div><p>为我们的每个表达式和变量提供了位置信息。</p>
 <p>无论什么时候我们到了一个新的位置时，为了确保每条指令都获得合适的定位信息，我们必须要告诉 <em>Builder</em>。这时我们会使用一个小的辅助函数：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">void</span> DebugInfo<span style="color:#f92672">:</span><span style="color:#f92672">:</span>emitLocation(ExprAST <span style="color:#f92672">*</span>AST) {
-  DIScope <span style="color:#f92672">*</span>Scope;
-  <span style="color:#66d9ef">if</span> (LexicalBlocks.empty())
-    Scope <span style="color:#f92672">=</span> TheCU;
-  <span style="color:#66d9ef">else</span>
-    Scope <span style="color:#f92672">=</span> LexicalBlocks.back();
-  Builder.SetCurrentDebugLocation(
-      DebugLoc<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(AST<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getLine(), AST<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>getCol(), Scope));
-}
-</code></pre></div><p>这既会告诉主要的<code>IRBuilder</code>我们现在在哪，也会告诉它我们当前的作用域范围。作用域范围可以是编译单元级别的，也可以是最近的封闭词汇块，如当前函数。为了表示这个，我们会创建一个栈来记录范围：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>DIScope <span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span> LexicalBlocks;
-</code></pre></div><p>当我们开始为每个函数生成代码时，将范围（函数）推送到堆栈的顶部：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">KSDbgInfo.LexicalBlocks.push_back(SP);
-</code></pre></div><p>同时，我们还要在函数代码产生的末尾弹出作用域：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Pop off the lexical block for the function since we added it
-</span><span style="color:#75715e"></span><span style="color:#75715e">// unconditionally.
-</span><span style="color:#75715e"></span>KSDbgInfo.LexicalBlocks.pop_back();
-</code></pre></div><p>然后，我们会确保每次我们开始为新的AST对象产生代码时emit位置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">KSDbgInfo.emitLocation(<span style="color:#66d9ef">this</span>);
-</code></pre></div><h1 id="98-">9.8 变量</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> DebugInfo<span style="color:#f92672">::</span>emitLocation(ExprAST <span style="color:#f92672">*</span>AST) {
+</span></span><span style="display:flex;"><span>  DIScope <span style="color:#f92672">*</span>Scope;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (LexicalBlocks.empty())
+</span></span><span style="display:flex;"><span>    Scope <span style="color:#f92672">=</span> TheCU;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    Scope <span style="color:#f92672">=</span> LexicalBlocks.back();
+</span></span><span style="display:flex;"><span>  Builder.SetCurrentDebugLocation(
+</span></span><span style="display:flex;"><span>      DebugLoc<span style="color:#f92672">::</span>get(AST<span style="color:#f92672">-&gt;</span>getLine(), AST<span style="color:#f92672">-&gt;</span>getCol(), Scope));
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这既会告诉主要的<code>IRBuilder</code>我们现在在哪，也会告诉它我们当前的作用域范围。作用域范围可以是编译单元级别的，也可以是最近的封闭词汇块，如当前函数。为了表示这个，我们会创建一个栈来记录范围：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>DIScope <span style="color:#f92672">*&gt;</span> LexicalBlocks;
+</span></span></code></pre></div><p>当我们开始为每个函数生成代码时，将范围（函数）推送到堆栈的顶部：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>KSDbgInfo.LexicalBlocks.push_back(SP);
+</span></span></code></pre></div><p>同时，我们还要在函数代码产生的末尾弹出作用域：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Pop off the lexical block for the function since we added it
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// unconditionally.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>KSDbgInfo.LexicalBlocks.pop_back();
+</span></span></code></pre></div><p>然后，我们会确保每次我们开始为新的AST对象产生代码时emit位置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>KSDbgInfo.emitLocation(<span style="color:#66d9ef">this</span>);
+</span></span></code></pre></div><h1 id="98-变量">9.8 变量</h1>
 <p>现在我们有了函数，我们需要能够打印作用域中的变量。让我们设置我们的函数参数，这样我们就可以获得不错的 <code>backtraces</code>（回溯） 并且看看我们的函数是如何被调用的。这并不需要写很多代码，我们通常当我们在 <code>FunctionAST::codegen</code> 创建参数allocas时处理它。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Record the function arguments in the NamedValues map.
-</span><span style="color:#75715e"></span>NamedValues.clear();
-<span style="color:#66d9ef">unsigned</span> ArgIdx <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-<span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : TheFunction<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>args()) {
-  <span style="color:#75715e">// Create an alloca for this variable.
-</span><span style="color:#75715e"></span>  AllocaInst <span style="color:#f92672">*</span>Alloca <span style="color:#f92672">=</span> CreateEntryBlockAlloca(TheFunction, Arg.getName());
-
-  <span style="color:#75715e">// Create a debug descriptor for the variable.
-</span><span style="color:#75715e"></span>  DILocalVariable <span style="color:#f92672">*</span>D <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createParameterVariable(
-      SP, Arg.getName(), <span style="color:#f92672">+</span><span style="color:#f92672">+</span>ArgIdx, Unit, LineNo, KSDbgInfo.getDoubleTy(),
-      true);
-
-  DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>insertDeclare(Alloca, D, DBuilder<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>createExpression(),
-                          DebugLoc<span style="color:#f92672">:</span><span style="color:#f92672">:</span>get(LineNo, <span style="color:#ae81ff">0</span>, SP),
-                          Builder.GetInsertBlock());
-
-  <span style="color:#75715e">// Store the initial value into the alloca.
-</span><span style="color:#75715e"></span>  Builder.CreateStore(<span style="color:#f92672">&amp;</span>Arg, Alloca);
-
-  <span style="color:#75715e">// Add arguments to variable symbol table.
-</span><span style="color:#75715e"></span>  NamedValues[Arg.getName()] <span style="color:#f92672">=</span> Alloca;
-}
-</code></pre></div><p>在这里我们首先会创建变量，给它作用域范围（SP)，名称，源位置，类型，因为它是一个参数，还需要有参数索引。下一步，我们创建一个 <code>lvm.dbg.declare</code> 调用来指示在 IR 级别我们在 alloca 中有一个变量（并且它给出了变量的起始位置），并在申明上为该范围的开头设置了一个源位置。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Record the function arguments in the NamedValues map.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>NamedValues.clear();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> ArgIdx <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span> <span style="color:#f92672">&amp;</span>Arg : TheFunction<span style="color:#f92672">-&gt;</span>args()) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Create an alloca for this variable.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  AllocaInst <span style="color:#f92672">*</span>Alloca <span style="color:#f92672">=</span> CreateEntryBlockAlloca(TheFunction, Arg.getName());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Create a debug descriptor for the variable.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  DILocalVariable <span style="color:#f92672">*</span>D <span style="color:#f92672">=</span> DBuilder<span style="color:#f92672">-&gt;</span>createParameterVariable(
+</span></span><span style="display:flex;"><span>      SP, Arg.getName(), <span style="color:#f92672">++</span>ArgIdx, Unit, LineNo, KSDbgInfo.getDoubleTy(),
+</span></span><span style="display:flex;"><span>      true);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  DBuilder<span style="color:#f92672">-&gt;</span>insertDeclare(Alloca, D, DBuilder<span style="color:#f92672">-&gt;</span>createExpression(),
+</span></span><span style="display:flex;"><span>                          DebugLoc<span style="color:#f92672">::</span>get(LineNo, <span style="color:#ae81ff">0</span>, SP),
+</span></span><span style="display:flex;"><span>                          Builder.GetInsertBlock());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Store the initial value into the alloca.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Builder.CreateStore(<span style="color:#f92672">&amp;</span>Arg, Alloca);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Add arguments to variable symbol table.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  NamedValues[Arg.getName()] <span style="color:#f92672">=</span> Alloca;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>在这里我们首先会创建变量，给它作用域范围（SP)，名称，源位置，类型，因为它是一个参数，还需要有参数索引。下一步，我们创建一个 <code>lvm.dbg.declare</code> 调用来指示在 IR 级别我们在 alloca 中有一个变量（并且它给出了变量的起始位置），并在申明上为该范围的开头设置了一个源位置。</p>
 <p>此刻需要注意的一件有趣的事情是，各种调试器会根据过去为它们生成代码和调试信息进行假设。在这个例子中，我们需要做一些hack来避免产生为函数prologue产生行信息，以便于当设置断点时，调试器知道跳过这些指令。所以我们在 <code>FunctionAST::CodeGen</code> 添加一些更多的行：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Unset the location for the prologue emission (leading instructions with no
-</span><span style="color:#75715e"></span><span style="color:#75715e">// location in a function are considered part of the prologue and the debugger
-</span><span style="color:#75715e"></span><span style="color:#75715e">// will run past them when breaking on a function)
-</span><span style="color:#75715e"></span>KSDbgInfo.emitLocation(<span style="color:#66d9ef">nullptr</span>);
-</code></pre></div><p>然后我们实际开始为函数体生成代码时emit一个新的位置：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">KSDbgInfo.emitLocation(Body.get());
-</code></pre></div><p>有了这个，我们有足够的调试信息来设置函数中的断点，打印参数变量，并且调用函数。只需要几行简单的代码就行了！</p>
-<h1 id="99-">9.9 全部代码</h1>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Compile</span>
-$clang++ -g toy.cpp <span style="color:#e6db74">`</span>llvm-config --cxxflags --ldflags --system-libs --libs core mcjit native<span style="color:#e6db74">`</span> -O3 -o toy
-<span style="color:#75715e"># Run</span>
-$./toy
-</code></pre></div><p><a href="http://llvm.org/docs/tutorial/LangImpl09.html#full-code-listing">http://llvm.org/docs/tutorial/LangImpl09.html#full-code-listing</a></p></article>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">// Unset the location for the prologue emission (leading instructions with no
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// location in a function are considered part of the prologue and the debugger
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// will run past them when breaking on a function)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>KSDbgInfo.emitLocation(<span style="color:#66d9ef">nullptr</span>);
+</span></span></code></pre></div><p>然后我们实际开始为函数体生成代码时emit一个新的位置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>KSDbgInfo.emitLocation(Body.get());
+</span></span></code></pre></div><p>有了这个，我们有足够的调试信息来设置函数中的断点，打印参数变量，并且调用函数。只需要几行简单的代码就行了！</p>
+<h1 id="99-全部代码">9.9 全部代码</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Compile</span>
+</span></span><span style="display:flex;"><span>$clang++ -g toy.cpp <span style="color:#e6db74">`</span>llvm-config --cxxflags --ldflags --system-libs --libs core mcjit native<span style="color:#e6db74">`</span> -O3 -o toy
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Run</span>
+</span></span><span style="display:flex;"><span>$./toy
+</span></span></code></pre></div><p><a href="http://llvm.org/docs/tutorial/LangImpl09.html#full-code-listing">http://llvm.org/docs/tutorial/LangImpl09.html#full-code-listing</a></p></article>
     <footer class="post-footer">
       
       <ul class="post-tags">
+        
+          <li><a href="/tags/llvm"><span class="tag">Llvm</span></a></li>
+        
+          <li><a href="/tags/kaleidoscope"><span class="tag">Kaleidoscope</span></a></li>
         
       </ul>
       
@@ -497,7 +500,7 @@ $./toy
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>

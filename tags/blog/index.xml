@@ -6,11 +6,7 @@
     <description>Recent content in blog on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Wed, 19 Sep 2018 20:04:10 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/tags/blog/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Wed, 19 Sep 2018 20:04:10 +0800</lastBuildDate><atom:link href="http://L0phTg.top/tags/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hugo搭建博客</title>
       <link>http://L0phTg.top/post/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>

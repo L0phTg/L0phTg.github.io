@@ -6,11 +6,7 @@
     <description>Recent content in 数据结构 on L0phTg&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <copyright>© This post is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License，please give source if you wish to quote or reproduce.</copyright>
-    <lastBuildDate>Tue, 05 Jan 2021 10:40:46 +0800</lastBuildDate>
-    
-	<atom:link href="http://L0phTg.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 05 Jan 2021 10:40:46 +0800</lastBuildDate><atom:link href="http://L0phTg.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>二叉树及其推广</title>
       <link>http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/</link>
@@ -19,8 +15,7 @@
       <guid>http://L0phTg.top/post/techbase/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/</guid>
       <description>&lt;p&gt;能否有一个数据结构既能兼顾高效率的动态修改，又能高效率的静态查找呢？&lt;/p&gt;
 &lt;p&gt;这就是我们的接下来要聊的话题：半线性结构：树。&lt;/p&gt;
-&lt;figure&gt;
-    &lt;img src=&#34;http://L0phTg.top/docs-pic/ds/tree-arch.png&#34; width=&#34;70%&#34; height=&#34;50%&#34;/&gt; 
+&lt;figure&gt;&lt;img src=&#34;http://L0phTg.top/docs-pic/ds/tree-arch.png&#34; width=&#34;70%&#34; height=&#34;50%&#34;/&gt;
 &lt;/figure&gt;</description>
     </item>
     

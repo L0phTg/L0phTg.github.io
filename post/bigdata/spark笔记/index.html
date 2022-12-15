@@ -9,7 +9,7 @@
 
   
   
-  <link href="//cdn.jsdelivr.net" rel="dns-prefetch">
+  
   <link href="//cdnjs.cloudflare.com" rel="dns-prefetch">
   
   <link href="//at.alicdn.com" rel="dns-prefetch">
@@ -56,7 +56,6 @@
 
 
 
-<meta name="generator" content="Hugo 0.61.0">
 
 
 <link rel="canonical" href="http://L0phTg.top/post/bigdata/spark%E7%AC%94%E8%AE%B0/">
@@ -228,28 +227,28 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#11-">1.1 运行速度快</a></li>
-    <li><a href="#12-">1.2 易用性好</a></li>
-    <li><a href="#13-">1.3 通用性强</a></li>
-    <li><a href="#14-">1.4 随处运行</a></li>
+    <li><a href="#11-运行速度快">1.1 运行速度快</a></li>
+    <li><a href="#12-易用性好">1.2 易用性好</a></li>
+    <li><a href="#13-通用性强">1.3 通用性强</a></li>
+    <li><a href="#14-随处运行">1.4 随处运行</a></li>
   </ul>
 
   <ul>
-    <li><a href="#21-sparksession">2.1 SparkSession介绍</a></li>
+    <li><a href="#21-sparksession介绍">2.1 SparkSession介绍</a></li>
     <li><a href="#22-tungsten-phase-2">2.2 Tungsten Phase 2</a></li>
   </ul>
 
   <ul>
-    <li><a href="#31-collection">3.1 并行化Collection</a></li>
-    <li><a href="#32-">3.2 外部数据集</a></li>
-    <li><a href="#33-rdd">3.3 RDD操作</a>
+    <li><a href="#31-并行化collection">3.1 并行化Collection</a></li>
+    <li><a href="#32-外部数据集">3.2 外部数据集</a></li>
+    <li><a href="#33-rdd操作">3.3 RDD操作</a>
       <ul>
-        <li><a href="#331-">3.3.1 基本操作</a></li>
-        <li><a href="#332-spark">3.3.2 向Spark传递函数</a></li>
-        <li><a href="#333-">3.3.3 理解闭包</a></li>
+        <li><a href="#331-基本操作">3.3.1 基本操作</a></li>
+        <li><a href="#332-向spark传递函数">3.3.2 向Spark传递函数</a></li>
+        <li><a href="#333-理解闭包">3.3.3 理解闭包</a></li>
         <li><a href="#334-transformation">3.3.4 Transformation</a></li>
         <li><a href="#335-actions">3.3.5 actions</a></li>
-        <li><a href="#heading">分发操作</a></li>
+        <li><a href="#分发操作">分发操作</a></li>
       </ul>
     </li>
   </ul>
@@ -259,12 +258,12 @@
     <li><a href="#pysparksqldataframe">pyspark.sql.DataFrame</a>
       <ul>
         <li><a href="#property">property</a></li>
-        <li><a href="#select--selectexpr">select & selectExpr</a></li>
-        <li><a href="#where--filter">where & filter</a></li>
-        <li><a href="#groupby--agg-udaf--count">groupby & agg UDAF & count</a></li>
+        <li><a href="#select--selectexpr">select &amp; selectExpr</a></li>
+        <li><a href="#where--filter">where &amp; filter</a></li>
+        <li><a href="#groupby--agg-udaf--count">groupby &amp; agg UDAF &amp; count</a></li>
         <li><a href="#crossjoin">crossJoin</a></li>
         <li><a href="#withcolumn">withColumn</a></li>
-        <li><a href="#collect--take--first--head">collect & take & first & head</a></li>
+        <li><a href="#collect--take--first--head">collect &amp; take &amp; first &amp; head</a></li>
         <li><a href="#alias">alias</a></li>
       </ul>
     </li>
@@ -280,36 +279,36 @@
 <p>Apache Spark是一个开源的、强大的分布式查询和处理引擎。</p>
 <p>官网文档：https://spark.apache.org/docs/latest/</p>
 <p>安装pyspark:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$pip install pyspark<span style="color:#f92672">=</span>version --user
-</code></pre></div><h1 id="1-">1. 简介</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$pip install pyspark<span style="color:#f92672">=</span>version --user
+</span></span></code></pre></div><h1 id="1-简介">1. 简介</h1>
 <p>参考自：<code>&lt;&lt;图解Spark 核心技术与案例实战&gt;&gt;</code></p>
 <p>Spark是加州大学伯克利分校AMP实验室(Algorithms、Machines and People Lab)开发的通用大数据处理框架。具有运行速度快、易用性好、通用性强和随处运行等优点。</p>
-<h2 id="11-">1.1 运行速度快</h2>
+<h2 id="11-运行速度快">1.1 运行速度快</h2>
 <p>官方数据表明, 如果数据由磁盘读取, 速度是Hadoop MapReduce的10倍以上; 如果数据从内存读取, 速度可以高达100多倍。</p>
 <p>Spark相对于Hadoop有如此快的计算速度有<strong>数据本地性</strong>、<strong>调度优化</strong>和<strong>传输优化</strong>等原因，其最主要的原因是<strong>基于内存计算</strong>和<strong>引入DAG执行引擎</strong>。</p>
 <p>1). Spark默认情况下迭代过程的数据保存到内存中，后续的运行作业利用这些结果进行计算，而Hadoop每次计算都直接存储到磁盘中，在随后的计算中需要从磁盘中读取上次计算的结果。由于从内存读取数据时间比磁盘读取时间低两个数量级，这就造成了Hadoop的运行速度较慢，这种情况在迭代计算中尤为明显。</p>
 <p>2). 由于较复杂的数据计算任务需要多个步骤才能实现，且步骤之间具有依赖性。对于这些步骤之间，Hadoop需要借助Oozie等工具进行处理。而Spark在执行任务前，可以将这些步骤根据依赖关系形成DAG图(有向无环图)，任务执行可以按图索骥，不需要人工干预，从而优化了计算路径，大大减少了I/O读取操作。</p>
-<h2 id="12-">1.2 易用性好</h2>
+<h2 id="12-易用性好">1.2 易用性好</h2>
 <p>Spark不仅支持Scala编写应用程序，而且支持Java和Python等语言进行编写。</p>
-<h2 id="13-">1.3 通用性强</h2>
+<h2 id="13-通用性强">1.3 通用性强</h2>
 <p><img src="/docs-pic/bigdata/sparkarch.png" alt=""></p>
-<h2 id="14-">1.4 随处运行</h2>
+<h2 id="14-随处运行">1.4 随处运行</h2>
 <p>Spark有很强的适应性，能够读取HDFS、Cassandra、HBase、S3和Tachyon，为持久层读写原生数据，能够以Mesos、YARN 和自身携带的Standalone作为资源管理器调度作业来完成Spark应用程序计算。</p>
-<h1 id="2-spark-20--spark-10">2. Spark 2.0 与 Spark 1.0</h1>
+<h1 id="2-spark-20-与-spark-10">2. Spark 2.0 与 Spark 1.0</h1>
 <ol>
 <li>引入SparkSession</li>
 <li>解析器 2.0</li>
 </ol>
-<h2 id="21-sparksession">2.1 SparkSession介绍</h2>
+<h2 id="21-sparksession介绍">2.1 SparkSession介绍</h2>
 <p>SparkSession本质上是SparkConf、SparkContext、SQLContext和HiveContext的组合，包括StreamingContext。</p>
 <p>例如：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df  <span style="color:#f92672">=</span> SQLContext<span style="color:#f92672">.</span>read \
-		<span style="color:#f92672">.</span>format(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">json</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">.</span>load(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py/test/sql/people.json</span><span style="color:#e6db74">&#39;</span>)
-</code></pre></div><p>现在可以这样写：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>format(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">json</span><span style="color:#e6db74">&#39;</span>)<span style="color:#f92672">.</span>load(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py/test/sql/people.json</span><span style="color:#e6db74">&#39;</span>)
-</code></pre></div><p>或者：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>json(<span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">py/test/sql/people.json</span><span style="color:#e6db74">&#39;</span>)
-</code></pre></div><p>SparkSessin现在是读取数据、处理元数据、配置会话和管理集群资源的入口。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df  <span style="color:#f92672">=</span> SQLContext<span style="color:#f92672">.</span>read \
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#39;json&#39;</span>)<span style="color:#f92672">.</span>load(<span style="color:#e6db74">&#39;py/test/sql/people.json&#39;</span>)
+</span></span></code></pre></div><p>现在可以这样写：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>format(<span style="color:#e6db74">&#39;json&#39;</span>)<span style="color:#f92672">.</span>load(<span style="color:#e6db74">&#39;py/test/sql/people.json&#39;</span>)
+</span></span></code></pre></div><p>或者：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>df <span style="color:#f92672">=</span> spark<span style="color:#f92672">.</span>read<span style="color:#f92672">.</span>json(<span style="color:#e6db74">&#39;py/test/sql/people.json&#39;</span>)
+</span></span></code></pre></div><p>SparkSessin现在是读取数据、处理元数据、配置会话和管理集群资源的入口。</p>
 <h2 id="22-tungsten-phase-2">2.2 Tungsten Phase 2</h2>
 <p>参考：https://www.slideshare.net/databricks/structuring-spark-dataframes-datasets-and-streaming</p>
 
@@ -329,7 +328,7 @@ graph LR
 	SelectedPhysicalP -->|Code generation| RDDs
 
 </div>
-<h1 id="3-rdd">3. RDD介绍</h1>
+<h1 id="3-rdd介绍">3. RDD介绍</h1>
 <p>参考官方文档：https://spark.apache.org/docs/latest/rdd-programming-guide.html</p>
 <p>RDD解决的问题？</p>
 <blockquote>
@@ -340,71 +339,71 @@ graph LR
 <li>在你的driver程序中，将已经存在的collection并行化</li>
 <li>引用外部存储的数据集，例如HDFS，HBASE，和其他Hadoop支持的源文件格式</li>
 </ul>
-<h2 id="31-collection">3.1 并行化Collection</h2>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
-distData <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>parallelize(data)
-</code></pre></div><h2 id="32-">3.2 外部数据集</h2>
+<h2 id="31-并行化collection">3.1 并行化Collection</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>data <span style="color:#f92672">=</span> [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>]
+</span></span><span style="display:flex;"><span>distData <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>parallelize(data)
+</span></span></code></pre></div><h2 id="32-外部数据集">3.2 外部数据集</h2>
 <p>Spark支持文本文件（textFiles），sequencesfiles，和其它Hadoop输入格式。</p>
 <p>可以通过<strong>SparkContext</strong>的<strong>textFile</strong>方法创建文本文件的RDDs。（该方法接收一个文件的URI（可以是在机器上的本地路径，或者一个<code>hdfs://</code>，<code>s3a://</code>，etc），可以将它读为collection of lines。</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span><span style="color:#f92672">&gt;</span> distFile <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">data.txt</span><span style="color:#e6db74">&#34;</span>)
-</code></pre></div><p>一旦被创建，<code>distFile</code>可以执行数据集操作。例如，我们可以使用map和reduce操作来add up the sizes of all the lines. <code>distFile.map(lambda s: len(s)).reduce(lambda a, b: a + b)</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> distFile <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74">&#34;data.txt&#34;</span>)
+</span></span></code></pre></div><p>一旦被创建，<code>distFile</code>可以执行数据集操作。例如，我们可以使用map和reduce操作来add up the sizes of all the lines. <code>distFile.map(lambda s: len(s)).reduce(lambda a, b: a + b)</code></p>
 <p>一些关于使用Spark来读文件的注意事项：</p>
 <ul>
 <li>如果使用本地文件路径，要保证文件必须在worker nodes都可以用相同的路径来获得。可以将文件拷贝到workers，也可以通过网络mount共享文件系统。</li>
 <li>所以Spark中文件读取相关的方法，包括<code>textFile</code>，都支持目录，压缩文件，和通配符as well。例如，可以使用<code>textFile(&quot;/my/directory&quot;)</code>，<code>textFile(&quot;/my/dir/*.txt&quot;)</code>和<code>textFile(&quot;/my/dir/*.gz&quot;)</code>。</li>
 <li>textFile方法可以接收额外的第二个参数，用于控制文件分区的数量。默认情况下，Spark为文件的每个block都创建一个分区（block是128MB,默认hdfs），但是你可以要求一个更大的分区数目，通过传递一个更大的值。</li>
 </ul>
-<p>除了文本文件，Spark's python api也支持几个其他的数据格式：</p>
+<p>除了文本文件，Spark&rsquo;s python api也支持几个其他的数据格式：</p>
 <ul>
 <li><code>SparkContext.wholeTextFiles</code>允许你读一个包含多个小文件的目录。并返回它们的每一个（filename, content)pairs。而textFile会返回每个文件中的每一行。</li>
 <li><code>RDD.saveAsPickleFile</code>和<code>SparkContext.pickleFile</code>支持将Rdd存为简单的由pickled python对象组成的格式。</li>
 <li>Hadoop input/output格式 和 sequencefile。</li>
 </ul>
-<h2 id="33-rdd">3.3 RDD操作</h2>
+<h2 id="33-rdd操作">3.3 RDD操作</h2>
 <p>RDD支持两种类型的操作：</p>
 <ul>
 <li>transformation。</li>
 <li>actions。</li>
 </ul>
-<h3 id="331-">3.3.1 基本操作</h3>
+<h3 id="331-基本操作">3.3.1 基本操作</h3>
 <p>展示一下基本操作：</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">lines <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">data.txt</span><span style="color:#e6db74">&#34;</span>)					            <span style="color:#75715e"># 返回RDD对象</span>
-lineLengths <span style="color:#f92672">=</span> lines<span style="color:#f92672">.</span>map(<span style="color:#66d9ef">lambda</span> s: len(s))  <span style="color:#75715e"># 每行的长度 , transformatino操作，返回RDD</span>
-totalLength <span style="color:#f92672">=</span> lineLengths<span style="color:#f92672">.</span>reduce(<span style="color:#66d9ef">lambda</span> a, b: a <span style="color:#f92672">+</span> b)  <span style="color:#75715e"># 所有行的长度, actinos操作，返回int</span>
-</code></pre></div><p>第一行从读取外部文件，作为RDD。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>lines <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74">&#34;data.txt&#34;</span>)					            <span style="color:#75715e"># 返回RDD对象</span>
+</span></span><span style="display:flex;"><span>lineLengths <span style="color:#f92672">=</span> lines<span style="color:#f92672">.</span>map(<span style="color:#66d9ef">lambda</span> s: len(s))  <span style="color:#75715e"># 每行的长度 , transformatino操作，返回RDD</span>
+</span></span><span style="display:flex;"><span>totalLength <span style="color:#f92672">=</span> lineLengths<span style="color:#f92672">.</span>reduce(<span style="color:#66d9ef">lambda</span> a, b: a <span style="color:#f92672">+</span> b)  <span style="color:#75715e"># 所有行的长度, actinos操作，返回int</span>
+</span></span></code></pre></div><p>第一行从读取外部文件，作为RDD。</p>
 <p>map：transformatin操作。lineLengths<strong>不会</strong>立即计算。</p>
 <p>reduce：actions操作，此刻Spark会在不同的机器上<strong>执行任务</strong>。</p>
-<h3 id="332-spark">3.3.2 向Spark传递函数</h3>
+<h3 id="332-向spark传递函数">3.3.2 向Spark传递函数</h3>
 <ul>
 <li>lambda表达式</li>
 <li>本地定义的函数</li>
 <li>模块中的顶级函数</li>
 </ul>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#e6db74"></span><span style="color:#e6db74">&#34;&#34;&#34;</span><span style="color:#e6db74">MyScript.py</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
-<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">__main__</span><span style="color:#e6db74">&#34;</span>:
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">myFunc</span>(s):
-        words <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>split(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74"> </span><span style="color:#e6db74">&#34;</span>)
-        <span style="color:#66d9ef">return</span> len(words)
-
-    sc <span style="color:#f92672">=</span> SparkContext(<span style="color:#f92672">.</span><span style="color:#f92672">.</span><span style="color:#f92672">.</span>)
-    sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">file.txt</span><span style="color:#e6db74">&#34;</span>)<span style="color:#f92672">.</span>map(myFunc)
-</code></pre></div><h3 id="333-">3.3.3 理解闭包</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;MyScript.py&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">myFunc</span>(s):
+</span></span><span style="display:flex;"><span>        words <span style="color:#f92672">=</span> s<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34; &#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> len(words)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    sc <span style="color:#f92672">=</span> SparkContext(<span style="color:#f92672">...</span>)
+</span></span><span style="display:flex;"><span>    sc<span style="color:#f92672">.</span>textFile(<span style="color:#e6db74">&#34;file.txt&#34;</span>)<span style="color:#f92672">.</span>map(myFunc)
+</span></span></code></pre></div><h3 id="333-理解闭包">3.3.3 理解闭包</h3>
 <p>在Spark中一个比较困难的事情是：理解变量和方法的生命周期和作用域（当在集群中执行代码时）。</p>
 <p>RDD操作会在变量的作用域外修改它们，can be frequent source of confusion。在下面的例子中，我们将会看到使用<code>foreach</code>来增加计数，使用其它操作也会出现类似的问题。</p>
 <p><strong>例子</strong>：
 RDD 元素求和，在相同的JVM中可能行为不同。当以local模式运行Spark时（&ndash;master=local[n]），versus部署Spark应用到集群上（e.g. 通过YARN提交应用）</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-rdd <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>parallelize(data)
-
-<span style="color:#75715e"># Wrong: Don&#39;t do this!!</span>
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">increment_counter</span>(x):
-    <span style="color:#66d9ef">global</span> counter
-    counter <span style="color:#f92672">+</span><span style="color:#f92672">=</span> x
-rdd<span style="color:#f92672">.</span>foreach(increment_counter)
-
-<span style="color:#66d9ef">print</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Counter value: </span><span style="color:#e6db74">&#34;</span>, counter)
-</code></pre></div><p><strong>本地 vs 集群模式</strong>
-上面代码的行为是未定义的，可能是不会工作的。为了执行job，Spark将RDD的操作拆分为tasks，每一个tasks都会被一个executor执行。在执行之前，Spark会计算task's 闭包。闭包是：对executor来说，在RDD上执行它的计算是可见的变量和方法（在这个例子是：foreach()）。闭包是序列化的，会被发送到每一个executor中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>rdd <span style="color:#f92672">=</span> sc<span style="color:#f92672">.</span>parallelize(data)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Wrong: Don&#39;t do this!!</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">increment_counter</span>(x):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">global</span> counter
+</span></span><span style="display:flex;"><span>    counter <span style="color:#f92672">+=</span> x
+</span></span><span style="display:flex;"><span>rdd<span style="color:#f92672">.</span>foreach(increment_counter)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;Counter value: &#34;</span>, counter)
+</span></span></code></pre></div><p><strong>本地 vs 集群模式</strong>
+上面代码的行为是未定义的，可能是不会工作的。为了执行job，Spark将RDD的操作拆分为tasks，每一个tasks都会被一个executor执行。在执行之前，Spark会计算task&rsquo;s 闭包。闭包是：对executor来说，在RDD上执行它的计算是可见的变量和方法（在这个例子是：foreach()）。闭包是序列化的，会被发送到每一个executor中。</p>
 <p>发送给每个executor的闭包中的变量是副本。因此，当在foreach中引用计数器时，它不再是driver节点上的计数器。driver节点的内存中仍然有一个计数器，但是对于executors来说是不可见的。executors只是看到序列化闭包中的副本。因此，计数器最终的值仍然为0，因为所有计数器上的操作都引用了序列化闭包内的值。</p>
 <p>在本地模式中，在某些情况下，foreach函数实际上将会在driver相同的jvm中运行，并且引用相同的原来的计数器，则计数器可能会更新。</p>
 <p>为了确保在这些场景下能够有不错的行为，应该使用<strong>Accumulator</strong>。在Spark中，Accumulators被用来提供一个机制来安全地更新变量（当execution被分割为跨集群的多个worker node的时候）。</p>
@@ -487,7 +486,7 @@ rdd<span style="color:#f92672">.</span>foreach(increment_counter)
 </tr>
 <tr>
 <td>pipe(command, [envVars])</td>
-<td>Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process's stdin and lines output to its stdout are returned as an RDD of strings.</td>
+<td>Pipe each partition of the RDD through a shell command, e.g. a Perl or bash script. RDD elements are written to the process&rsquo;s stdin and lines output to its stdout are returned as an RDD of strings.</td>
 </tr>
 <tr>
 <td>coalesce(numPartitions)</td>
@@ -567,8 +566,8 @@ rdd<span style="color:#f92672">.</span>foreach(increment_counter)
 </tr>
 </tbody>
 </table>
-<h3 id="heading">分发操作</h3>
-<h1 id="4-sparksql">4. sparksql使用</h1>
+<h3 id="分发操作">分发操作</h3>
+<h1 id="4-sparksql使用">4. sparksql使用</h1>
 <p>参考：https://spark.apache.org/docs/latest/api/python/pyspark.sql.html</p>
 <p>描述一些api的使用, 其实和hiveql类似, 不过使用py语法.</p>
 <h2 id="pysparksqlsparksession">pyspark.sql.SparkSession</h2>
@@ -620,7 +619,7 @@ rdd<span style="color:#f92672">.</span>foreach(increment_counter)
   
   
 <footer class="site-footer">
-  <p>© 2017-2021 L0phTg&#39;s Blog</p>
+  <p>© 2017-2022 L0phTg&#39;s Blog</p>
   <p>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> with theme <a href="https://github.com/laozhu/hugo-nuo" target="_blank" rel="noopener">Nuo</a>.</p>
   
 </footer>
