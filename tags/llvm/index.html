@@ -267,6 +267,42 @@
       
         <article class="post-entry">
   <header class="post-header">
+    <h3 class="post-title"><a href="http://L0phTg.top/post/llvm/kaleidoscopeextending-the-languagemutable-variables/" class="post-link">Kaleidoscope：Extending the Language：Mutable Variables</a></h3>
+    <p class="post-meta">@L0phTg · Jun 12, 2019 · 9 min read</p>
+  </header>
+  
+  
+  <p class="post-summary">
+    <p>translate from: <a href="http://llvm.org/docs/tutorial/LangImpl07.html">http://llvm.org/docs/tutorial/LangImpl07.html</a></p>
+<p>本章为“LLVM tutorial”的第七章：为Kaleidoscope添加对<strong>改变变量</strong>功能的支持。</p>
+<ul>
+<li>
+<p>改变已经存在的变量：</p>
+<ol>
+<li>
+<p>函数参数。</p>
+</li>
+<li>
+<p>迭代变量。</p>
+<p>在Codegen层面，为了改变这些变量，我们会为通过调用Alloca指令为每个变量在栈上创建空间，之后想要改变该变量的值可以通过Store指令来实现对变量值的改变，使用Load指令读取Alloca内存中的值（同时，我们还要修改NamedValues映射）。</p>
+<p>具体到Kaleidoscope语法层面，我们通过&rsquo;=&lsquo;运算符达到对已经定义变量的改变。</p>
+</li>
+</ol>
+</li>
+<li>
+<p>新定义一个变量：
+通过关键字var/in实现。</p>
+</li>
+</ul>
+  </p>
+  <footer class="post-footer">
+    <a class="read-more" href="http://L0phTg.top/post/llvm/kaleidoscopeextending-the-languagemutable-variables/">Read More →</a>
+  </footer>
+</article>
+
+      
+        <article class="post-entry">
+  <header class="post-header">
     <h3 class="post-title"><a href="http://L0phTg.top/post/llvm/kaleidoscopeextending-the-languageuser-defined-operators/" class="post-link">Kaleidoscope：Extending the Language：User Defined Operators</a></h3>
     <p class="post-meta">@L0phTg · Jun 11, 2019 · 8 min read</p>
   </header>
@@ -475,23 +511,6 @@ graph TB
   </p>
   <footer class="post-footer">
     <a class="read-more" href="http://L0phTg.top/post/llvm/kaleidoscope_implementing-a-parser-and-ast/">Read More →</a>
-  </footer>
-</article>
-
-      
-        <article class="post-entry">
-  <header class="post-header">
-    <h3 class="post-title"><a href="http://L0phTg.top/post/kaleidoscope_tutorial-introduction-and-lexer/" class="post-link">Kaleidoscope: Tutorial Introduction and Lexer</a></h3>
-    <p class="post-meta">@L0phTg · Apr 10, 2019 · 2 min read</p>
-  </header>
-  
-  
-  <p class="post-summary">
-    <p>translate from <a href="http://llvm.org/docs/tutorial/LangImpl01.html">http://llvm.org/docs/tutorial/LangImpl01.html</a></p>
-<p>本tutorial将会介绍一个简单语言的实现.</p>
-  </p>
-  <footer class="post-footer">
-    <a class="read-more" href="http://L0phTg.top/post/kaleidoscope_tutorial-introduction-and-lexer/">Read More →</a>
   </footer>
 </article>
 
