@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Root on L0phTg&#39; Blog</title>
+    <link>https://l0phtg.top/zh/tags/Root/</link>
+    <description>Recent content in Root on L0phTg&#39; Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 02 Oct 2018 15:38:56 +0800</lastBuildDate>
+    <atom:link href="https://l0phtg.top/zh/tags/Root/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Pixel1 源码编译</title>
+      <link>https://l0phtg.top/zh/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/Pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</link>
+      <pubDate>Tue, 02 Oct 2018 15:38:56 +0800</pubDate>
+      <guid>https://l0phtg.top/zh/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/Pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/</guid>
+      <description>&lt;p&gt;记录自己Pixel1刷机流程.&lt;/p&gt;&#xA;&lt;p&gt;相关网站&lt;/p&gt;&#xA;&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;Requirements&#xA;https://source.android.google.cn/setup/build/requirements.html#binaries&#xA;&#xA;https://source.android.com/setup/build/running&#xA;&#xA;buile numbers&#xA;https://source.android.com/setup/start/build-numbers&#xA;&#xA;https://source.android.com/setup/build/downloading&#xA;&#xA;驱动&#xA;https://developers.google.com/android/drivers&#xA;&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+  </channel>
+</rss>

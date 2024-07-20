@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Docs on L0phTg&#39; Blog</title>
+    <link>https://l0phtg.top/zh/docs/</link>
+    <description>Recent content in Docs on L0phTg&#39; Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 11 Jun 2019 16:32:00 +0800</lastBuildDate>
+    <atom:link href="https://l0phtg.top/zh/docs/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>信号与系统-学习笔记</title>
+      <link>https://l0phtg.top/zh/docs/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</link>
+      <pubDate>Tue, 11 Jun 2019 16:32:00 +0800</pubDate>
+      <guid>https://l0phtg.top/zh/docs/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</guid>
+      <description>&lt;p&gt;昨天刚回家，停更了两天，今天继续更博客。&lt;strong&gt;先简单水一篇&amp;laquo;信号与系统&amp;raquo;的学习记录&lt;/strong&gt;。&lt;/p&gt;&#xA;&lt;p&gt;&amp;laquo;信号与系统&amp;raquo;是我大学期间唯一一门挂了三年的课程，所以我对它的印象不可谓不深刻。&lt;/p&gt;&#xA;&lt;p&gt;为了过补考，在上个寒假时又重新学了一遍课程，并做了很多笔记，&lt;strong&gt;本文发一下我当前的笔记目录，并附上笔记pdf的github地址&lt;/strong&gt;。&lt;/p&gt;&#xA;&lt;p&gt;笔记地址: &#xA;  &lt;a href=&#34;https://github.com/L0phTg/ClassNote&#34;&gt;https://github.com/L0phTg/ClassNote&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;&lt;strong&gt;本文不断更新中&lt;/strong&gt;。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>如果你冲动删除了python</title>
+      <link>https://l0phtg.top/zh/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</link>
+      <pubDate>Tue, 02 Apr 2019 21:12:17 +0800</pubDate>
+      <guid>https://l0phtg.top/zh/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/</guid>
+      <description>&lt;p&gt;在你经历了痛苦的pip安装, 各种报错之后. 一气之前, 你决定卸载python, 重新安装. 那么, 既然要卸载, 就要卸载的彻底!&lt;/p&gt;&#xA;&lt;p&gt;所以你输入了下面的几行命令&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#hahaha&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove python&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove python3&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove pip&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt remove pip3&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#75715e&#34;&gt;#一定删除的不彻底, 我要彻底删除&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;$sudo apt autoremove -f &#xA;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;看到要删除600+M, 毅然决然的按了 y.&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;hellip;&lt;/p&gt;&#xA;&lt;p&gt;Bingo 然后你看到了我这篇文章.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>我的zsh和vim配置</title>
+      <link>https://l0phtg.top/zh/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Wed, 24 Oct 2018 00:14:31 +0800</pubDate>
+      <guid>https://l0phtg.top/zh/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</guid>
+      <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置&lt;/p&gt;&#xA;&lt;p&gt;&#xA;  &lt;img src=&#34;https://l0phtg.github.io/customConfig/myVimPreview.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Hugo搭建博客</title>
+      <link>https://l0phtg.top/zh/docs/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
+      <pubDate>Wed, 19 Sep 2018 20:04:10 +0800</pubDate>
+      <guid>https://l0phtg.top/zh/docs/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
+      <description>&lt;p&gt;博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.&lt;/p&gt;&#xA;&lt;p&gt;以前使用hexo搭的, 最近发现了好多人在用&lt;code&gt;hugo&lt;/code&gt;, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>装机日志-deepin</title>
+      <link>https://l0phtg.top/zh/docs/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</link>
+      <pubDate>Thu, 28 Dec 2017 11:47:58 +0000</pubDate>
+      <guid>https://l0phtg.top/zh/docs/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/</guid>
+      <description>&lt;p&gt;17年使用了一段时间deepin系统, 这里简单记录一些使用心得(现在已转ubuntu.&lt;/p&gt;&#xA;&lt;p&gt;主要就是&lt;strong&gt;装机的过程&lt;/strong&gt;, 以及&lt;strong&gt;装机后的效果展示&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;p&gt;&#xA;  &lt;img src=&#34;https://l0phtg.top/deepin/desktop.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
