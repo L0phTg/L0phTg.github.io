@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>算法 on L0phTg&#39; Blog</title>
+    <link>http://localhost:1313/tags/%E7%AE%97%E6%B3%95/</link>
+    <description>Recent content in 算法 on L0phTg&#39; Blog</description>
+    <generator>Hugo</generator>
+    <language>zh</language>
+    <lastBuildDate>Thu, 30 Jan 2020 21:12:15 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>算法篇之排序算法</title>
+      <link>http://localhost:1313/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E7%AE%97%E6%B3%95%E7%AF%87%E4%B9%8B%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+      <pubDate>Thu, 30 Jan 2020 21:12:15 +0800</pubDate>
+      <guid>http://localhost:1313/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E7%AE%97%E6%B3%95%E7%AF%87%E4%B9%8B%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+      <description>&lt;p&gt;参考自&amp;lt;算法导论&amp;gt;和网易公开课的&amp;lt;算法导论&amp;gt;课程。&lt;/p&gt;&#xA;&lt;table&gt;&#xA;&lt;thead&gt;&#xA;&lt;tr&gt;&#xA;&lt;th&gt;算法&lt;/th&gt;&#xA;&lt;th&gt;时间复杂度&lt;/th&gt;&#xA;&lt;/tr&gt;&#xA;&lt;/thead&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;insert sort(插入排序)&lt;/td&gt;&#xA;&lt;td&gt;$\varTheta (n^2)$&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;merge sort(归并排序)&lt;/td&gt;&#xA;&lt;td&gt;$\varTheta (nlgn)$&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;heap sort(堆排序)&lt;/td&gt;&#xA;&lt;td&gt;$\varTheta (nlgn)$&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;quicksort(快速排序)&lt;/td&gt;&#xA;&lt;td&gt;$\varTheta (nlgn)$  rand&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;counting sort(计数排序)&lt;/td&gt;&#xA;&lt;td&gt;$\varTheta (n) $&lt;/td&gt;&#xA;&lt;/tr&gt;&#xA;&lt;/tbody&gt;&#xA;&lt;/table&gt;</description>
+    </item>
+  </channel>
+</rss>
