@@ -10,9 +10,9 @@
     <atom:link href="https://l0phtg.top/tags/blog/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hugo搭建博客</title>
-      <link>https://l0phtg.top/docs/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
+      <link>https://l0phtg.top/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</link>
       <pubDate>Wed, 19 Sep 2018 20:04:10 +0800</pubDate>
-      <guid>https://l0phtg.top/docs/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
+      <guid>https://l0phtg.top/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/</guid>
       <description>&lt;p&gt;博客半年多没更新了. 正好最近时间比较多, 想着把博客更新下, 再把几篇平时总结的文章上传在Blog里面.&lt;/p&gt;&#xA;&lt;p&gt;以前使用hexo搭的, 最近发现了好多人在用&lt;code&gt;hugo&lt;/code&gt;, 自己使用hugo重新搭建了一下, 简单方便, 好感指数五颗星.&lt;/p&gt;</description>
     </item>
   </channel>

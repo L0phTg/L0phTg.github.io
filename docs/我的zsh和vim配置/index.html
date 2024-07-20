@@ -3,7 +3,13 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="总结了一下自己的vim配置和zsh配置
+<meta name="description" content="总结了一下自己的vim配置和zsh配置: 
+  https://github.com/L0phTg/vim-config
+
+支持lsp(自动补全、语法检查等): clang(c/c&#43;&#43;), pyright(python)等
+支持语法高亮: treesitter实现
+
+
 
   ">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
@@ -11,7 +17,8 @@
 <meta name="color-scheme" content="light dark"><meta property="og:url" content="https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/">
   <meta property="og:site_name" content="L0phTg&#39; Blog">
   <meta property="og:title" content="我的zsh和vim配置">
-  <meta property="og:description" content="总结了一下自己的vim配置和zsh配置">
+  <meta property="og:description" content="总结了一下自己的vim配置和zsh配置: https://github.com/L0phTg/vim-config
+支持lsp(自动补全、语法检查等): clang(c/c&#43;&#43;), pyright(python)等 支持语法高亮: treesitter实现 ">
   <meta property="og:locale" content="zh">
   <meta property="og:type" content="article">
     <meta property="article:section" content="docs">
@@ -23,7 +30,7 @@
 <link rel="canonical" href="https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/fuse.min.js"></script>
-  <script defer src="/zh.search.min.2e550bcfca34d31fc1a8232f0f8d450fa479b3a29cc633eb1f4fbf7cc96eaf47.js" integrity="sha256-LlULz8o00x/BqCMvD41FD6R5s6KcxjPrH0&#43;/fMlur0c=" crossorigin="anonymous"></script>
+  <script defer src="/zh.search.min.1a147ca7d2a1ea1788f833196188442cfcf6f1bc610456d77451c74cb0016d1a.js" integrity="sha256-GhR8p9Kh6heI&#43;DMZYYhELPz28bxhBFbXdFHHTLABbRo=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 
@@ -114,19 +121,6 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="">信号与系统-学习笔记</a>
-  
-
-        </li>
-      
-    
-      
-        <li>
-          
-  
-  
-
-  
     <a href="/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/" class="">如果你冲动删除了python</a>
   
 
@@ -141,32 +135,6 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/" class="active">我的zsh和vim配置</a>
-  
-
-        </li>
-      
-    
-      
-        <li>
-          
-  
-  
-
-  
-    <a href="/docs/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="">Hugo搭建博客</a>
-  
-
-        </li>
-      
-    
-      
-        <li>
-          
-  
-  
-
-  
-    <a href="/docs/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/" class="">装机日志-deepin</a>
   
 
         </li>
@@ -583,9 +551,9 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-8605de7ed46e24ba27108b98bdcb646f" class="toggle"  />
-    <label for="section-8605de7ed46e24ba27108b98bdcb646f" class="flex justify-between">
-      <a role="button" class="">编程语言</a>
+    <input type="checkbox" id="section-ed5a276e6651bb1bc42104ff560b0ad9" class="toggle"  />
+    <label for="section-ed5a276e6651bb1bc42104ff560b0ad9" class="flex justify-between">
+      <a role="button" class="">杂七杂八</a>
     </label>
   
 
@@ -599,7 +567,46 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/shortcodes/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="">C&#43;&#43;：设计一个抽象数据类型</a>
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="">信号与系统-学习笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/" class="">书签整理</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="">Hugo搭建博客</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/" class="">装机日志-deepin</a>
   
 
         </li>
@@ -617,9 +624,9 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <input type="checkbox" id="section-ed5a276e6651bb1bc42104ff560b0ad9" class="toggle"  />
-    <label for="section-ed5a276e6651bb1bc42104ff560b0ad9" class="flex justify-between">
-      <a role="button" class="">杂七杂八</a>
+    <input type="checkbox" id="section-8605de7ed46e24ba27108b98bdcb646f" class="toggle"  />
+    <label for="section-8605de7ed46e24ba27108b98bdcb646f" class="flex justify-between">
+      <a role="button" class="">编程语言</a>
     </label>
   
 
@@ -633,7 +640,7 @@ https://github.com/alex-shpak/hugo-book
   
 
   
-    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/" class="">书签整理</a>
+    <a href="/docs/shortcodes/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="">C&#43;&#43;：设计一个抽象数据类型</a>
   
 
         </li>
@@ -841,18 +848,9 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     <li>
       <ul>
-        <li><a href="#zsh配置">zsh配置</a>
-          <ul>
-            <li><a href="#powerline字体设置">powerline字体设置</a></li>
-            <li><a href="#我的插件">我的插件</a></li>
-          </ul>
-        </li>
-        <li><a href="#vim配置">vim配置</a>
-          <ul>
-            <li><a href="#插件">插件</a></li>
-            <li><a href="#我的配置">我的配置</a></li>
-          </ul>
-        </li>
+        <li><a href="#zsh配置">zsh配置</a></li>
+        <li><a href="#vim配置">vim配置</a></li>
+        <li><a href="#其他相关">其他相关</a></li>
       </ul>
     </li>
   </ul>
@@ -867,406 +865,127 @@ https://github.com/alex-shpak/hugo-book
 
       
       
-  <article class="markdown book-article"><p>总结了一下自己的vim配置和zsh配置</p>
+  <article class="markdown book-article"><p>总结了一下自己的vim配置和zsh配置: 
+  <a href="https://github.com/L0phTg/vim-config">https://github.com/L0phTg/vim-config</a></p>
+<ul>
+<li>支持lsp(自动补全、语法检查等): clang(c/c++), pyright(python)等</li>
+<li>支持语法高亮: treesitter实现</li>
+</ul>
+<!-- ![](https://l0phtg.github.io/customConfig/myVimPreview.png) -->
 <p>
-  <img src="https://l0phtg.github.io/customConfig/myVimPreview.png" alt="" /></p>
+  <img src="/life/nvim2.png" alt="" /></p>
 <h2 id="zsh配置">
   zsh配置
   <a class="anchor" href="#zsh%e9%85%8d%e7%bd%ae">#</a>
 </h2>
 <p>
   <a href="https://github.com/robbyrussell/oh-my-zsh">https://github.com/robbyrussell/oh-my-zsh</a></p>
-<h3 id="powerline字体设置">
-  powerline字体设置
-  <a class="anchor" href="#powerline%e5%ad%97%e4%bd%93%e8%ae%be%e7%bd%ae">#</a>
-</h3>
-<p>
-  <a href="https://dwijaybane.wordpress.com/2017/12/04/oh-my-zsh-and-powerline-fonts-setup-for-awesome-terminal-in-ubuntu-16-04/">https://dwijaybane.wordpress.com/2017/12/04/oh-my-zsh-and-powerline-fonts-setup-for-awesome-terminal-in-ubuntu-16-04/</a></p>
-<h3 id="我的插件">
-  我的插件
-  <a class="anchor" href="#%e6%88%91%e7%9a%84%e6%8f%92%e4%bb%b6">#</a>
-</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>plugins<span style="color:#f92672">=(</span>git autojump web-search last-working-dir zsh-syntax-highlighting colored-man-pages extract zsh-proxychains-ng adb pip npm python<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">#plugins=(git autojump last-working-dir adb pip npm python)</span>
-</span></span></code></pre></div><h2 id="vim配置">
+<p>zsh配置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>plugins<span style="color:#f92672">=(</span>git zsh-autosuggestions<span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>powerline字体: 
+  <a href="https://github.com/powerline/powerline">https://github.com/powerline/powerline</a></p>
+<h2 id="vim配置">
   vim配置
   <a class="anchor" href="#vim%e9%85%8d%e7%bd%ae">#</a>
 </h2>
-<ol>
+<p>配置文件:</p>
+<ul>
 <li>
 <p>当你使用<code>vim</code>时, 可以在<code>~/.vimrc</code>中编写你的vim配置文件.</p>
 </li>
 <li>
 <p>当你使用<code>neovim</code>时, 可以在<code>~/.config/nvim/init.vim</code>中编写你的vim配置文件.</p>
 </li>
-</ol>
-<h3 id="插件">
-  插件
-  <a class="anchor" href="#%e6%8f%92%e4%bb%b6">#</a>
-</h3>
-<ol start="0">
-<li>插件管理<code>vim-plug</code></li>
-<li>tagbar</li>
-<li>airline</li>
-<li>vimfilter</li>
-<li>vim-bufabline buffer窗口</li>
-<li>fzf和ag 搜索</li>
-<li>括号补全&rsquo;Raimondi/delimitMate'</li>
-<li>include补全 neoinclude</li>
-<li>语法补全jedi-vim(python)</li>
-</ol>
-<h4 id="vim-plug-vim插件管理工具">
-  <code>vim-plug</code> vim插件管理工具
-  <a class="anchor" href="#vim-plug-vim%e6%8f%92%e4%bb%b6%e7%ae%a1%e7%90%86%e5%b7%a5%e5%85%b7">#</a>
-</h4>
-<p>README: 
-  <a href="https://github.com/junegunn/vim-plug">https://github.com/junegunn/vim-plug</a>.</p>
-<ol>
-<li>安装</li>
-</ol>
-<p>a. 当你使用<code>vim</code>时.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$curl -fLo ~/.vim/autoload/plug.vim --create-dirs <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-</span></span></code></pre></div><p>b. 当你使用`neovim时.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs <span style="color:#ae81ff">\
-</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-</span></span></code></pre></div><ol start="2">
-<li>使用</li>
-</ol>
-<p>a. 可以使用git链接</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;https://github.com/junegunn/vim-github-dashboard.git&#39;</span>
-</span></span></code></pre></div><p>b. 使用git<code>UserName/Project</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;junegunn/vim-easy-align&#39;</span>
-</span></span></code></pre></div><p>更多可以参考文档.</p>
-<ol start="3">
-<li>安装插件</li>
-</ol>
-<p>只是把要安装的插件写在配置文件中是不够的, 还需要安装.</p>
-<p>写好配置文件后, 重新打开vim, 运行<code>PlugInstall</code>.</p>
-<ol start="4">
-<li>例子:(我的部分配置)</li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;NLKNguyen/papercolor-theme&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;vim-airline/vim-airline&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;vim-airline/vim-airline-themes&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/denite.nvim&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/unite.vim&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/vimfiler&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;majutsushi/tagbar&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;ap/vim-buftabline&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/deoplete.nvim&#39;</span>, { <span style="color:#e6db74">&#39;do&#39;</span>: <span style="color:#e6db74">&#39;:UpdateRemotePlugins&#39;</span> }
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;rip-rip/clang_complete&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;SirVer/ultisnips&#39;</span>           <span style="color:#75715e">&#34; 代码片段补全  模板补全</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;honza/vim-snippets&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;zchee/deoplete-jedi&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;scrooloose/nerdcommenter&#39;</span>   <span style="color:#75715e">&#34; 自动注释   &lt;leader&gt;cc  注释当先选中文本  </span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;ctrlpvim/ctrlp.vim&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;lvht/tagbar-markdown&#39;</span>       <span style="color:#75715e">&#34; markdown  tagbar显示</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;~/.fzf&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;junegunn/fzf.vim&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span></code></pre></div><h4 id="tagbar">
-  <code>tagbar</code>
-  <a class="anchor" href="#tagbar">#</a>
-</h4>
-<p>README: 
-  <a href="https://github.com/majutsushi/tagbar">https://github.com/majutsushi/tagbar</a>.</p>
-<ol>
-<li>安装<code>ctags</code></li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$sudo apt install ctags
-</span></span></code></pre></div><ol start="2">
-<li>vim中配置<code>tagbar</code></li>
-</ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;majutsushi/tagbar&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">tagbar_width</span>=<span style="color:#ae81ff">30</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">tagbar_left</span>=<span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;映射F2快捷键为打开tagbar</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">F2</span>&gt; :<span style="color:#a6e22e">TagbarToggle</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span></code></pre></div><h4 id="airline-主题">
-  <code>airline</code> 主题
-  <a class="anchor" href="#airline-%e4%b8%bb%e9%a2%98">#</a>
-</h4>
-<p>
-  <a href="https://github.com/vim-airline/vim-airline">https://github.com/vim-airline/vim-airline</a></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;NLKNguyen/papercolor-theme&#39;</span>           <span style="color:#e6db74">//</span> <span style="color:#a6e22e">这是我自己的主题</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;vim-airline/vim-airline&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;vim-airline/vim-airline-themes&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">airline_theme</span>=<span style="color:#e6db74">&#39;papercolor&#39;</span>
-</span></span></code></pre></div><h4 id="vimfilter-文件树">
-  <code>vimfilter</code> 文件树
-  <a class="anchor" href="#vimfilter-%e6%96%87%e4%bb%b6%e6%a0%91">#</a>
-</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/vimfiler&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;我设置的打开vimfilter的对应快捷键为F3</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">F3</span>&gt; :<span style="color:#a6e22e">VimFilerExplorer</span> -<span style="color:#a6e22e">split</span> -<span style="color:#a6e22e">direction</span>=<span style="color:#a6e22e">rightbelow</span> &lt;<span style="color:#a6e22e">CR</span>&gt;          
-</span></span></code></pre></div><h4 id="vim-bufabline-buffer窗口">
-  <code>vim-bufabline</code> buffer窗口
-  <a class="anchor" href="#vim-bufabline-buffer%e7%aa%97%e5%8f%a3">#</a>
-</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;ap/vim-buftabline&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;映射对应的快捷键为打开对应的buffer</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">1</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">2</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">2</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">3</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">3</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">4</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">4</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">5</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">5</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">6</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">6</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">7</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">7</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">8</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">8</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">9</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">9</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">0</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">10</span>)
-</span></span></code></pre></div><h4 id="fzf-和-ag">
-  fzf 和 ag
-  <a class="anchor" href="#fzf-%e5%92%8c-ag">#</a>
-</h4>
-<p>
-  <img src="https://l0phtg.github.io/customConfig/fileContentSearch.png" alt="目录下的全部文件内容搜索" /></p>
-<ol>
-<li>下载安装fzf</li>
-</ol>
+</ul>
+<p>插件管理工具：</p>
+<ul>
+<li>vim-plug: 
+  <a href="https://github.com/junegunn/vim-plug">https://github.com/junegunn/vim-plug</a>.</li>
+</ul>
+<p>下载nvim</p>
+<pre tabindex="0"><code>$ wget https://github.com/neovim/neovim/releases/download/nightly/nvim.appimage
+</code></pre><p>centos 支持运行image:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ yum install fuse-devel fuse-libs fuse
+</span></span><span style="display:flex;"><span>$ lsmod | grep fuse
+</span></span><span style="display:flex;"><span>$ modprobe fuse
+</span></span><span style="display:flex;"><span>$ lsmod | grep fuse
+</span></span></code></pre></div><p>可选: centos安装devtools:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ yum install centos-release-scl
+</span></span><span style="display:flex;"><span>$ yum install devtoolset-7
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 开启方法1:</span>
+</span></span><span style="display:flex;"><span>$ scl enable devtoolset-7 bash <span style="color:#75715e"># sch enable devtoolset-7 zsh</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 开启方法2: 可以在.zshrc里面source</span>
+</span></span><span style="display:flex;"><span>source /opt/rh/devtoolset-7/enable
+</span></span></code></pre></div><p>pip安装pynvim</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ pip3.8 install pynvim --user
+</span></span></code></pre></div><p>更新vim-plug:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sh -c <span style="color:#e6db74">&#39;curl -fLo &#34;${XDG_DATA_HOME:-$HOME/.local/share}&#34;/nvim/site/autoload/plug.vim --create-dirs \
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim&#39;</span>
+</span></span></code></pre></div><p>安装fzf, ripgrep, fd</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone --depth <span style="color:#ae81ff">1</span> https://github.com/junegunn/fzf.git ~/.fzf
 </span></span><span style="display:flex;"><span>~/.fzf/install
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>// centos
+</span></span><span style="display:flex;"><span>yum install yum-utils.noarch
+</span></span><span style="display:flex;"><span>yum-config-manager --add-repo<span style="color:#f92672">=</span>https://copr.fedorainfracloud.org/coprs/carlwgeorge/ripgrep/repo/epel-7/carlwgeorge-ripgrep-epel-7.repo
+</span></span><span style="display:flex;"><span>yum install ripgrep
+</span></span><span style="display:flex;"><span>// ubuntu
+</span></span><span style="display:flex;"><span>wget https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep_13.0.0_amd64.deb
+</span></span><span style="display:flex;"><span>sudo dpkg -i ripgrep_13.0.0_amd64.deb
+</span></span><span style="display:flex;"><span>// aarch: https://github.com/BurntSushi/ripgrep/releases
+</span></span><span style="display:flex;"><span>wget https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-aarch64-unknown-linux-gnu.tar.gz
+</span></span><span style="display:flex;"><span>tar xvzf ripgrep-14.1.0-aarch64-unknown-linux-gnu.tar.gz
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget https://github.com/sharkdp/fd/releases/download/v8.5.3/fd-v8.5.3-x86_64-unknown-linux-musl.tar.gz
+</span></span><span style="display:flex;"><span>tar -xvf fd-v8.5.3-x86_64-unknown-linux-musl.tar.gz
+</span></span><span style="display:flex;"><span>cp fd /usr/local/bin
+</span></span><span style="display:flex;"><span>cp fd.1 /usr/local/share/man/man1/
+</span></span><span style="display:flex;"><span>mandb
+</span></span></code></pre></div><p>安装node, npm: 
+  <a href="https://www.runoob.com/nodejs/nodejs-install-setup.html">安装教程</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget https://nodejs.org/dist/v18.12.1/node-v18.12.1-linux-x64.tar.xz <span style="color:#75715e"># for ubuntu20.04</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#$  wget https://nodejs.org/dist/v17.9.1/node-v17.9.1-linux-x64.tar.xz # for ubuntu18.04</span>
+</span></span><span style="display:flex;"><span>$ tar xf node-v18.12.1-linux-x64.tar.xz
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#$ tar xf node-v17.9.1-linux-x64.tar.xz</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设置zsh PATH</span>
+</span></span></code></pre></div><p><code>npm install -g neovim</code></p>
+<p>执行<code>:PlugInstall</code></p>
+<p>通过执行<code>:Mason</code>命令安装语言服务器: clangd, pyright等</p>
+<h2 id="其他相关">
+  其他相关
+  <a class="anchor" href="#%e5%85%b6%e4%bb%96%e7%9b%b8%e5%85%b3">#</a>
+</h2>
+<ol>
+<li>安装cmake</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ wget https://github.com/Kitware/CMake/releases/download/v3.25.1/cmake-3.25.1-linux-x86_64.sh
+</span></span><span style="display:flex;"><span>$ chmod <span style="color:#ae81ff">755</span> cmake-3.25.1-linux-x86_64.sh
+</span></span><span style="display:flex;"><span>$ sudo sh cmake-3.25.1-linux-x86_64.sh
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 设置环境变量</span>
 </span></span></code></pre></div><ol start="2">
-<li>vim 中配置fzf</li>
+<li>安装git
+  <a href="https://git-scm.com/download/linux">安装说明</a></li>
 </ol>
-<p>插件使用<code>vim-plug</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;~/.fzf&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo add-apt-repository ppa:git-core/ppa
+</span></span><span style="display:flex;"><span>$ sudo apt update
+</span></span><span style="display:flex;"><span>$ sudo apt install git
 </span></span></code></pre></div><ol start="3">
-<li>ag安装</li>
+<li>安装xclip, 方便系统和vim之前相互复制:</li>
 </ol>
-<p>ubuntu</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$sudo apt-get install silversearcher-ag
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ sudo apt install xclip
 </span></span></code></pre></div><ol start="4">
-<li>快捷键映射</li>
+<li>使用wsl2时, 要使剪切板生效, 需要在<code>init.vim</code>中添加(这些脚本可以通过<code>help clipboard-wsl</code>得到):</li>
 </ol>
-<p>在我的vim中, <leader>映射为了<code>space</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">sff</span> :<span style="color:#a6e22e">Files</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">ssf</span> :<span style="color:#a6e22e">Lines</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">sbf</span> :<span style="color:#a6e22e">BLines</span>&lt;<span style="color:#a6e22e">CR</span>&gt; 
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">ss</span>  :<span style="color:#a6e22e">Ag</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">gls</span> :<span style="color:#a6e22e">GFiles</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">gss</span> :<span style="color:#a6e22e">GFiles</span>?&lt;<span style="color:#a6e22e">CR</span>&gt;   
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">btag</span> :<span style="color:#a6e22e">Tags</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">stag</span> :<span style="color:#a6e22e">BTags</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span></code></pre></div><ol start="5">
-<li>使用</li>
-</ol>
-<p><code>:BTags</code> 可以在当前目录下build tags, <code>前提系统已经ctags</code>(apt install ctags)</p>
-<p><code>:Tags</code> 可以搜索tag. 在搜索前, 要先build tags. (可以自行阅读fzf doc, 应该可以在vim启动时自动build tags).</p>
-<p>当前文件内容搜索:
-
-  <img src="https://l0phtg.github.io/customConfig/singleFileContentSearch.png" alt="当前文件内容搜索" />
-当前目录的文件搜索:
-
-  <img src="https://l0phtg.github.io/customConfig/searchFile.png" alt="当前目录的文件搜索" /></p>
-<h4 id="括号补全raimondidelimitmate">
-  括号补全&rsquo;Raimondi/delimitMate'
-  <a class="anchor" href="#%e6%8b%ac%e5%8f%b7%e8%a1%a5%e5%85%a8raimondidelimitmate">#</a>
-</h4>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Raimondi/delimitMate&#39;</span>       <span style="color:#e6db74">&#34; 补全, \&#34;</span> \( <span style="color:#a6e22e">等</span>.
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span></code></pre></div><h4 id="ccllvm头文件补全-neoinclude">
-  c/c++/llvm头文件补全 neoinclude
-  <a class="anchor" href="#ccllvm%e5%a4%b4%e6%96%87%e4%bb%b6%e8%a1%a5%e5%85%a8-neoinclude">#</a>
-</h4>
-<p>头文件补全需要设置头文件path, (<strong>注意, 是vim配置文件中的path, 而不是系统环境变量的path</strong>)</p>
-<p>我使用的是nvim, 配置文件是~/config/nvim/init.vim</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#75715e">&#34; ~/.config/nvim/init.vim</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">path</span>=.,<span style="color:#e6db74">/usr/</span><span style="color:#a6e22e">include</span><span style="color:#e6db74">/c++/</span><span style="color:#ae81ff">5</span>,<span style="color:#e6db74">/usr/</span><span style="color:#a6e22e">include</span>,<span style="color:#e6db74">/home/</span><span style="color:#a6e22e">l0phtg</span><span style="color:#e6db74">/tools/</span><span style="color:#a6e22e">llvm</span>-<span style="color:#a6e22e">project</span><span style="color:#e6db74">/llvm/</span><span style="color:#a6e22e">include</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/neoinclude.vim&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span></code></pre></div><h3 id="我的配置">
-  我的配置
-  <a class="anchor" href="#%e6%88%91%e7%9a%84%e9%85%8d%e7%bd%ae">#</a>
-</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-vim" data-lang="vim"><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">nu</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">mapleader</span>= <span style="color:#e6db74">&#39; &#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">mapleader</span> = <span style="color:#e6db74">&#39; &#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">syntax</span> <span style="color:#a6e22e">on</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">filetype</span> <span style="color:#a6e22e">on</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">filetype</span> <span style="color:#a6e22e">indent</span> <span style="color:#a6e22e">on</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">filetype</span> <span style="color:#a6e22e">plugin</span> <span style="color:#a6e22e">on</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">filetype</span> <span style="color:#a6e22e">plugin</span> <span style="color:#a6e22e">indent</span> <span style="color:#a6e22e">on</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 标签页</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">tabpagemax</span>=<span style="color:#ae81ff">20</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">showtabline</span>=<span style="color:#ae81ff">2</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 设置文件浏览器目录为当前目录</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">bsdir</span>=<span style="color:#a6e22e">buffer</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 突出显示当前行</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">cursorline</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 突出显示当前列</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; set cursorcolumn</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 括号配对情况, 跳转并高亮匹配的括号</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">showmatch</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">matchtime</span>=<span style="color:#ae81ff">2</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 相对行号: 行号变成相对</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">relativenumber</span> <span style="color:#a6e22e">number</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">encoding</span>=<span style="color:#a6e22e">utf</span><span style="color:#ae81ff">-8</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">fileencodings</span>=<span style="color:#a6e22e">ucs</span>-<span style="color:#a6e22e">bom</span>,<span style="color:#a6e22e">utf</span><span style="color:#ae81ff">-8</span>,<span style="color:#a6e22e">cp936</span>,<span style="color:#a6e22e">gb18030</span>,<span style="color:#a6e22e">big5</span>,<span style="color:#a6e22e">euc</span>-<span style="color:#a6e22e">jp</span>,<span style="color:#a6e22e">euc</span>-<span style="color:#a6e22e">kr</span>,<span style="color:#a6e22e">latin1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">helplang</span>=<span style="color:#a6e22e">cn</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">rtp</span>+=~/.<span style="color:#a6e22e">fzf</span>                  <span style="color:#75715e">&#34; fzf </span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">path</span>=.,<span style="color:#e6db74">/usr/</span><span style="color:#a6e22e">include</span><span style="color:#e6db74">/c++/</span><span style="color:#ae81ff">5</span>,<span style="color:#e6db74">/usr/</span><span style="color:#a6e22e">include</span>,<span style="color:#e6db74">/home/</span><span style="color:#a6e22e">l0phtg</span><span style="color:#e6db74">/tools/</span><span style="color:#a6e22e">llvm</span>-<span style="color:#a6e22e">project</span><span style="color:#e6db74">/llvm/</span><span style="color:#a6e22e">include</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;plug插件</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">begin</span>()
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;NLKNguyen/papercolor-theme&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;vim-airline/vim-airline&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;vim-airline/vim-airline-themes&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/denite.nvim&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/unite.vim&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/vimfiler&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/deoplete.nvim&#39;</span>, { <span style="color:#e6db74">&#39;do&#39;</span>: <span style="color:#e6db74">&#39;:UpdateRemotePlugins&#39;</span> }
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Shougo/neoinclude.vim&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;majutsushi/tagbar&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;&#34;Plug &#39;https://github.com/fholgado/minibufexpl.vim.git&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;ap/vim-buftabline&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;justmao945/vim-clang&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;Plug &#39;Valloric/YouCompleteMe&#39;     &#34; YCM补全</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;Plug &#39;SirVer/ultisnips&#39;           &#34; 代码片段补全  模板补全</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;Plug &#39;zchee/deoplete-jedi&#39;       &#34; Python补全</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;Raimondi/delimitMate&#39;</span>       <span style="color:#e6db74">&#34; 不全, \&#34;</span> \( <span style="color:#a6e22e">等</span>.
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;scrooloose/nerdcommenter&#39;</span>   <span style="color:#75715e">&#34; 自动注释   &lt;leader&gt;cc  注释当先选中文本  &lt;leader&gt;cu 取消选中文本块的注释</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;lvht/tagbar-markdown&#39;</span>       <span style="color:#75715e">&#34; markdown  tagbar显示</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;~/.fzf&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">Plug</span> <span style="color:#e6db74">&#39;junegunn/fzf.vim&#39;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">call</span> <span style="color:#a6e22e">plug</span>#<span style="color:#a6e22e">end</span>()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">background</span>=dark
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">colorscheme</span> <span style="color:#a6e22e">PaperColor</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">airline_theme</span>=<span style="color:#e6db74">&#39;papercolor&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 设置tagbar</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">tagbar_width</span>=<span style="color:#ae81ff">30</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">tagbar_left</span>=<span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 配置fzf  和 ag</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">sff</span> :<span style="color:#a6e22e">Files</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">ssf</span> :<span style="color:#a6e22e">Lines</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">sbf</span> :<span style="color:#a6e22e">BLines</span>&lt;<span style="color:#a6e22e">CR</span>&gt; 
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">ss</span>  :<span style="color:#a6e22e">Ag</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">gls</span> :<span style="color:#a6e22e">GFiles</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">gss</span> :<span style="color:#a6e22e">GFiles</span>?&lt;<span style="color:#a6e22e">CR</span>&gt;   
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">btag</span> :<span style="color:#a6e22e">Tags</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">stag</span> :<span style="color:#a6e22e">BTags</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 配置vimbuftabline</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">buftabline_numbers</span>=<span style="color:#ae81ff">2</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">noremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;&lt;<span style="color:#a6e22e">Tab</span>&gt; :<span style="color:#a6e22e">bnext</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">1</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">1</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">2</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">2</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">3</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">3</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">4</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">4</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">5</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">5</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">6</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">6</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">7</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">7</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">8</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">8</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">9</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">9</span>)
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nmap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#ae81ff">0</span> &lt;<span style="color:#a6e22e">Plug</span>&gt;<span style="color:#a6e22e">BufTabLine</span>.<span style="color:#a6e22e">Go</span>(<span style="color:#ae81ff">10</span>)
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 设置 deoplete.nvim</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">deoplete</span>#<span style="color:#a6e22e">enable_at_startup</span> = <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;设置Tab为补全</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">inoremap</span> &lt;<span style="color:#a6e22e">expr</span>&gt; &lt;<span style="color:#a6e22e">Tab</span>&gt; <span style="color:#a6e22e">pumvisible</span>() ? <span style="color:#e6db74">&#34;\&lt;C-n&gt;&#34;</span> : <span style="color:#e6db74">&#34;\&lt;Tab&gt;&#34;</span>                
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;inoremap &lt;expr&gt; &lt;S-Tab&gt; pumvisible() ? &#34;\&lt;C-p&gt;&#34; : &#34;\&lt;S-Tab&gt;&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;inoremap &lt;expr&gt; &lt;cr&gt; pumvisible() ? &#34;\&lt;C-y&gt;&#34; : &#34;\&lt;cr&gt;&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 设置vim-clang</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">clang_cpp_options</span> = <span style="color:#e6db74">&#39;-std=c++11&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">clang_check_syntax_auto</span> = <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">clang_cpp_completeopt</span> = <span style="color:#e6db74">&#39;menuone,longest&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;快捷键只在常规模式下有用 nnoremap</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;设置 F3 为打开vimfiler</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;设置 &#34; &#34;fs 为保存文件</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;function vimfilertoRight()</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;endfunction</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">F2</span>&gt; :<span style="color:#a6e22e">TagbarToggle</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">F3</span>&gt; :<span style="color:#a6e22e">VimFilerExplorer</span> -<span style="color:#a6e22e">split</span> -<span style="color:#a6e22e">direction</span>=<span style="color:#a6e22e">rightbelow</span> &lt;<span style="color:#a6e22e">CR</span>&gt;          
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">fs</span> :<span style="color:#a6e22e">w</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">fS</span> :<span style="color:#a6e22e">wall</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">qq</span> :<span style="color:#a6e22e">wq</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;vim windows窗口左右</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">h</span>&gt; &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">w</span>&gt;<span style="color:#a6e22e">h</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">l</span>&gt; &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">w</span>&gt;<span style="color:#a6e22e">l</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">j</span>&gt; &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">w</span>&gt;<span style="color:#a6e22e">j</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">k</span>&gt; &lt;<span style="color:#a6e22e">C</span>-<span style="color:#a6e22e">w</span>&gt;<span style="color:#a6e22e">k</span> &lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;分割窗口</span>
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">wj</span> :<span style="color:#a6e22e">split</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#a6e22e">nnoremap</span> &lt;<span style="color:#a6e22e">leader</span>&gt;<span style="color:#a6e22e">wl</span> :<span style="color:#a6e22e">vsplit</span>&lt;<span style="color:#a6e22e">CR</span>&gt;
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34;set hidden &#34; 避免必须保存才可以跳转buffer</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; my settings 对vimfiler的配置</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_as_default_explorer</span> = <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_safe_mode_by_default</span> = <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_tree_leaf_icon</span> = <span style="color:#e6db74">&#39; &#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_tree_opened_icon</span> = <span style="color:#e6db74">&#39;▾&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_tree_closed_icon</span> = <span style="color:#e6db74">&#39;▸&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_enable_auto_cd</span> = <span style="color:#ae81ff">1</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_file_icon</span> = <span style="color:#e6db74">&#39;-&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_marked_file_icon</span> = <span style="color:#e6db74">&#39;✓&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_readonly_file_icon</span> = <span style="color:#e6db74">&#39;✗&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_time_format</span> = <span style="color:#e6db74">&#39;%m-%d-%y %H:%M:%S&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_expand_jump_to_first_child</span> = <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">let</span> <span style="color:#a6e22e">g</span>:<span style="color:#a6e22e">vimfiler_ignore_pattern</span> = <span style="color:#e6db74">&#39;\.git\|\.DS_Store\|\.pyc&#39;</span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">&#34; 文件类型设置 FileType Settings</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">sw</span>=<span style="color:#ae81ff">4</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">set</span> <span style="color:#a6e22e">ts</span>=<span style="color:#ae81ff">4</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">autocmd</span> <span style="color:#a6e22e">FileType</span> <span style="color:#a6e22e">markdown</span> <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">tabstop</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">shiftwidth</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">expandtab</span> <span style="color:#a6e22e">ai</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">autocmd</span> <span style="color:#a6e22e">FileType</span> <span style="color:#a6e22e">c</span>++ <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">tabstop</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">shiftwidth</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">expandtab</span> <span style="color:#a6e22e">ai</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">autocmd</span> <span style="color:#a6e22e">FileType</span> <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">tabstop</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">shiftwidth</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">expandtab</span> <span style="color:#a6e22e">ai</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">autocmd</span> <span style="color:#a6e22e">FileType</span> <span style="color:#a6e22e">python</span> <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">tabstop</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">shiftwidth</span>=<span style="color:#ae81ff">4</span> <span style="color:#a6e22e">expandtab</span> <span style="color:#a6e22e">ai</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">autocmd</span> <span style="color:#a6e22e">FileType</span> <span style="color:#a6e22e">ruby</span>,<span style="color:#a6e22e">javascript</span>,<span style="color:#a6e22e">html</span>,<span style="color:#a6e22e">css</span>,<span style="color:#a6e22e">xml</span> <span style="color:#66d9ef">set</span> <span style="color:#a6e22e">tabstop</span>=<span style="color:#ae81ff">2</span> <span style="color:#a6e22e">shiftwidth</span>=<span style="color:#ae81ff">2</span> <span style="color:#a6e22e">softtabstop</span>=<span style="color:#ae81ff">2</span> <span style="color:#a6e22e">expandtab</span> <span style="color:#a6e22e">ai</span>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>let g:clipboard <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>  <span style="color:#e6db74">&#39;name&#39;</span>: <span style="color:#e6db74">&#39;WslClipboard&#39;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>  <span style="color:#e6db74">&#39;copy&#39;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>     <span style="color:#e6db74">&#39;+&#39;</span>: <span style="color:#e6db74">&#39;clip.exe&#39;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>     <span style="color:#e6db74">&#39;*&#39;</span>: <span style="color:#e6db74">&#39;clip.exe&#39;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>   <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>  <span style="color:#e6db74">&#39;paste&#39;</span>: <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>     <span style="color:#e6db74">&#39;+&#39;</span>: <span style="color:#e6db74">&#39;powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace(&#34;`r&#34;, &#34;&#34;))&#39;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>     <span style="color:#e6db74">&#39;*&#39;</span>: <span style="color:#e6db74">&#39;powershell.exe -c [Console]::Out.Write($(Get-Clipboard -Raw).tostring().replace(&#34;`r&#34;, &#34;&#34;))&#39;</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>  <span style="color:#f92672">}</span>,
+</span></span><span style="display:flex;"><span>		<span style="color:#ae81ff">\ </span>  <span style="color:#e6db74">&#39;cache_enabled&#39;</span>: 0,
+</span></span><span style="display:flex;"><span>                <span style="color:#ae81ff">\ </span><span style="color:#f92672">}</span>
 </span></span></code></pre></div></article>
  
       
@@ -1317,18 +1036,9 @@ https://github.com/alex-shpak/hugo-book
   <ul>
     <li>
       <ul>
-        <li><a href="#zsh配置">zsh配置</a>
-          <ul>
-            <li><a href="#powerline字体设置">powerline字体设置</a></li>
-            <li><a href="#我的插件">我的插件</a></li>
-          </ul>
-        </li>
-        <li><a href="#vim配置">vim配置</a>
-          <ul>
-            <li><a href="#插件">插件</a></li>
-            <li><a href="#我的配置">我的配置</a></li>
-          </ul>
-        </li>
+        <li><a href="#zsh配置">zsh配置</a></li>
+        <li><a href="#vim配置">vim配置</a></li>
+        <li><a href="#其他相关">其他相关</a></li>
       </ul>
     </li>
   </ul>
