@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="RewriteDataflowReshape # pass功能：
+将所有的类似reshape的call_tir转换为VM reshape操作符call。VM reshape operator将会被降级为运行期间的CreateView操作，而不是做一些真实的数据拷贝工作。 这里的reshape类的算子包含：reshape、expand_dims、flatten等 类实现：
+Expr RewriteDataflowReshape(const Function&amp; f, const IRModule&amp; mod) { return DataflowReshapeRewriter(mod)(f); } namespace transform { Pass RewriteDataflowReshape() { runtime::TypedPackedFunc&lt;Function(Function, IRModule, PassContext)&gt; pass_func = [=](Function f, IRModule m, PassContext pc) { return Downcast&lt;Function&gt;(RewriteDataflowReshape(f, m)); }; return CreateFunctionPass(pass_func, 0, &#34;RewriteDataflowReshape&#34;, {}); } TVM_REGISTER_GLOBAL(&#34;relax.transform.RewriteDataflowReshape&#34;) .set_body_typed(RewriteDataflowReshape); } CallTIRRewrite # # src/relax/transform/call_tir_rewrite.cc Pass CallTIRRewrite() { runtime::TypedPackedFunc&lt;Function(Function, IRModule, PassContext)&gt; pass_func = [=](Function f, IRModule m, PassContext pc) { return Downcast&lt;Function&gt;(CallTIRRewrite(f)); }; return CreateFunctionPass(pass_func, 0, &#34;CallTIRRewrite&#34;, {}); } TVM_REGISTER_GLOBAL(&#34;relax.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax.Pipeline/">
+  <meta property="og:site_name" content="L0phTg&#39; Blog">
+  <meta property="og:title" content="【TVM】Relax.Pipeline源码分析">
+  <meta property="og:description" content="RewriteDataflowReshape # pass功能：
+将所有的类似reshape的call_tir转换为VM reshape操作符call。VM reshape operator将会被降级为运行期间的CreateView操作，而不是做一些真实的数据拷贝工作。 这里的reshape类的算子包含：reshape、expand_dims、flatten等 类实现：
+Expr RewriteDataflowReshape(const Function&amp; f, const IRModule&amp; mod) { return DataflowReshapeRewriter(mod)(f); } namespace transform { Pass RewriteDataflowReshape() { runtime::TypedPackedFunc&lt;Function(Function, IRModule, PassContext)&gt; pass_func = [=](Function f, IRModule m, PassContext pc) { return Downcast&lt;Function&gt;(RewriteDataflowReshape(f, m)); }; return CreateFunctionPass(pass_func, 0, &#34;RewriteDataflowReshape&#34;, {}); } TVM_REGISTER_GLOBAL(&#34;relax.transform.RewriteDataflowReshape&#34;) .set_body_typed(RewriteDataflowReshape); } CallTIRRewrite # # src/relax/transform/call_tir_rewrite.cc Pass CallTIRRewrite() { runtime::TypedPackedFunc&lt;Function(Function, IRModule, PassContext)&gt; pass_func = [=](Function f, IRModule m, PassContext pc) { return Downcast&lt;Function&gt;(CallTIRRewrite(f)); }; return CreateFunctionPass(pass_func, 0, &#34;CallTIRRewrite&#34;, {}); } TVM_REGISTER_GLOBAL(&#34;relax.">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+    <meta property="article:published_time" content="2023-08-09T21:54:49+08:00">
+    <meta property="article:modified_time" content="2023-08-10T21:54:49+08:00">
+<title>【TVM】Relax.Pipeline源码分析 | L0phTg&#39; Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" >
+<link rel="canonical" href="https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax.Pipeline/">
+<link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/zh.search.min.8a0f5956e90f1b547918a0c0c9315ddcf55ad1982046c00bd108b96fb61b4492.js" integrity="sha256-ig9ZVukPG1R5GKDAyTFd3PVa0ZggRsAL0Qi5b7YbRJI=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+
+  
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>L0phTg&#39; Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="搜索" aria-label="搜索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex justify-between">
+      <a role="button" class="flex align-center">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        中文
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="https://l0phtg.top/en/">
+          English
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/TVM%E4%B9%8BRuntime%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">【TVM】Runtime源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/" class="">我的zsh和vim配置</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="">Kaleidoscope: 前五章总结</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/" class="">如果你冲动删除了python</a>
+  
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Shortcodes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-70316d26641ff7ce811873ef904e600a" class="toggle" checked />
+    <label for="section-70316d26641ff7ce811873ef904e600a" class="flex justify-between">
+      <a role="button" class="">编译器和深度学习框架</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BDlight%E5%AD%A6%E4%B9%A0/" class="">【TVM】TIR Schedule和Dlight学习</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax.zero_pipeline/" class="">【TVM】Relax.zero Pipeline源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax.Pipeline/" class="active">【TVM】Relax.Pipeline源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="">【TVM】Relax设计文档</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeConclusion-and-other-useful-LLVM-tidbits/" class="">Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeAdding-Debug-Information/" class="">Kaleidoscope：Adding Debug Information</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeCompile-to-Object-Code/" class="">Kaleidoscope：Compile to Object Code</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageMutable-Variables/" class="">Kaleidoscope：Extending the Language：Mutable Variables</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageUser-defined-Operators/" class="">Kaleidoscope：Extending the Language：User Defined Operators</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/" class="">Kaleidoscope: Extending the Language Control Flow</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Adding-JIT-and-Optimizer-Support/" class="">Kaleidoscope: Adding JIT and Optimizer Support</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Code-generation-to-LLVM-IR/" class="">Kaleidoscope: Code Generation to LLVM IR</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Implementing-a-Parser-and-AST/" class="">Kaleidoscope: Implementing a Parser and AST</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Tutorial-Introduction-and-Lexer/" class="">Kaleidoscope: Tutorial Introduction and Lexer</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Static-Single-Assignment/" class="">Static Single Assignment</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/" class="">Dominator(graph Theory)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/" class="">thumb指令虚拟化学习(一)</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-1a271ccce1389f2d7c14aea1fd752a30" class="toggle"  />
+    <label for="section-1a271ccce1389f2d7c14aea1fd752a30" class="flex justify-between">
+      <a role="button" class="">大数据技术</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/" class="">使用docker搭建spark集群</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/Spark%E7%AC%94%E8%AE%B0/" class="">Spark笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/hive%E7%AC%94%E8%AE%B0/" class="">Hive笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-31c89efe36fd3de07e773c00b8997045" class="toggle"  />
+    <label for="section-31c89efe36fd3de07e773c00b8997045" class="flex justify-between">
+      <a role="button" class="">漏洞分析和网络攻防</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6XHook%E5%88%86%E6%9E%90/" class="">Iqiyi开源hook框架XHook分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/InlineHook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/" class="">InlineHook学习分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88CVE-2014-7911/" class="">第一篇博文-谈谈CVE-2014-7911</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-018af693a2b5f52952d9292f7c738548" class="toggle"  />
+    <label for="section-018af693a2b5f52952d9292f7c738548" class="flex justify-between">
+      <a role="button" class="">安卓学习</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/Pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" class="">Pixel1 源码编译</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8CAndroidLinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">elf文件格式和AndroidLinker加载.so的源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/%E5%88%86%E6%9E%90Android%E7%9A%84JNI%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/" class="">分析Android的JNI编程时所使用的一些函数功能</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-8605de7ed46e24ba27108b98bdcb646f" class="toggle"  />
+    <label for="section-8605de7ed46e24ba27108b98bdcb646f" class="flex justify-between">
+      <a role="button" class="">编程语言</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="">C&#43;&#43;：设计一个抽象数据类型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-02d37011b401bd1ddc5041abe78510ce" class="toggle"  />
+    <label for="section-02d37011b401bd1ddc5041abe78510ce" class="flex justify-between">
+      <a role="button" class="">安全工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%85%A8%E5%B7%A5%E5%85%B7/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/" class="">Radare2入门指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f1aa4e69c00a03c190bef2ee00739d18" class="toggle"  />
+    <label for="section-f1aa4e69c00a03c190bef2ee00739d18" class="flex justify-between">
+      <a role="button" class="">笔试面试</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/" class="">二叉树及其推广</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" class="">本科应届生安全岗面试总结</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-adf7f0289c2f5c3424463b717a2507e1" class="toggle"  />
+    <label for="section-adf7f0289c2f5c3424463b717a2507e1" class="flex justify-between">
+      <a role="button" class="">生活随笔</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E5%B7%A6%E4%BC%A0%E4%B9%8B%E5%AD%90%E9%B1%BC%E8%AE%BA%E6%88%98/" class="">左传之子鱼论战</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/" class="">习字：入门</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ed5a276e6651bb1bc42104ff560b0ad9" class="toggle"  />
+    <label for="section-ed5a276e6651bb1bc42104ff560b0ad9" class="flex justify-between">
+      <a role="button" class="">杂七杂八</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="">信号与系统-学习笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/" class="">书签整理</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="">Hugo搭建博客</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/" class="">装机日志-deepin</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/L0phTg"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/themes/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>【TVM】Relax.Pipeline源码分析</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#rewritedataflowreshape">RewriteDataflowReshape</a></li>
+    <li><a href="#calltirrewrite">CallTIRRewrite</a></li>
+    <li><a href="#loweralloctensor">LowerAllocTensor</a>
+      <ul>
+        <li><a href="#实例">实例</a></li>
+      </ul>
+    </li>
+    <li><a href="#vmbuiltinlower">VMBuiltinLower</a>
+      <ul>
+        <li><a href="#visitexpr">VisitExpr</a></li>
+        <li><a href="#mem">Mem</a>
+          <ul>
+            <li><a href="#makememallocstorage">MakeMemAllocStorage</a></li>
+            <li><a href="#makememalloctensor">MakeMemAllocTensor</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#vmshapelower">VMShapeLower</a>
+      <ul>
+        <li><a href="#源码分析">源码分析</a>
+          <ul>
+            <li><a href="#rewrite">Rewrite</a></li>
+            <li><a href="#visitexpr-1">visitExpr</a></li>
+          </ul>
+        </li>
+        <li><a href="#相关builtin">相关builtin</a>
+          <ul>
+            <li><a href="#alloc_shape_heap">alloc_shape_heap</a></li>
+            <li><a href="#check_tensor_info">check_tensor_info</a></li>
+            <li><a href="#match_shape">match_shape</a></li>
+            <li><a href="#make_shape">make_shape</a></li>
+          </ul>
+        </li>
+        <li><a href="#实例分析1lower">实例分析1：lower</a></li>
+        <li><a href="#示例分析2running">示例分析2：running</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><h1 id="rewritedataflowreshape">
+  RewriteDataflowReshape
+  <a class="anchor" href="#rewritedataflowreshape">#</a>
+</h1>
+<p>pass功能：</p>
+<ul>
+<li>将所有的类似reshape的call_tir转换为VM reshape操作符call。VM reshape operator将会被降级为运行期间的CreateView操作，而不是做一些真实的数据拷贝工作。</li>
+<li>这里的reshape类的算子包含：reshape、expand_dims、flatten等</li>
+</ul>
+<p>类实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Expr <span style="color:#a6e22e">RewriteDataflowReshape</span>(<span style="color:#66d9ef">const</span> Function<span style="color:#f92672">&amp;</span> f, <span style="color:#66d9ef">const</span> IRModule<span style="color:#f92672">&amp;</span> mod) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> DataflowReshapeRewriter(mod)(f);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">namespace</span> transform {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Pass <span style="color:#a6e22e">RewriteDataflowReshape</span>() {
+</span></span><span style="display:flex;"><span>  runtime<span style="color:#f92672">::</span>TypedPackedFunc<span style="color:#f92672">&lt;</span>Function(Function, IRModule, PassContext)<span style="color:#f92672">&gt;</span> pass_func <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      [<span style="color:#f92672">=</span>](Function f, IRModule m, PassContext pc) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> Downcast<span style="color:#f92672">&lt;</span>Function<span style="color:#f92672">&gt;</span>(RewriteDataflowReshape(f, m));
+</span></span><span style="display:flex;"><span>      };
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> CreateFunctionPass(pass_func, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;RewriteDataflowReshape&#34;</span>, {});
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;relax.transform.RewriteDataflowReshape&#34;</span>)
+</span></span><span style="display:flex;"><span>    .set_body_typed(RewriteDataflowReshape);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h1 id="calltirrewrite">
+  CallTIRRewrite
+  <a class="anchor" href="#calltirrewrite">#</a>
+</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e"># src/relax/transform/call_tir_rewrite.cc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Pass <span style="color:#a6e22e">CallTIRRewrite</span>() {
+</span></span><span style="display:flex;"><span>  runtime<span style="color:#f92672">::</span>TypedPackedFunc<span style="color:#f92672">&lt;</span>Function(Function, IRModule, PassContext)<span style="color:#f92672">&gt;</span> pass_func <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      [<span style="color:#f92672">=</span>](Function f, IRModule m, PassContext pc) { 
+</span></span><span style="display:flex;"><span>		      <span style="color:#66d9ef">return</span> Downcast<span style="color:#f92672">&lt;</span>Function<span style="color:#f92672">&gt;</span>(CallTIRRewrite(f)); 
+</span></span><span style="display:flex;"><span>	  };
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> CreateFunctionPass(pass_func, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;CallTIRRewrite&#34;</span>, {});
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;relax.transform.CallTIRRewrite&#34;</span>).set_body_typed(CallTIRRewrite);
+</span></span></code></pre></div><p>调用CallTIRMutator实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Expr <span style="color:#a6e22e">CallTIRRewrite</span>(<span style="color:#66d9ef">const</span> Expr<span style="color:#f92672">&amp;</span> e) { <span style="color:#66d9ef">return</span> CallTIRMutator().VisitExpr(e); }
+</span></span></code></pre></div><h1 id="loweralloctensor">
+  LowerAllocTensor
+  <a class="anchor" href="#loweralloctensor">#</a>
+</h1>
+<h2 id="实例">
+  实例
+  <a class="anchor" href="#%e5%ae%9e%e4%be%8b">#</a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_tensor(R<span style="color:#f92672">.</span>shape([<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>]), <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> x
+</span></span></code></pre></div><p>after LowerAllocTensor()(Before)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>	storage <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>memory<span style="color:#f92672">.</span>alloc_storage(R<span style="color:#f92672">.</span>shape([<span style="color:#ae81ff">2048</span>]), <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;global&#34;</span>, <span style="color:#e6db74">&#34;uint8&#34;</span>) <span style="color:#75715e"># 分配storage</span>
+</span></span><span style="display:flex;"><span>	x <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>memory<span style="color:#f92672">.</span>alloc_tensor(storage, <span style="color:#ae81ff">0</span>, R<span style="color:#f92672">.</span>shape([<span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>]), <span style="color:#e6db74">&#34;float32&#34;</span>) <span style="color:#75715e"># 分配tensor</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> x
+</span></span></code></pre></div><h1 id="vmbuiltinlower">
+  VMBuiltinLower
+  <a class="anchor" href="#vmbuiltinlower">#</a>
+</h1>
+<p>源文件位置：src/relax/backend/vm/vm_builtin_lower.cc
+pass类型：Mutator
+pass功能：
+global注册：</p>
+<ul>
+<li>核心类：VMBuiltinLowerMutator</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Expr <span style="color:#a6e22e">VMBuiltinLower</span>(<span style="color:#66d9ef">const</span> Expr<span style="color:#f92672">&amp;</span> e) { <span style="color:#66d9ef">return</span> VMBuiltinLowerMutator().VisitExpr(e); }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Pass <span style="color:#a6e22e">VMBuiltinLower</span>() {
+</span></span><span style="display:flex;"><span>  runtime<span style="color:#f92672">::</span>TypedPackedFunc<span style="color:#f92672">&lt;</span>Function(Function, IRModule, PassContext)<span style="color:#f92672">&gt;</span> pass_func <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      [<span style="color:#f92672">=</span>](Function f, IRModule m, PassContext pc) { 
+</span></span><span style="display:flex;"><span>	      <span style="color:#66d9ef">return</span> Downcast<span style="color:#f92672">&lt;</span>Function<span style="color:#f92672">&gt;</span>(VMBuiltinLower(f)); 
+</span></span><span style="display:flex;"><span>	  };
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> CreateFunctionPass(pass_func, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;VMBuiltinLower&#34;</span>, {});
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;relax.transform.VMBuiltinLower&#34;</span>).set_body_typed(VMBuiltinLower);
+</span></span></code></pre></div><ul>
+<li>VMBuiltinLowerMutator属性</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">VMBuiltinLowerMutator</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprMutator {
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">using</span> ExprMutator<span style="color:#f92672">::</span>VisitExpr_;
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> call_builtin_with_ctx_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.call_builtin_with_ctx&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> StructInfo object_sinfo_ <span style="color:#f92672">=</span> ObjectStructInfo();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> StructInfo void_sinfo_ <span style="color:#f92672">=</span> TupleStructInfo(Array<span style="color:#f92672">&lt;</span>StructInfo<span style="color:#f92672">&gt;</span>({}));
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// object to pattern match.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> call_tir_dyn_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.vm.call_tir_dyn&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> reshape_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.reshape&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> shape_of_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.shape_of&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> to_vdevice_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.to_vdevice&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> make_closure_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.make_closure&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> invoke_closure_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.invoke_closure&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> alloc_tensor_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.builtin.alloc_tensor&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// mem alloc//kill
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> mem_alloc_storage_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.memory.alloc_storage&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> mem_alloc_tensor_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.memory.alloc_tensor&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> mem_kill_storage_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.memory.kill_storage&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> mem_kill_tensor_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.memory.kill_tensor&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// functions to lower to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> vm_alloc_storage_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.vm.alloc_storage&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> vm_alloc_tensor_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.vm.alloc_tensor&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> Op<span style="color:#f92672">&amp;</span> vm_kill_object_op_ <span style="color:#f92672">=</span> Op<span style="color:#f92672">::</span>Get(<span style="color:#e6db74">&#34;relax.vm.kill_object&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Function to compute allocated shape.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_compute_alloc_shape_{<span style="color:#e6db74">&#34;vm.builtin.compute_alloc_shape&#34;</span>};
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_call_tir_dyn_{<span style="color:#e6db74">&#34;vm.builtin.call_tir_dyn&#34;</span>};
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_reshape_{<span style="color:#e6db74">&#34;vm.builtin.reshape&#34;</span>};
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_shape_of_{<span style="color:#e6db74">&#34;vm.builtin.shape_of&#34;</span>};
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_to_device_{<span style="color:#e6db74">&#34;vm.builtin.to_device&#34;</span>};
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_make_closure_{<span style="color:#e6db74">&#34;vm.builtin.make_closure&#34;</span>};
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> ExternFunc builtin_invoke_closure_{<span style="color:#e6db74">&#34;vm.builtin.invoke_closure&#34;</span>};
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="visitexpr">
+  VisitExpr
+  <a class="anchor" href="#visitexpr">#</a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>  Expr <span style="color:#a6e22e">VisitExpr_</span>(<span style="color:#66d9ef">const</span> CallNode<span style="color:#f92672">*</span> call_node) <span style="color:#66d9ef">final</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// post-order mutation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Call call <span style="color:#f92672">=</span> Downcast<span style="color:#f92672">&lt;</span>Call<span style="color:#f92672">&gt;</span>(VisitExprPostOrder_(call_node));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> call_tir_dyn_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> CallTIRDyn(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> reshape_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> Reshape(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> shape_of_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> ShapeOf(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> to_vdevice_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> ToDevice(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> make_closure_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> MakeClosure(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> invoke_closure_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> InvokeClosure(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> alloc_tensor_op_) {
+</span></span><span style="display:flex;"><span>      LOG(FATAL) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;VMBuiltinLower encountered &#34;</span> <span style="color:#f92672">&lt;&lt;</span> call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; in expression &#34;</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">&lt;&lt;</span> GetRef<span style="color:#f92672">&lt;</span>Call<span style="color:#f92672">&gt;</span>(call_node) <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;.  &#34;</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;This operation should have been lowered earlier &#34;</span>
+</span></span><span style="display:flex;"><span>                 <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;using the &#39;relax.transform.LowerAllocTensor&#39; pass.&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 内存存储分配//张量存储分配//内存释放
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> mem_alloc_storage_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> MakeMemAllocStorage(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> mem_alloc_tensor_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> MakeMemAllocTensor(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> mem_kill_storage_op_ <span style="color:#f92672">||</span> call<span style="color:#f92672">-&gt;</span>op <span style="color:#f92672">==</span> mem_kill_tensor_op_) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> MakeMemKillObject(call);
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> call;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><h2 id="mem">
+  Mem
+  <a class="anchor" href="#mem">#</a>
+</h2>
+<h3 id="makememallocstorage">
+  MakeMemAllocStorage
+  <a class="anchor" href="#makememallocstorage">#</a>
+</h3>
+<h3 id="makememalloctensor">
+  MakeMemAllocTensor
+  <a class="anchor" href="#makememalloctensor">#</a>
+</h3>
+<p>relax.memory.alloc_tensor 降级为 relax.vm.alloc_tensor</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>  Expr <span style="color:#a6e22e">MakeMemAllocTensor</span>(<span style="color:#66d9ef">const</span> Call<span style="color:#f92672">&amp;</span> call) {
+</span></span><span style="display:flex;"><span>    PrimValue offset <span style="color:#f92672">=</span> Downcast<span style="color:#f92672">&lt;</span>PrimValue<span style="color:#f92672">&gt;</span>(call<span style="color:#f92672">-&gt;</span>args[<span style="color:#ae81ff">1</span>]);
+</span></span><span style="display:flex;"><span>    DataTypeImm dtype <span style="color:#f92672">=</span> Downcast<span style="color:#f92672">&lt;</span>DataTypeImm<span style="color:#f92672">&gt;</span>(call<span style="color:#f92672">-&gt;</span>args[<span style="color:#ae81ff">3</span>]);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> Call(vm_alloc_tensor_op_, {call<span style="color:#f92672">-&gt;</span>args[<span style="color:#ae81ff">0</span>], offset, call<span style="color:#f92672">-&gt;</span>args[<span style="color:#ae81ff">2</span>], dtype}, Attrs());
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><p>调用的ops：<code>const Op&amp; vm_alloc_tensor_op_ = Op::Get(&quot;relax.vm.alloc_tensor&quot;);</code></p>
+<h1 id="vmshapelower">
+  VMShapeLower
+  <a class="anchor" href="#vmshapelower">#</a>
+</h1>
+<p>源文件位置：src/relax/backend/vm/vm_shape_lower.cc
+global注册：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Pass <span style="color:#a6e22e">VMShapeLower</span>(<span style="color:#66d9ef">bool</span> emit_err_ctx) {
+</span></span><span style="display:flex;"><span>  runtime<span style="color:#f92672">::</span>TypedPackedFunc<span style="color:#f92672">&lt;</span>IRModule(IRModule, PassContext)<span style="color:#f92672">&gt;</span> pass_func <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>      [<span style="color:#f92672">=</span>](IRModule mod, PassContext pc) { 
+</span></span><span style="display:flex;"><span>	      <span style="color:#66d9ef">return</span> VMShapeLowerMutator<span style="color:#f92672">::</span>Lower(mod, emit_err_ctx); 
+</span></span><span style="display:flex;"><span>	  };
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> CreateModulePass(pass_func, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;VMShapeLower&#34;</span>, {});
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;relax.transform.VMShapeLower&#34;</span>).set_body_typed([](<span style="color:#66d9ef">bool</span> emit_err_ctx) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">VMShapeLower</span>(emit_err_ctx);
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><p>VMShapeLowerMutator：Mutator，重写Rewrite，对IRModule进行重写</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">VMShapeLowerMutator</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> ExprMutator,
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">public</span> StructInfoFunctor<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">void</span>(<span style="color:#66d9ef">const</span> StructInfo<span style="color:#f92672">&amp;</span>, Expr, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">bool</span>, <span style="color:#66d9ef">const</span> String<span style="color:#f92672">&amp;</span>,
+</span></span><span style="display:flex;"><span>                                    std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>MatchShapeTodoItem<span style="color:#f92672">&gt;*</span>)<span style="color:#f92672">&gt;</span> {
+</span></span><span style="display:flex;"><span> <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">static</span> IRModule Lower(IRModule mod, <span style="color:#66d9ef">bool</span> emit_err_ctx) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 1. visit
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    VMShapeLowerMutator <span style="color:#a6e22e">mutator</span>(mod, emit_err_ctx);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. 遍历所有的functions, 针对tir.Func做处理-&gt; Rewrite, 最后将更新后的func替换builder_的函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">auto</span><span style="color:#f92672">&amp;</span> kv : mod<span style="color:#f92672">-&gt;</span>functions) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> func <span style="color:#f92672">=</span> kv.second.as<span style="color:#f92672">&lt;</span>FunctionNode<span style="color:#f92672">&gt;</span>()) {
+</span></span><span style="display:flex;"><span>        Function updated_func <span style="color:#f92672">=</span> mutator.Rewrite(kv.first, GetRef<span style="color:#f92672">&lt;</span>Function<span style="color:#f92672">&gt;</span>(func));
+</span></span><span style="display:flex;"><span>        mutator.builder_<span style="color:#f92672">-&gt;</span>UpdateFunction(kv.first, updated_func);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> mutator.builder_<span style="color:#f92672">-&gt;</span>GetContextIRModule();
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><h2 id="源码分析">
+  源码分析
+  <a class="anchor" href="#%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90">#</a>
+</h2>
+<p>算法流程：</p>
+<ol>
+<li>预处理：PrimExprSlot 集合，我们扫描函数并为每个 PrimExpr 分配 PrimExprSlot。在上面的例子中，从slot索引到 expr 的结果映射将为 {0：m， 1： n+1： 2： n}。注意到：&ldquo;n+1&quot;也会获得一个slot。PrimExprSlot还带有辅助字段，用于跟踪其值是否易于计算。
+每个匹配点的步骤：</li>
+<li>步骤一 调用<code>CheckMatchCast</code>：将会递归式的unpack StructInfo，并且生成静态信息检查。请注意，此步骤仅生成用于检查类型和 ndim 信息的函数，而不生成符号形状变量。符号shape-matching的结果将被返回作为vector&lt;MatchShapeTodoItem&gt;。这是因为符号形状匹配可能无法在一轮中完成。重要的是，CheckMatchCast 还处理元组解包。</li>
+<li>步骤二：调用<code>RunMatch</code>来生成匹配符号形状的语句。在上面的例子中，第一轮会将 M、N 的值存储到其对应的插槽中。RunMatch 可能会返回outstanding的项。</li>
+<li>步骤三：</li>
+</ol>
+<h3 id="rewrite">
+  Rewrite
+  <a class="anchor" href="#rewrite">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>  <span style="color:#75715e">// Unit rewrite function per function.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Function <span style="color:#a6e22e">Rewrite</span>(GlobalVar gvar, Function func) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// prepare mapping and heap var
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    slot_vec_.clear();
+</span></span><span style="display:flex;"><span>    slot_map_.clear();
+</span></span><span style="display:flex;"><span>    PrimExprSlotCollector<span style="color:#f92672">::</span>Collect(func, <span style="color:#f92672">&amp;</span>slot_vec_, <span style="color:#f92672">&amp;</span>slot_map_);
+</span></span><span style="display:flex;"><span>    heap_size_ <span style="color:#f92672">=</span> IntImm(ShapeDType(), <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int64_t</span><span style="color:#f92672">&gt;</span>(slot_vec_.size()));
+</span></span><span style="display:flex;"><span>    VarBinding shape_heap_binding <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>AllocShapeHeapBinding(heap_size_);
+</span></span><span style="display:flex;"><span>    shape_heap_ <span style="color:#f92672">=</span> shape_heap_binding<span style="color:#f92672">-&gt;</span>var;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// prepare slot information
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>PopulateSlotInfo();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>BindingBlock<span style="color:#f92672">&gt;</span> blocks;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    builder_<span style="color:#f92672">-&gt;</span>BeginScope(func<span style="color:#f92672">-&gt;</span>params);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Check the parameter section.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      builder_<span style="color:#f92672">-&gt;</span>BeginBindingBlock();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>builder_<span style="color:#f92672">-&gt;</span>EmitNormalized(shape_heap_binding);
+</span></span><span style="display:flex;"><span>      std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>MatchShapeTodoItem<span style="color:#f92672">&gt;</span> match_todos;
+</span></span><span style="display:flex;"><span>      size_t num_input <span style="color:#f92672">=</span> func<span style="color:#f92672">-&gt;</span>params.size();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">auto</span> opt_num_input <span style="color:#f92672">=</span> func<span style="color:#f92672">-&gt;</span>attrs.GetAttr<span style="color:#f92672">&lt;</span>Integer<span style="color:#f92672">&gt;</span>(attr<span style="color:#f92672">::</span>kNumInput)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// If the function has the attribute &#39;num_input&#39;, do shape checking on for the real inputs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// and skip weights.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        num_input <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>size_t<span style="color:#f92672">&gt;</span>(opt_num_input.value()<span style="color:#f92672">-&gt;</span>value);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> func<span style="color:#f92672">-&gt;</span>params.size(); <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>        StructInfo sinfo <span style="color:#f92672">=</span> GetStructInfo(func<span style="color:#f92672">-&gt;</span>params[i]);
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>ostringstream err_ctx;
+</span></span><span style="display:flex;"><span>        err_ctx <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;ErrorContext(fn=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> gvar<span style="color:#f92672">-&gt;</span>name_hint <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, loc=param[&#34;</span> <span style="color:#f92672">&lt;&lt;</span> i
+</span></span><span style="display:flex;"><span>                <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;], param=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> func<span style="color:#f92672">-&gt;</span>params[i]<span style="color:#f92672">-&gt;</span>name_hint() <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, annotation=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> sinfo <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;) &#34;</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>CheckMatchCast(sinfo, func<span style="color:#f92672">-&gt;</span>params[i], true, i <span style="color:#f92672">&gt;=</span> num_input, err_ctx.str(),
+</span></span><span style="display:flex;"><span>                             <span style="color:#f92672">&amp;</span>match_todos);
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// insert heap generation logic.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      match_todos <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>RunMatch(match_todos, false);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>EmitOutstandingPrimExprCompute();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>RunMatch(match_todos, true);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>      BindingBlock pre_block <span style="color:#f92672">=</span> builder_<span style="color:#f92672">-&gt;</span>EndBlock();
+</span></span><span style="display:flex;"><span>      blocks.push_back(pre_block);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// new body.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">auto</span> body_seq <span style="color:#f92672">=</span> Downcast<span style="color:#f92672">&lt;</span>SeqExpr<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>VisitWithNewScope(func<span style="color:#f92672">-&gt;</span>body, func<span style="color:#f92672">-&gt;</span>params));
+</span></span><span style="display:flex;"><span>    blocks.insert(blocks.end(), body_seq<span style="color:#f92672">-&gt;</span>blocks.begin(), body_seq<span style="color:#f92672">-&gt;</span>blocks.end());
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// Insert the return value check
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      builder_<span style="color:#f92672">-&gt;</span>BeginBindingBlock();
+</span></span><span style="display:flex;"><span>      std<span style="color:#f92672">::</span>ostringstream err_ctx;
+</span></span><span style="display:flex;"><span>      err_ctx <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;ErrorContext(fn=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> gvar<span style="color:#f92672">-&gt;</span>name_hint
+</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;, loc=return, annotation=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> func<span style="color:#f92672">-&gt;</span>ret_struct_info <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;) &#34;</span>;
+</span></span><span style="display:flex;"><span>      std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>MatchShapeTodoItem<span style="color:#f92672">&gt;</span> match_todos;
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// NOTE: the return value&#39;s shape computation must already be defined.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>CheckMatchCast(func<span style="color:#f92672">-&gt;</span>ret_struct_info, body_seq<span style="color:#f92672">-&gt;</span>body, false, false, err_ctx.str(),
+</span></span><span style="display:flex;"><span>                           <span style="color:#f92672">&amp;</span>match_todos);
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e">// NOTE: the return value&#39;s shape computation must already be defined.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>RunMatch(match_todos, true);
+</span></span><span style="display:flex;"><span>      BindingBlock post_block <span style="color:#f92672">=</span> builder_<span style="color:#f92672">-&gt;</span>EndBlock();
+</span></span><span style="display:flex;"><span>      blocks.push_back(post_block);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">auto</span> new_body <span style="color:#f92672">=</span> builder_<span style="color:#f92672">-&gt;</span>Normalize(SeqExpr(blocks, body_seq<span style="color:#f92672">-&gt;</span>body));
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// create a new function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> Function(func<span style="color:#f92672">-&gt;</span>params, new_body, func<span style="color:#f92672">-&gt;</span>ret_struct_info, func<span style="color:#f92672">-&gt;</span>is_pure, func<span style="color:#f92672">-&gt;</span>attrs);
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><h3 id="visitexpr-1">
+  visitExpr
+  <a class="anchor" href="#visitexpr-1">#</a>
+</h3>
+<h4 id="primvaluenode">
+  PrimValueNode
+  <a class="anchor" href="#primvaluenode">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>  Expr <span style="color:#a6e22e">VisitExpr_</span>(<span style="color:#66d9ef">const</span> PrimValueNode<span style="color:#f92672">*</span> op) <span style="color:#66d9ef">final</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> runtime<span style="color:#f92672">::</span>relax_vm<span style="color:#f92672">::</span>MakeShapeCode;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Constant shape can be preserved.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">bool</span> is_const_value <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>        op<span style="color:#f92672">-&gt;</span>value<span style="color:#f92672">-&gt;</span>IsInstance<span style="color:#f92672">&lt;</span>IntImmNode<span style="color:#f92672">&gt;</span>() <span style="color:#f92672">||</span> op<span style="color:#f92672">-&gt;</span>value<span style="color:#f92672">-&gt;</span>IsInstance<span style="color:#f92672">&lt;</span>FloatImmNode<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (is_const_value) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> GetRef<span style="color:#f92672">&lt;</span>Expr<span style="color:#f92672">&gt;</span>(op);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>Expr<span style="color:#f92672">&gt;</span> args <span style="color:#f92672">=</span> {shape_heap_};
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">auto</span> [code, value_or_index] <span style="color:#f92672">=</span> MakeSymbolicShapeArg(op<span style="color:#f92672">-&gt;</span>value);
+</span></span><span style="display:flex;"><span>    args.push_back(code);
+</span></span><span style="display:flex;"><span>    args.push_back(value_or_index);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// make_shape(heap, n, c[0], r[0], c[1], r[1] ..., c[n], r[n])
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Call call(builtin_make_prim_value_, args, Attrs(), {Downcast<span style="color:#f92672">&lt;</span>StructInfo<span style="color:#f92672">&gt;</span>(op<span style="color:#f92672">-&gt;</span>struct_info_)});
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> call;
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><h4 id="shapeexprnode">
+  ShapeExprNode
+  <a class="anchor" href="#shapeexprnode">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>  Expr <span style="color:#a6e22e">VisitExpr_</span>(<span style="color:#66d9ef">const</span> ShapeExprNode<span style="color:#f92672">*</span> op) <span style="color:#66d9ef">final</span> {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">using</span> runtime<span style="color:#f92672">::</span>relax_vm<span style="color:#f92672">::</span>MakeShapeCode;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Constant shape can be preserved.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">bool</span> is_const_shape <span style="color:#f92672">=</span> std<span style="color:#f92672">::</span>all_of(op<span style="color:#f92672">-&gt;</span>values.begin(), op<span style="color:#f92672">-&gt;</span>values.end(), [](<span style="color:#66d9ef">const</span> PrimExpr<span style="color:#f92672">&amp;</span> e) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> e<span style="color:#f92672">-&gt;</span>IsInstance<span style="color:#f92672">&lt;</span>IntImmNode<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (is_const_shape) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> GetRef<span style="color:#f92672">&lt;</span>Expr<span style="color:#f92672">&gt;</span>(op);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>Expr<span style="color:#f92672">&gt;</span> args <span style="color:#f92672">=</span> {shape_heap_, PrimValue<span style="color:#f92672">::</span>Int64(<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int64_t</span><span style="color:#f92672">&gt;</span>(op<span style="color:#f92672">-&gt;</span>values.size()))};
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (PrimExpr expr : op<span style="color:#f92672">-&gt;</span>values) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">auto</span> [code, value_or_index] <span style="color:#f92672">=</span> MakeSymbolicShapeArg(expr);
+</span></span><span style="display:flex;"><span>      args.push_back(code);
+</span></span><span style="display:flex;"><span>      args.push_back(value_or_index);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// make_shape(heap, n, c[0], r[0], c[1], r[1] ..., c[n], r[n])
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Call call(builtin_make_shape_, args, Attrs(),
+</span></span><span style="display:flex;"><span>              {ShapeStructInfo(<span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span>(op<span style="color:#f92672">-&gt;</span>values.size()))});
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> call;
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><h4 id="matchcastnode">
+  MatchCastNode
+  <a class="anchor" href="#matchcastnode">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">VisitBinding_</span>(<span style="color:#66d9ef">const</span> MatchCastNode<span style="color:#f92672">*</span> binding) <span style="color:#66d9ef">final</span> {
+</span></span><span style="display:flex;"><span>    Expr value <span style="color:#f92672">=</span> ExprMutator<span style="color:#f92672">::</span>VisitExpr(binding<span style="color:#f92672">-&gt;</span>value);
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>MatchShapeTodoItem<span style="color:#f92672">&gt;</span> match_todos;
+</span></span><span style="display:flex;"><span>    std<span style="color:#f92672">::</span>ostringstream err_ctx;
+</span></span><span style="display:flex;"><span>    err_ctx <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;ErrorContext(match_cast, struct_info=&#34;</span> <span style="color:#f92672">&lt;&lt;</span> binding<span style="color:#f92672">-&gt;</span>struct_info <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;) &#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// always_check=false
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>CheckMatchCast(binding<span style="color:#f92672">-&gt;</span>struct_info, value, false, false, err_ctx.str(), <span style="color:#f92672">&amp;</span>match_todos);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    match_todos <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>RunMatch(match_todos, false);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>EmitOutstandingPrimExprCompute();
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>RunMatch(match_todos, true);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// These checks are emitted as extra, in codegen
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// match-cast is simply ignored and treated as a normal binding.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    builder_<span style="color:#f92672">-&gt;</span>EmitNormalized(GetRef<span style="color:#f92672">&lt;</span>MatchCast<span style="color:#f92672">&gt;</span>(binding));
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><h2 id="相关builtin">
+  相关builtin
+  <a class="anchor" href="#%e7%9b%b8%e5%85%b3builtin">#</a>
+</h2>
+<h3 id="alloc_shape_heap">
+  alloc_shape_heap
+  <a class="anchor" href="#alloc_shape_heap">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e"># src/runtime/relax_vm/builtin.cc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;vm.builtin.alloc_shape_heap&#34;</span>).set_body_typed(AllocShapeHeap);
+</span></span><span style="display:flex;"><span>NDArray <span style="color:#a6e22e">AllocShapeHeap</span>(<span style="color:#66d9ef">void</span><span style="color:#f92672">*</span> ctx_ptr, <span style="color:#66d9ef">int64_t</span> size) {
+</span></span><span style="display:flex;"><span>  VirtualMachine<span style="color:#f92672">*</span> vm <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>VirtualMachine<span style="color:#f92672">*&gt;</span>(ctx_ptr);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 1. host allocator, 总是最后一个元素
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  size_t host_device_index <span style="color:#f92672">=</span> vm<span style="color:#f92672">-&gt;</span>devices.size() <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 2. 特别指定on-device RT hexagon
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (vm<span style="color:#f92672">-&gt;</span>devices[<span style="color:#ae81ff">0</span>].device_type <span style="color:#f92672">==</span> kDLHexagon) {
+</span></span><span style="display:flex;"><span>    host_device_index <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>  } 
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> alloc <span style="color:#f92672">=</span> vm<span style="color:#f92672">-&gt;</span>allocators[host_device_index];
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 3. 调用alloc-&gt;Empty
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> alloc<span style="color:#f92672">-&gt;</span>Empty({size}, DLDataType{kDLInt, <span style="color:#ae81ff">64</span>, <span style="color:#ae81ff">1</span>}, vm<span style="color:#f92672">-&gt;</span>devices[host_device_index]);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="check_tensor_info">
+  check_tensor_info
+  <a class="anchor" href="#check_tensor_info">#</a>
+</h3>
+<p>简介：检测参数arg是否是Tensor(dtype, ndim)</p>
+<ul>
+<li>arg: 输入参数</li>
+<li>ndim：Tensor的ndim，可以是-1（表示不知道）</li>
+<li>dtype：期待的数据类型</li>
+<li>error_ctx</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e"># src/runtime/relax_vm/builtin.cc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;vm.builtin.check_tensor_info&#34;</span>).set_body(CheckTensorInfo);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">CheckTensorInfo</span>(TVMArgs args, TVMRetValue<span style="color:#f92672">*</span> rv) {
+</span></span><span style="display:flex;"><span>  ObjectRef arg <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int</span> ndim <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  DataType dtype;
+</span></span><span style="display:flex;"><span>  Optional<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> err_ctx;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (args.size() <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span>) {
+</span></span><span style="display:flex;"><span>    dtype <span style="color:#f92672">=</span> DataType<span style="color:#f92672">::</span>Void();
+</span></span><span style="display:flex;"><span>    err_ctx <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">2</span>].<span style="color:#66d9ef">operator</span> Optional<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    dtype <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>    err_ctx <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">3</span>].<span style="color:#66d9ef">operator</span> Optional<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">auto</span><span style="color:#f92672">*</span> ptr <span style="color:#f92672">=</span> arg.as<span style="color:#f92672">&lt;</span>NDArray<span style="color:#f92672">::</span>ContainerType<span style="color:#f92672">&gt;</span>();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="match_shape">
+  match_shape
+  <a class="anchor" href="#match_shape">#</a>
+</h3>
+<p>简介：内置的runtime函数
+签名：</p>
+<ul>
+<li>此函数提供 runtime 形状填充和对match-cast的检测支持。</li>
+<li>当形状变量第一次出现时，我们应该加载形状并填充变量。</li>
+<li>当形状变量已经出现时，我们应该断言它已经等于现有的形状值。</li>
+<li>（如果断定所有的code标识都是AssertEqualToImm，允许传递shape_heap为nullptr）</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>MatchShape(input_shape, shape_heap, n, c[<span style="color:#ae81ff">0</span>], r[<span style="color:#ae81ff">0</span>], c[<span style="color:#ae81ff">1</span>], r[<span style="color:#ae81ff">1</span>], ... c[n], r[n], err_ctx)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MatchShapeCode</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>  kAssertEqualToImm <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, <span style="color:#75715e">// 立即数 assert input_shape[i] == r[i]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  kStoreToHeap <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, <span style="color:#75715e">// 第一次看到symbolic shape, 存到heap中 shape_heap[r[i]] = input_shape[i]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  kNoOp <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, <span style="color:#75715e">// 什么都不做
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  kAssertEqualToLoad <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>, <span style="color:#75715e">// assert input_shape[i] == shape_heap[r[i]]
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>};
+</span></span></code></pre></div><p>具体实现：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e"># ./src/runtime/relax_vm/builtin.cc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;vm.builtin.match_shape&#34;</span>).set_body(MatchShape);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">MatchShape</span>(TVMArgs args, TVMRetValue<span style="color:#f92672">*</span> rv) {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 1. 第一个参数是shape或者tensor
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  ShapeTuple input_shape;
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (args[<span style="color:#ae81ff">0</span>].IsObjectRef<span style="color:#f92672">&lt;</span>NDArray<span style="color:#f92672">&gt;</span>()) {
+</span></span><span style="display:flex;"><span>    input_shape <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">0</span>].<span style="color:#66d9ef">operator</span> NDArray().Shape();
+</span></span><span style="display:flex;"><span>  } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>    input_shape <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 2. 第二个参数, heap-&gt;DLTensor
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  DLTensor<span style="color:#f92672">*</span> heap <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">int64_t</span><span style="color:#f92672">*</span> heap_data <span style="color:#f92672">=</span> heap <span style="color:#f92672">==</span> <span style="color:#66d9ef">nullptr</span> <span style="color:#f92672">?</span> <span style="color:#66d9ef">nullptr</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int64_t</span><span style="color:#f92672">*&gt;</span>(heap<span style="color:#f92672">-&gt;</span>data);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// 2. 第三个参数：大小、第四个参数BeginCode
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">int64_t</span> size <span style="color:#f92672">=</span> args[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int64_t</span> kBeginCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// a function that lazily get context for error reporting
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int64_t</span> kErrorContextOffset <span style="color:#f92672">=</span> kBeginCode <span style="color:#f92672">+</span> size <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>  Optional<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> err_ctx <span style="color:#f92672">=</span> args[kErrorContextOffset];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int64_t</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> size; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 解析code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    MatchShapeCode code <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>MatchShapeCode<span style="color:#f92672">&gt;</span>(args[kBeginCode <span style="color:#f92672">+</span> i <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>].<span style="color:#66d9ef">operator</span> <span style="color:#66d9ef">int</span>());
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 解析register-&gt; args
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int64_t</span> reg <span style="color:#f92672">=</span> args[kBeginCode <span style="color:#f92672">+</span> i <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (code <span style="color:#f92672">==</span> MatchShapeCode<span style="color:#f92672">::</span>kAssertEqualToImm) {
+</span></span><span style="display:flex;"><span>      CHECK_EQ(input_shape[i], reg)...
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (code <span style="color:#f92672">==</span> MatchShapeCode<span style="color:#f92672">::</span>kStoreToHeap) {
+</span></span><span style="display:flex;"><span>      heap_data[reg] <span style="color:#f92672">=</span> input_shape[i];
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> (code <span style="color:#f92672">==</span> MatchShapeCode<span style="color:#f92672">::</span>kNoOp) {
+</span></span><span style="display:flex;"><span>    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>      ICHECK(code <span style="color:#f92672">==</span> MatchShapeCode<span style="color:#f92672">::</span>kAssertEqualToLoad);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="make_shape">
+  make_shape
+  <a class="anchor" href="#make_shape">#</a>
+</h3>
+<p>简介：
+签名：</p>
+<ul>
+<li>如果code都是UseImm的话，允许shape_heap为nullptr</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>MakeShape(shape_heap, n, c[<span style="color:#ae81ff">0</span>], r[<span style="color:#ae81ff">0</span>], c[<span style="color:#ae81ff">1</span>], r[<span style="color:#ae81ff">1</span>], ... c[n], r[n]).
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">enum</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MakeShapeCode</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">int</span> {
+</span></span><span style="display:flex;"><span>  kUseImm <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>  kLoadShape <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h2 id="实例分析1lower">
+  实例分析1：lower
+  <a class="anchor" href="#%e5%ae%9e%e4%be%8b%e5%88%86%e6%9e%901lower">#</a>
+</h2>
+<p>before：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.script.ir_module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Before</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>(x: R<span style="color:#f92672">.</span>Tensor([<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;m&#34;</span>], <span style="color:#e6db74">&#34;float32&#34;</span>)):
+</span></span><span style="display:flex;"><span>		R<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;relax.force_pure&#34;</span>: <span style="color:#66d9ef">True</span>})
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> x
+</span></span></code></pre></div><p>after = relax.transform.VMShapeLower(emit_err_ctx=False)(before)</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>sindex <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;n&#34;</span>: <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;m&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.script.ir_module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Expected</span>:
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>(x: R<span style="color:#f92672">.</span>Tensor([<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;m&#34;</span>], <span style="color:#e6db74">&#34;float32&#34;</span>)):
+</span></span><span style="display:flex;"><span>		R<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;relax.force_pure&#34;</span>: <span style="color:#66d9ef">True</span>})
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 1. 分配shape堆, 使用R.builtin_with_ctx, 因为需要ctx上下文, 得到vm runtime</span>
+</span></span><span style="display:flex;"><span>		shape_heap <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_builtin_with_ctx(
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;vm.builtin.alloc_shape_heap&#34;</span>,
+</span></span><span style="display:flex;"><span>			[R<span style="color:#f92672">.</span>prim_value(<span style="color:#ae81ff">2</span>)],
+</span></span><span style="display:flex;"><span>			sinfo_args<span style="color:#f92672">=</span>[R<span style="color:#f92672">.</span>Tensor(ndim<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>, dtype<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;int64&#34;</span>)],
+</span></span><span style="display:flex;"><span>		)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 2. 检查输入x的tensor类型是否匹配, x == Tensor(ndim=3, dtype=&#34;float32&#34;)</span>
+</span></span><span style="display:flex;"><span>		_ <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_packed(
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;vm.builtin.check_tensor_info&#34;</span>,
+</span></span><span style="display:flex;"><span>			x, 
+</span></span><span style="display:flex;"><span>			<span style="color:#ae81ff">3</span>,R<span style="color:#f92672">.</span>dtype(<span style="color:#e6db74">&#34;float32&#34;</span>), <span style="color:#75715e"># ndim == 3, dtype == &#34;float32&#34;</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>			sinfo_args<span style="color:#f92672">=</span>[R<span style="color:#f92672">.</span>Tuple()],
+</span></span><span style="display:flex;"><span>		)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># 3. match_shape</span>
+</span></span><span style="display:flex;"><span>		_ <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_packed(
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;vm.builtin.match_shape&#34;</span>, <span style="color:#75715e"># 内置的runtime函数, 运行期确定sidx的值</span>
+</span></span><span style="display:flex;"><span>			x, <span style="color:#75715e"># 第一个参数: tensor</span>
+</span></span><span style="display:flex;"><span>			shape_heap, <span style="color:#ae81ff">3</span>, <span style="color:#75715e"># shape_heap, shape大小为3</span>
+</span></span><span style="display:flex;"><span>			MS<span style="color:#f92672">.</span>STORE_TO_HEAP, sindex[<span style="color:#e6db74">&#34;n&#34;</span>],
+</span></span><span style="display:flex;"><span>			MS<span style="color:#f92672">.</span>ASSERT_EQUAL_TO_IMM, <span style="color:#ae81ff">2</span>,
+</span></span><span style="display:flex;"><span>			MS<span style="color:#f92672">.</span>STORE_TO_HEAP, sindex[<span style="color:#e6db74">&#34;m&#34;</span>],
+</span></span><span style="display:flex;"><span>			<span style="color:#e6db74">&#34;&#34;</span>,
+</span></span><span style="display:flex;"><span>			sinfo_args<span style="color:#f92672">=</span>[R<span style="color:#f92672">.</span>Tuple()],
+</span></span><span style="display:flex;"><span>		)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> x
+</span></span></code></pre></div><h2 id="示例分析2running">
+  示例分析2：running
+  <a class="anchor" href="#%e7%a4%ba%e4%be%8b%e5%88%86%e6%9e%902running">#</a>
+</h2>
+<p>
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/#%e5%b0%86%e8%af%a5%e7%a8%8b%e5%ba%8f%e9%99%8d%e7%ba%a7%e4%b8%bavm%e6%8c%87%e4%bb%a4%e7%9a%84%e6%8c%91%e6%88%98">Relax设计文档#将该程序降级为VM指令的挑战</a>
+运行期数据结构包含：</p>
+<ul>
+<li>ShapeTuple和NDArray。</li>
+</ul>
+<ol>
+<li>输入和irmodule</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># 输入</span>
+</span></span><span style="display:flex;"><span>\inputs <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(
+</span></span><span style="display:flex;"><span>    np<span style="color:#f92672">.</span>array([<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>])<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>int64)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># irmodule</span>
+</span></span><span style="display:flex;"><span>d <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>Var(<span style="color:#e6db74">&#34;m&#34;</span>, <span style="color:#e6db74">&#34;int64&#34;</span>)
+</span></span><span style="display:flex;"><span>p <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>Var(<span style="color:#e6db74">&#34;n&#34;</span>, <span style="color:#e6db74">&#34;int64&#34;</span>)
+</span></span><span style="display:flex;"><span>nums <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>Var(<span style="color:#e6db74">&#34;shape_d&#34;</span>, R<span style="color:#f92672">.</span>Tensor([d, p], <span style="color:#e6db74">&#34;int32&#34;</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> bb<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;main&#34;</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> bb<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        b <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>op<span style="color:#f92672">.</span>ones(R<span style="color:#f92672">.</span>shape((d, p)), <span style="color:#e6db74">&#34;int32&#34;</span>)
+</span></span><span style="display:flex;"><span>        gv <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>emit_output(relax<span style="color:#f92672">.</span>op<span style="color:#f92672">.</span>astype(b, <span style="color:#e6db74">&#34;int64&#34;</span>))
+</span></span><span style="display:flex;"><span>    bb<span style="color:#f92672">.</span>emit_func_output(gv, [nums])
+</span></span><span style="display:flex;"><span>mod <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>get()
+</span></span></code></pre></div><ol start="2">
+<li>after pipeline, lower shape</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>mod_after_pipeline <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>pipeline<span style="color:#f92672">.</span>get_pipeline(<span style="color:#e6db74">&#34;zero&#34;</span>)(mod)
+</span></span><span style="display:flex;"><span>mod_after_builtinLower <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>VMBuiltinLower()(mod_after_pipeline)
+</span></span><span style="display:flex;"><span>mod_after_vmshapeLower <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>VMShapeLower()(mod_after_builtinLower)
+</span></span></code></pre></div><ol start="3">
+<li>build and running</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>rt_mod <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>build(mod_after_pipeline, tvm<span style="color:#f92672">.</span>target<span style="color:#f92672">.</span>Target(<span style="color:#e6db74">&#34;llvm&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>vm <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>VirtualMachine(rt_mod, tvm<span style="color:#f92672">.</span>cpu())
+</span></span><span style="display:flex;"><span>inputs <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(
+</span></span><span style="display:flex;"><span>    np<span style="color:#f92672">.</span>array([[<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>], [<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">5</span>,<span style="color:#ae81ff">6</span>]])<span style="color:#f92672">.</span>astype(np<span style="color:#f92672">.</span>int32)
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span>vm[<span style="color:#e6db74">&#34;main&#34;</span>](inputs)
+</span></span></code></pre></div><p>分析：</p>
+<ul>
+<li>vm调用relax函数main, 传递Inputs作为输入</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@main</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># </span>
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_shape_heap <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span>vm, i3      dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>check_tensor_info <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">0</span>, i2, c[<span style="color:#ae81ff">0</span>], c[<span style="color:#ae81ff">1</span>] dst: <span style="color:#f92672">%</span>void
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>match_shape <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">0</span>, <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>, i2, i1, i0, i1, i1, c[<span style="color:#ae81ff">1</span>] dst: <span style="color:#f92672">%</span>void
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">#</span>
+</span></span><span style="display:flex;"><span>  call  shape_func       <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>           dst: <span style="color:#f92672">%</span>void
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>make_shape <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>, i1, i1, i2 dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_storage <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span>vm, <span style="color:#f92672">%</span><span style="color:#ae81ff">2</span>, i0, c[<span style="color:#ae81ff">2</span>], c[<span style="color:#ae81ff">3</span>] dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>make_shape <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>, i2, i1, i0, i1, i1 dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">4</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_tensor <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">3</span>, i0, <span style="color:#f92672">%</span><span style="color:#ae81ff">4</span>, c[<span style="color:#ae81ff">4</span>] dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">5</span>
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>null_value <span style="color:#f92672">in</span>:              dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>make_shape <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>, i2, i1, i1, i1, i0 dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">6</span>
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>call_tir_dyn <span style="color:#f92672">in</span>: f[fused_ones_cast], <span style="color:#f92672">%</span><span style="color:#ae81ff">5</span>, <span style="color:#f92672">%</span><span style="color:#ae81ff">6</span> dst: <span style="color:#f92672">%</span>void
+</span></span><span style="display:flex;"><span>  call  vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>match_shape <span style="color:#f92672">in</span>: <span style="color:#f92672">%</span><span style="color:#ae81ff">5</span>, <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>, i2, i3, i0, i3, i1, c[<span style="color:#ae81ff">5</span>] dst: <span style="color:#f92672">%</span>void
+</span></span><span style="display:flex;"><span>  ret   <span style="color:#f92672">%</span><span style="color:#ae81ff">5</span>
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+  <div>
+    <a class="flex align-center" href="https://github.com/L0phTg/L0phTg.github.io/edit/main/exampleSite/content/docs/shortcodes/%e7%bc%96%e8%af%91%e5%99%a8%e5%92%8c%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%a1%86%e6%9e%b6/TVM%e4%b9%8bRelax.Pipeline.md" target="_blank" rel="noopener">
+      <img src="/svg/edit.svg" class="book-icon" alt="" />
+      <span>编辑本页</span>
+    </a>
+  </div>
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#rewritedataflowreshape">RewriteDataflowReshape</a></li>
+    <li><a href="#calltirrewrite">CallTIRRewrite</a></li>
+    <li><a href="#loweralloctensor">LowerAllocTensor</a>
+      <ul>
+        <li><a href="#实例">实例</a></li>
+      </ul>
+    </li>
+    <li><a href="#vmbuiltinlower">VMBuiltinLower</a>
+      <ul>
+        <li><a href="#visitexpr">VisitExpr</a></li>
+        <li><a href="#mem">Mem</a>
+          <ul>
+            <li><a href="#makememallocstorage">MakeMemAllocStorage</a></li>
+            <li><a href="#makememalloctensor">MakeMemAllocTensor</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#vmshapelower">VMShapeLower</a>
+      <ul>
+        <li><a href="#源码分析">源码分析</a>
+          <ul>
+            <li><a href="#rewrite">Rewrite</a></li>
+            <li><a href="#visitexpr-1">visitExpr</a></li>
+          </ul>
+        </li>
+        <li><a href="#相关builtin">相关builtin</a>
+          <ul>
+            <li><a href="#alloc_shape_heap">alloc_shape_heap</a></li>
+            <li><a href="#check_tensor_info">check_tensor_info</a></li>
+            <li><a href="#match_shape">match_shape</a></li>
+            <li><a href="#make_shape">make_shape</a></li>
+          </ul>
+        </li>
+        <li><a href="#实例分析1lower">实例分析1：lower</a></li>
+        <li><a href="#示例分析2running">示例分析2：running</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

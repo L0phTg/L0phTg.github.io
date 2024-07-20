@@ -1,0 +1,2282 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="https://github.com/tlc-pack/relax/wiki 架构 # https://github.com/tlc-pack/relax/wiki/Relax-Architecture-Overview relax是我们设计高级IR的代号。该文档的主要目标是提供关键动机（key motivations）和设计点（design points）的简洁而清晰的摘要，而不涉及低级架构相关细节和高级主题。 它旨在：作为第一个从架构级别理解relax的文档。有关具体方面的详细信息，请参阅其他设计文档。
+关键目标 # relax用于ML加速的三个关键目标：
+G0：支持动态shape workloads # 具体来说，我们需要支持动态形状workloads，并优化新旧性能。
+动态形状模型在当今的机器学习工作负载中无处不在。动态性可能来自 可变的输入大小（variable input size），或者 来自程序中缺少的信息（missing information）。
+G1：支持携带高级语义的“计算图” # 大多数机器学习工程师都熟悉“计算图”及其优化（图中的每个操作都没有副作用）。虽然这种优化对大多数程序都很有用。 当我们开始处理随机数、状态和权重更新时，我们还需要能够表示包含更复杂语义的进程，例如控制、就地更新（inplace updates）和副作用（side effects）。
+此外，一些高级优化可能需要我们处理mutations，例如scatter-gather操作的inplace更新。
+我们需要找到一种方法，使大多数人能够编写计算图优化，同时仍然能够表示这些高级语义。
+G2：统一跨层优化抽象 # 现在，TVM 在抽象之间有一个明确的边界。Relay以单次翻译方式完成到TIR的降级。 然而，我们发现我们对跨层执行优化有强烈需求。 例如，理想情况下，TensorIR 中的自动化决策应该为高层次的融合和布局决策提供信息。这种需求出现在我们的 TensorCore 自动调度应用进程以及 NPU 相关工作负载中。
+关键设计点 # import tvm.script from tvm.script import tir as T, relax as R @tvm.script.ir_module class MyIRModule: @T.prim_func def tir_exp_func(x: T.handle, y: T.handle): ## &lt;= D2 X = T.match_buffer(x, (n,), &#34;float32&#34;) Y = T.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">
+  <meta property="og:site_name" content="L0phTg&#39; Blog">
+  <meta property="og:title" content="【TVM】Relax设计文档">
+  <meta property="og:description" content="https://github.com/tlc-pack/relax/wiki 架构 # https://github.com/tlc-pack/relax/wiki/Relax-Architecture-Overview relax是我们设计高级IR的代号。该文档的主要目标是提供关键动机（key motivations）和设计点（design points）的简洁而清晰的摘要，而不涉及低级架构相关细节和高级主题。 它旨在：作为第一个从架构级别理解relax的文档。有关具体方面的详细信息，请参阅其他设计文档。
+关键目标 # relax用于ML加速的三个关键目标：
+G0：支持动态shape workloads # 具体来说，我们需要支持动态形状workloads，并优化新旧性能。
+动态形状模型在当今的机器学习工作负载中无处不在。动态性可能来自 可变的输入大小（variable input size），或者 来自程序中缺少的信息（missing information）。
+G1：支持携带高级语义的“计算图” # 大多数机器学习工程师都熟悉“计算图”及其优化（图中的每个操作都没有副作用）。虽然这种优化对大多数程序都很有用。 当我们开始处理随机数、状态和权重更新时，我们还需要能够表示包含更复杂语义的进程，例如控制、就地更新（inplace updates）和副作用（side effects）。
+此外，一些高级优化可能需要我们处理mutations，例如scatter-gather操作的inplace更新。
+我们需要找到一种方法，使大多数人能够编写计算图优化，同时仍然能够表示这些高级语义。
+G2：统一跨层优化抽象 # 现在，TVM 在抽象之间有一个明确的边界。Relay以单次翻译方式完成到TIR的降级。 然而，我们发现我们对跨层执行优化有强烈需求。 例如，理想情况下，TensorIR 中的自动化决策应该为高层次的融合和布局决策提供信息。这种需求出现在我们的 TensorCore 自动调度应用进程以及 NPU 相关工作负载中。
+关键设计点 # import tvm.script from tvm.script import tir as T, relax as R @tvm.script.ir_module class MyIRModule: @T.prim_func def tir_exp_func(x: T.handle, y: T.handle): ## &lt;= D2 X = T.match_buffer(x, (n,), &#34;float32&#34;) Y = T.">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+    <meta property="article:published_time" content="2023-10-09T21:54:49+08:00">
+    <meta property="article:modified_time" content="2023-10-10T21:54:49+08:00">
+<title>【TVM】Relax设计文档 | L0phTg&#39; Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" >
+<link rel="canonical" href="https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/">
+<link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/zh.search.min.8a0f5956e90f1b547918a0c0c9315ddcf55ad1982046c00bd108b96fb61b4492.js" integrity="sha256-ig9ZVukPG1R5GKDAyTFd3PVa0ZggRsAL0Qi5b7YbRJI=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+
+  
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>L0phTg&#39; Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="搜索" aria-label="搜索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex justify-between">
+      <a role="button" class="flex align-center">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        中文
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="https://l0phtg.top/en/">
+          English
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/TVM%E4%B9%8BRuntime%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">【TVM】Runtime源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/" class="">我的zsh和vim配置</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="">Kaleidoscope: 前五章总结</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/" class="">如果你冲动删除了python</a>
+  
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Shortcodes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-70316d26641ff7ce811873ef904e600a" class="toggle" checked />
+    <label for="section-70316d26641ff7ce811873ef904e600a" class="flex justify-between">
+      <a role="button" class="">编译器和深度学习框架</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BDlight%E5%AD%A6%E4%B9%A0/" class="">【TVM】TIR Schedule和Dlight学习</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax.zero_pipeline/" class="">【TVM】Relax.zero Pipeline源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax.Pipeline/" class="">【TVM】Relax.Pipeline源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="active">【TVM】Relax设计文档</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeConclusion-and-other-useful-LLVM-tidbits/" class="">Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeAdding-Debug-Information/" class="">Kaleidoscope：Adding Debug Information</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeCompile-to-Object-Code/" class="">Kaleidoscope：Compile to Object Code</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageMutable-Variables/" class="">Kaleidoscope：Extending the Language：Mutable Variables</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageUser-defined-Operators/" class="">Kaleidoscope：Extending the Language：User Defined Operators</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/" class="">Kaleidoscope: Extending the Language Control Flow</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Adding-JIT-and-Optimizer-Support/" class="">Kaleidoscope: Adding JIT and Optimizer Support</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Code-generation-to-LLVM-IR/" class="">Kaleidoscope: Code Generation to LLVM IR</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Implementing-a-Parser-and-AST/" class="">Kaleidoscope: Implementing a Parser and AST</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Tutorial-Introduction-and-Lexer/" class="">Kaleidoscope: Tutorial Introduction and Lexer</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Static-Single-Assignment/" class="">Static Single Assignment</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/" class="">Dominator(graph Theory)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/" class="">thumb指令虚拟化学习(一)</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-1a271ccce1389f2d7c14aea1fd752a30" class="toggle"  />
+    <label for="section-1a271ccce1389f2d7c14aea1fd752a30" class="flex justify-between">
+      <a role="button" class="">大数据技术</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/" class="">使用docker搭建spark集群</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/Spark%E7%AC%94%E8%AE%B0/" class="">Spark笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/hive%E7%AC%94%E8%AE%B0/" class="">Hive笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-31c89efe36fd3de07e773c00b8997045" class="toggle"  />
+    <label for="section-31c89efe36fd3de07e773c00b8997045" class="flex justify-between">
+      <a role="button" class="">漏洞分析和网络攻防</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6XHook%E5%88%86%E6%9E%90/" class="">Iqiyi开源hook框架XHook分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/InlineHook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/" class="">InlineHook学习分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88CVE-2014-7911/" class="">第一篇博文-谈谈CVE-2014-7911</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-018af693a2b5f52952d9292f7c738548" class="toggle"  />
+    <label for="section-018af693a2b5f52952d9292f7c738548" class="flex justify-between">
+      <a role="button" class="">安卓学习</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/Pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" class="">Pixel1 源码编译</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8CAndroidLinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">elf文件格式和AndroidLinker加载.so的源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/%E5%88%86%E6%9E%90Android%E7%9A%84JNI%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/" class="">分析Android的JNI编程时所使用的一些函数功能</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-8605de7ed46e24ba27108b98bdcb646f" class="toggle"  />
+    <label for="section-8605de7ed46e24ba27108b98bdcb646f" class="flex justify-between">
+      <a role="button" class="">编程语言</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="">C&#43;&#43;：设计一个抽象数据类型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-02d37011b401bd1ddc5041abe78510ce" class="toggle"  />
+    <label for="section-02d37011b401bd1ddc5041abe78510ce" class="flex justify-between">
+      <a role="button" class="">安全工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%85%A8%E5%B7%A5%E5%85%B7/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/" class="">Radare2入门指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f1aa4e69c00a03c190bef2ee00739d18" class="toggle"  />
+    <label for="section-f1aa4e69c00a03c190bef2ee00739d18" class="flex justify-between">
+      <a role="button" class="">笔试面试</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/" class="">二叉树及其推广</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" class="">本科应届生安全岗面试总结</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-adf7f0289c2f5c3424463b717a2507e1" class="toggle"  />
+    <label for="section-adf7f0289c2f5c3424463b717a2507e1" class="flex justify-between">
+      <a role="button" class="">生活随笔</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E5%B7%A6%E4%BC%A0%E4%B9%8B%E5%AD%90%E9%B1%BC%E8%AE%BA%E6%88%98/" class="">左传之子鱼论战</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/" class="">习字：入门</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ed5a276e6651bb1bc42104ff560b0ad9" class="toggle"  />
+    <label for="section-ed5a276e6651bb1bc42104ff560b0ad9" class="flex justify-between">
+      <a role="button" class="">杂七杂八</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="">信号与系统-学习笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/" class="">书签整理</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="">Hugo搭建博客</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/" class="">装机日志-deepin</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/L0phTg"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/themes/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>【TVM】Relax设计文档</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#架构">架构</a>
+      <ul>
+        <li><a href="#关键目标">关键目标</a>
+          <ul>
+            <li><a href="#g0支持动态shape-workloads">G0：支持动态shape workloads</a></li>
+            <li><a href="#g1支持携带高级语义的计算图">G1：支持携带高级语义的“计算图”</a></li>
+            <li><a href="#g2统一跨层优化抽象">G2：统一跨层优化抽象</a></li>
+          </ul>
+        </li>
+        <li><a href="#关键设计点">关键设计点</a>
+          <ul>
+            <li><a href="#d0第一个构造的类是数据流块">D0：第一个构造的类是数据流块</a></li>
+            <li><a href="#d1第一个计算的类是shape-deduction">D1：第一个计算的类是shape deduction</a></li>
+            <li><a href="#d2可以与tensorir和packedfunc直接交互">D2：可以与TensorIR和PackedFunc直接交互</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#ast-设计">AST 设计</a>
+      <ul>
+        <li><a href="#为什么要区分dataflowblock和bindingblock">为什么要区分DataflowBlock和BindingBlock</a></li>
+        <li><a href="#matchshape也是binding类型">MatchShape也是Binding类型</a></li>
+        <li><a href="#ir转换的含义">IR转换的含义</a></li>
+        <li><a href="#relax中visitor-pattern的层级">relax中Visitor pattern的层级</a></li>
+      </ul>
+    </li>
+    <li><a href="#shape-computation设计">Shape Computation设计</a>
+      <ul>
+        <li><a href="#关键目标-1">关键目标</a>
+          <ul>
+            <li><a href="#g0第一类-支持动态符号整数形状">G0：第一类-支持动态符号整数形状</a></li>
+            <li><a href="#g1一般情况下的安全网络">G1：一般情况下的安全网络</a></li>
+            <li><a href="#g2未来的提升改进路线">G2：未来的提升改进路线</a></li>
+          </ul>
+        </li>
+        <li><a href="#形状限制表示">形状限制表示</a>
+          <ul>
+            <li><a href="#dyntensortype">DynTensorType</a></li>
+            <li><a href="#shape-field">Shape Field</a></li>
+            <li><a href="#shape修订">Shape修订</a></li>
+          </ul>
+        </li>
+        <li><a href="#形状传播">形状传播</a>
+          <ul>
+            <li><a href="#d0安全链路--没有形状计算">D0：安全链路&ndash;没有形状计算</a></li>
+            <li><a href="#d1针对元ops的编译器形状传播">D1：针对元OPS的编译器形状传播</a></li>
+            <li><a href="#d2跨transform的额外改进和形状预留">D2：跨transform的额外改进和形状预留</a></li>
+            <li><a href="#d3跨函数边界的形状传播">D3：跨函数边界的形状传播</a></li>
+          </ul>
+        </li>
+        <li><a href="#其它考虑">其它考虑</a>
+          <ul>
+            <li><a href="#a0更高级的形状推导机制">A0：更高级的形状推导机制</a></li>
+            <li><a href="#a1符号形状更接近expr">A1：符号形状更接近Expr</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#compilation-mvp设计">Compilation MVP设计</a>
+      <ul>
+        <li><a href="#关键目标-2">关键目标</a></li>
+        <li><a href="#relax程序案例">relax程序案例</a></li>
+        <li><a href="#将该程序降级为vm指令的挑战">将该程序降级为VM指令的挑战</a>
+          <ul>
+            <li><a href="#首先将call_tir降级为显式地内存形式">首先，将call_tir降级为显式地内存形式</a></li>
+            <li><a href="#下一步通过vm堆操作实现shape降级">下一步，通过VM堆操作实现shape降级</a></li>
+          </ul>
+        </li>
+        <li><a href="#relax构建和编译workflow">Relax构建和编译workflow</a></li>
+      </ul>
+    </li>
+    <li><a href="#vm设计">VM设计</a>
+      <ul>
+        <li><a href="#指令集">指令集</a></li>
+        <li><a href="#架构-1">架构</a>
+          <ul>
+            <li><a href="#execbuilder">ExecBuilder</a></li>
+            <li><a href="#executable">Executable</a></li>
+            <li><a href="#virtual-machine">Virtual Machine</a></li>
+            <li><a href="#内置的runtime-packed函数">内置的runtime packed函数</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#emitte-staging集成">EmitTE Staging集成</a>
+      <ul>
+        <li><a href="#关键目标-3">关键目标</a></li>
+        <li><a href="#动态shape情况">动态shape情况</a></li>
+        <li><a href="#其它考虑-1">其它考虑</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><ul>
+<li>
+  <a href="https://github.com/tlc-pack/relax/wiki">https://github.com/tlc-pack/relax/wiki</a></li>
+</ul>
+<h1 id="架构">
+  架构
+  <a class="anchor" href="#%e6%9e%b6%e6%9e%84">#</a>
+</h1>
+<ul>
+<li>
+  <a href="https://github.com/tlc-pack/relax/wiki/Relax-Architecture-Overview">https://github.com/tlc-pack/relax/wiki/Relax-Architecture-Overview</a>
+relax是我们设计高级IR的代号。该文档的主要目标是提供<strong>关键动机</strong>（key motivations）和<strong>设计点</strong>（design points）的简洁而清晰的摘要，而不涉及低级架构相关细节和高级主题。</li>
+</ul>
+<p>它旨在：作为第一个从架构级别理解relax的文档。有关具体方面的详细信息，请参阅其他设计文档。</p>
+<h2 id="关键目标">
+  关键目标
+  <a class="anchor" href="#%e5%85%b3%e9%94%ae%e7%9b%ae%e6%a0%87">#</a>
+</h2>
+<p>relax用于ML加速的三个关键目标：</p>
+<h3 id="g0支持动态shape-workloads">
+  G0：支持动态shape workloads
+  <a class="anchor" href="#g0%e6%94%af%e6%8c%81%e5%8a%a8%e6%80%81shape-workloads">#</a>
+</h3>
+<p>具体来说，我们需要支持动态形状workloads，并优化新旧性能。</p>
+<p>动态形状模型在当今的机器学习工作负载中无处不在。动态性可能来自 <strong>可变的输入大小</strong>（variable input size），或者 <strong>来自程序中缺少的信息</strong>（missing information）。</p>
+<h3 id="g1支持携带高级语义的计算图">
+  G1：支持携带高级语义的“计算图”
+  <a class="anchor" href="#g1%e6%94%af%e6%8c%81%e6%90%ba%e5%b8%a6%e9%ab%98%e7%ba%a7%e8%af%ad%e4%b9%89%e7%9a%84%e8%ae%a1%e7%ae%97%e5%9b%be">#</a>
+</h3>
+<p>大多数机器学习工程师都熟悉“计算图”及其优化（图中的每个操作都没有副作用）。虽然这种优化对大多数程序都很有用。
+当我们开始处理随机数、状态和权重更新时，我们还需要能够表示包含更复杂语义的进程，例如控制、就地更新（inplace updates）和副作用（side effects）。</p>
+<p>此外，一些高级优化可能需要我们处理mutations，例如scatter-gather操作的inplace更新。</p>
+<p>我们需要找到一种方法，使大多数人能够编写计算图优化，同时仍然能够表示这些高级语义。</p>
+<h3 id="g2统一跨层优化抽象">
+  G2：统一跨层优化抽象
+  <a class="anchor" href="#g2%e7%bb%9f%e4%b8%80%e8%b7%a8%e5%b1%82%e4%bc%98%e5%8c%96%e6%8a%bd%e8%b1%a1">#</a>
+</h3>
+<p>现在，TVM 在抽象之间有一个明确的边界。Relay以单次翻译方式完成到TIR的降级。
+然而，我们发现我们对跨层执行优化有强烈需求。
+例如，理想情况下，TensorIR 中的自动化决策应该为<strong>高层次的融合和布局决策提供信息</strong>。这种需求出现在我们的 TensorCore 自动调度应用进程以及 NPU 相关工作负载中。</p>
+<h2 id="关键设计点">
+  关键设计点
+  <a class="anchor" href="#%e5%85%b3%e9%94%ae%e8%ae%be%e8%ae%a1%e7%82%b9">#</a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> tvm.script
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> tir <span style="color:#66d9ef">as</span> T, relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.script.ir_module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyIRModule</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tir_exp_func</span>(x: T<span style="color:#f92672">.</span>handle, y: T<span style="color:#f92672">.</span>handle): <span style="color:#75715e">## &lt;= D2</span>
+</span></span><span style="display:flex;"><span>        X <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(x, (n,), <span style="color:#e6db74">&#34;float32&#34;</span>)
+</span></span><span style="display:flex;"><span>        Y <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(y, (n,), <span style="color:#e6db74">&#34;float32&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>grid(n) <span style="color:#66d9ef">as</span> i:
+</span></span><span style="display:flex;"><span>            Y[i] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>exp(X[i]) 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">relax_func</span>(x: R<span style="color:#f92672">.</span>Tensor[(n, k), <span style="color:#e6db74">&#34;f32&#34;</span>], w: R<span style="color:#f92672">.</span>Tensor[_, <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># n, k above are implicitly defined by the signature</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># so we will be able to refer to n, k in the later part of the program</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow(): <span style="color:#75715e">### &lt;= D0</span>
+</span></span><span style="display:flex;"><span>            lv0 <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(w, (k, m)) <span style="color:#75715e">## &lt;= D1</span>
+</span></span><span style="display:flex;"><span>            lv1: R<span style="color:#f92672">.</span>Tensor[(n, m), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>dot(x, lv0)
+</span></span><span style="display:flex;"><span>            lv2: R<span style="color:#f92672">.</span>Tensor[(n <span style="color:#f92672">*</span> m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>flatten(lv1) <span style="color:#75715e">## &lt;= D1</span>
+</span></span><span style="display:flex;"><span>            lv3: R<span style="color:#f92672">.</span>Shape <span style="color:#f92672">=</span> (n <span style="color:#f92672">*</span> m,)  <span style="color:#75715e">## &lt;= D1 </span>
+</span></span><span style="display:flex;"><span>            gv0: R<span style="color:#f92672">.</span>Tensor[lv2, <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_tir(lv2, tir_exp_func, [lv3])   <span style="color:#75715e">## &lt;= D2</span>
+</span></span><span style="display:flex;"><span>            R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;custom_inplace_update&#34;</span>, gv0)  <span style="color:#75715e">## &lt;= D0, D2</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> gv0 
+</span></span></code></pre></div><p>我们可以使用上面的代码片段来演示 relax 的关键设计点。请注意，script语法仍在不断发展，可能会发生变化。</p>
+<h3 id="d0第一个构造的类是数据流块">
+  D0：第一个构造的类是数据流块
+  <a class="anchor" href="#d0%e7%ac%ac%e4%b8%80%e4%b8%aa%e6%9e%84%e9%80%a0%e7%9a%84%e7%b1%bb%e6%98%af%e6%95%b0%e6%8d%ae%e6%b5%81%e5%9d%97">#</a>
+</h3>
+<p>大多数<code>relax_func</code>代码都封装在 <code>R.dataflow（）</code> 构造中。数据流块中的所有操作是无副作用的，并且不包含高级控制流（如 if-then-else）或嵌套作用域。</p>
+<p>数据流块可以有效地被视为嵌入在进程中的计算图。请注意：数据流块中的大部分绑定变量<code>（lv0, lv1, lv2, lv3）</code>都是“local”的，这意味着他们仅仅在块内是可见的。</p>
+<ul>
+<li>这些变量可以看作是计算图的“内部节点”。</li>
+<li>我们可以将变量标记为 output（gv0），在这种情况下，该变量将在进程的后面部分可见。这些输出变量可以看作是计算图中的输出节点。
+请注意，<code>R.call_packed(&quot;custom_inplace_update&quot;， gv0)</code> 位于数据流块之外。数据流块之外的所有内容都可能产生副作用。因此，除非我们进行更仔细的分析，否则我们无法执行优化，例如根据拓扑顺序重新排序这些绑定 <strong>我们预计大多数优化将发生在数据流块级别</strong>。</li>
+</ul>
+<p>这些优化可以由熟悉计算图概念的 ML 工程师完成。
+隔离（isolate）和表示（represent）有效组件的能力也为需要它们的地方提供了更高级优化的机会。</p>
+<h3 id="d1第一个计算的类是shape-deduction">
+  D1：第一个计算的类是shape deduction
+  <a class="anchor" href="#d1%e7%ac%ac%e4%b8%80%e4%b8%aa%e8%ae%a1%e7%ae%97%e7%9a%84%e7%b1%bb%e6%98%afshape-deduction">#</a>
+</h3>
+<p>对于动态模型来说：shape deduction是很重要的。</p>
+<ul>
+<li>在动态形状设置下，我们通常需要<strong>在运行计算之前计算中间张量的形状</strong>。</li>
+<li>此外，我们还需要处理形状本身与数据相关的情况（例如唯一）；</li>
+<li>最后，大多数动态形状工作负载仍然包含大量（部分）静态形状，<strong>理想情况下，我们希望利用这些静态形状信息进行优化</strong>。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shape_example</span>(x: R<span style="color:#f92672">.</span>Tensor[(n, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>), <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 1. 符号和静态形状推导 symbolic and static shape deduction</span>
+</span></span><span style="display:flex;"><span>        lv0: R<span style="color:#f92672">.</span>Tensor[(n, <span style="color:#ae81ff">4</span>), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>reshape(x, (n, <span style="color:#ae81ff">4</span>)) 
+</span></span><span style="display:flex;"><span>        lv1: R<span style="color:#f92672">.</span>Tensor[(n <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>flatten(lv0)
+</span></span><span style="display:flex;"><span>        lv2: R<span style="color:#f92672">.</span>Shape <span style="color:#f92672">=</span> (n <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>,)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 2. 外部不透明形状函数 external opaque shape function</span>
+</span></span><span style="display:flex;"><span>        lv3: R<span style="color:#f92672">.</span>Shape <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;myshape_func&#34;</span>, lv2)
+</span></span><span style="display:flex;"><span>        lv4: R<span style="color:#f92672">.</span>Tensor[lv3, <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_tir(lv3, <span style="color:#e6db74">&#34;custom_func&#34;</span>, [lv1]) 
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 3. 数据依赖情况 data dependent case</span>
+</span></span><span style="display:flex;"><span>        lv5: R<span style="color:#f92672">.</span>Tensor[_, <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>unique(lv4)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 3. 重新match形状 re-match shape</span>
+</span></span><span style="display:flex;"><span>        lv6: R<span style="color:#f92672">.</span>Tensor[(m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(lv5, (m,))
+</span></span><span style="display:flex;"><span>        gv0: R<span style="color:#f92672">.</span>Tensor[(m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>exp(lv6)
+</span></span><span style="display:flex;"><span>        R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv0
+</span></span></code></pre></div><p>以上进程涵盖了形状推导的典型场景（正如注释所言）：重要的是，shape 现在与 Tensor 值一起成为计算的一部分。这反映了一个事实，即形状的计算可以在运行时进行。
+而文本格式类型注解 <code>lv0： R.Tensor[(n， 4)， “f32”]</code> 显示每个值的形状：这只是一种句法糖，从 IR 的角度来看，形状场 <code>(n, 4)</code> 不是<code>lv0.checked_type</code>的一部分。</p>
+<ul>
+<li>lv0 的类型是 <code>DynTensor(rank=2, dtype=“f32”)</code>，</li>
+<li>shape 是附加到每个 Expr 的特殊值字段
+我们做出了这个明确的选择，以简化类型推断，这样我们就不需要进入完全依赖的类型领域。</li>
+</ul>
+<p>有两个与符号形状计算相关的关键结构：</p>
+<ol>
+<li>match_shape
+<code>value = match_shape(lhs, pattern)</code>
+匹配形状构造采用 lhs 值和模式（符号整数表达式）。它有两个重载语义：</li>
+</ol>
+<ul>
+<li>当lhs是一个<strong>tensor</strong>的时候，它会将 lhs.shape 与pattern匹配，如果该变量首次出现在pattern中，则填充相应的符号整数变量，然后返回与 lhs 相同<strong>但 shape 字段更新为 pattern 的新 Tensor</strong>。</li>
+<li>lhs 也可以是直接匹配pattern的 <strong>Shape</strong>：当我们想要隔离出与任何张量值不对应的形状函数时，这很有用。
+例如：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shape_example</span>(x: R<span style="color:#f92672">.</span>Tensor[_, <span style="color:#e6db74">&#34;f32&#34;</span>], y: R<span style="color:#f92672">.</span>Tensor[_, <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># the match shape defines n, m because it appears for the first time</span>
+</span></span><span style="display:flex;"><span>        lv0: R<span style="color:#f92672">.</span>Tensor[(n, m)] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(x, (n, m))
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># the second occurance of n, m will translate into an assertion </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># that y&#39;s shape equals (n, m)</span>
+</span></span><span style="display:flex;"><span>        lv1: R<span style="color:#f92672">.</span>Tensor[(n, m)] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(y, (n, m)) 
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># we can also call match_shape on shape expressions</span>
+</span></span><span style="display:flex;"><span>        lv2: Shape <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(R<span style="color:#f92672">.</span>shape_of(y), (n, m)) 
+</span></span></code></pre></div><ol start="2">
+<li>形状推导来自于符号整数元组（symbolic integers tuple）</li>
+</ol>
+<p>在我们得到 n 和 m 等<strong>符号整数</strong>之后。我们可以将它们重新组合在一起以形成一个 Expr。<strong>符号整数表达式的任何元组都可以在 relax 中被识别为 Shape 值</strong>。因此 （n， m） 是一个形状值。</p>
+<p>形状传播的途径：
+重要的是，因为形状现在是值的一部分，所以在计算时才会出现。
+编译时<strong>形状推断可以看作是编译时常数折叠</strong>（或部分评估）对与形状有关的操作。</p>
+<p>有几种方法来表示形状计算：</p>
+<ul>
+<li>W1：符号形状传播。一个形状可以被分解成符号整数（在上面的进程中是n或m），然后我们可以使用符号整数<code>(n*4)</code>的表达式来表示形状计算。值得注意的是，静态形状是（常量符号）整数的特例。然后，符号整数可以重新组合以形成形状值（例如（n* 4，））。</li>
+<li>W2：不透明形状函数调用。我们还可以实现不透明的形状函数（myshape_func）。这些不透明的形状函数对于快速hack up运行时形状函数是有用的。</li>
+<li>W3：对于依赖于数据的 shape（unique），我们将简单地遵循运行时调用 <code>f（inputs）-&gt;output</code>，该调用接受输入张量，分配并返回输出张量。然后，我们可以通过构造从 Tensor 值中获取 <code>lv5</code> 的形状<code>match_shape</code>。</li>
+</ul>
+<p>对写pass的影响：
+许多优化过程都需要查看形状信息。现在，许多形状都可以是符号化的 （n， 4），最理想的优化pass将需要泛化一点以利用符号信息。
+例如，在上面的程序中，我们知道所有的 与 n 相同的值。这种限制是非常有用的。此外，由于arith模块中的符号整数，我们可以重用 proves 的机制来检查符号表达式的等价性和推导性（例如 <code>prove(n4 == n4)</code>）。</p>
+<p>因为符号整数（<code>tir.PrimExpr</code>）急切常数折叠，当输入是静态形状时，计算结果也应该急切地折叠为常数整数，保留静态形状相关优化所需的属性。</p>
+<p>因为我们现在可以在元组 <code>（n， 4）</code> 中表示混合符号静态形状，所以我们可以尝试利用静态信息进行额外的优化。</p>
+<h3 id="d2可以与tensorir和packedfunc直接交互">
+  D2：可以与TensorIR和PackedFunc直接交互
+  <a class="anchor" href="#d2%e5%8f%af%e4%bb%a5%e4%b8%8etensorir%e5%92%8cpackedfunc%e7%9b%b4%e6%8e%a5%e4%ba%a4%e4%ba%92">#</a>
+</h3>
+<p>我们做出的最后一个关键设计决策是<strong>允许高级 IR 能够直接交互并调用较低级别的 TensorIR 和 PackedFunc</strong>。TensorIR 函数和许多外部库采用目标传递约定（我们需要显式分配输出并作为参数传入函数）。我们使用 <strong>dps（destination passing） 来表示这个约定</strong>。dps 在低级 ML 优化中非常重要，因为它允许我们<strong>在可能的情况下一次性全局分配中间存储，并在没有活跃的内存分配的情况下执行计算</strong>。</p>
+<p>调用 dps 函数意味着在调用后，结果通过 <strong>函数参数（例如，以下示例中的 result）而不是函数的返回值传回</strong> 。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// not destination passing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">func</span>(<span style="color:#66d9ef">int</span> x) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// destination passing
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">func</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>result) {  
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">*</span>result <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>DPS 样式意味着本质上发生了发辫。我们需要一种方法将调用桥接到高级（纯）数据流领域，以便我们可以对一系列 tir 调用执行计算图样式重写。</p>
+<ol>
+<li>call_tir
+<code>call_tir</code>：是弥合gap的内在因素。该函数意味着“按照管理调用一个TIR函数”</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call_tir</span>(output_shape: Shape, lowlevel_func: Expr, inputs: Tuple[Expr]) <span style="color:#f92672">-&gt;</span> Expr:
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;Example code to demonstrate the semantics of call tir&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    out_tensor <span style="color:#f92672">=</span> alloc_tensor(output_shape, current_expr<span style="color:#f92672">.</span>dtype)
+</span></span><span style="display:flex;"><span>    lowlevel_func(<span style="color:#f92672">*</span>inputs, out_tensor)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> out_tensor
+</span></span></code></pre></div><p>call_tir接受：输出形状、lowlevel_func（可以打包 func、tir PrimFunc）和输入元组。call_tir的语义可以通过上面的代码来证明。值得注意的是，当我们对call_tir降级时，我们不需要选择单独的输出张量分配。编译器可以选择创建中间张量的内存计划，并将内容捆绑在一起以实现有效的重用。</p>
+<h1 id="ast-设计">
+  AST 设计
+  <a class="anchor" href="#ast-%e8%ae%be%e8%ae%a1">#</a>
+</h1>
+<ul>
+<li>
+  <a href="https://github.com/tlc-pack/relax/wiki/Relax-AST-Design">https://github.com/tlc-pack/relax/wiki/Relax-AST-Design</a></li>
+</ul>
+<p>为了支持体系结构概述中的关键目标（G0：支持动态形状工作负载，G1：作为一等公民的数据流块），Relax 将以下构造添加到 AST。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ShapeExpr</span>(Expr):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;corresponds to a shape containing symbolic PrimExpr&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    values: List[PrimExpr]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Var</span>(Expr):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;global scope visible vars&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    vid: Id
+</span></span><span style="display:flex;"><span>    type_annotation: Optional[Type]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataflowVar</span>(Var):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;dataflow scope visible vars&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Binding</span>(ObjectRef):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;the base class of bindings&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">VarBinding</span>(Binding):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;variable bindings, bind the value to the var&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    var: Var
+</span></span><span style="display:flex;"><span>    value: Expr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MatchShape</span>(Binding):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;binding represents to match a shape&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    value: Expr
+</span></span><span style="display:flex;"><span>    pattern: List[PrimExpr]
+</span></span><span style="display:flex;"><span>    var: Var
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">BindingBlock</span>(Node):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;base class of binding block, bindings inside can be impure (with side effect or control flow)&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    bindings: List[Binding]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DataflowBlock</span>(BindingBlock):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;dataflow block, bindings inside are pure (no side effect and no control flow)&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SeqExpr</span>(Expr):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;sequence of BindingBlocks, can serve as the body of a Function&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    blocks: List[BindingBlock]
+</span></span><span style="display:flex;"><span>    body: Expr
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Function</span>(BaseFunc):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;represents a Relax function&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    params: List[Var]
+</span></span><span style="display:flex;"><span>    body: Expr   
+</span></span><span style="display:flex;"><span>    ret_type: Type
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExternFunc</span>(BaseFunc):
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;&#34;&#34;extern function, which can represent a TIR PrimFunc or a PackedFunc.&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>    global_symbol: String
+</span></span></code></pre></div><p>
+  <img src="/mlsys/relax_arch_1.svg" alt="relax Arch" /></p>
+<ul>
+<li>函数的body可以由SeqExpr表示；</li>
+<li>一个SeqExpr由BindingBlock列表组成；</li>
+<li>DataflowBlock 是一种特殊的 BindingBlock，与纯计算图相同。DataflowBlock 内部的绑定没有副作用，也没有控制。</li>
+<li>一个<code>BindingBlock</code>包含一个<code>Binding</code>的列表；</li>
+<li><code>Binding</code>可以是<code>VarBinding</code>或者<code>MatchShape</code>；</li>
+<li><code>DataflowVar</code>的作用域是<code>DataflowBlock</code>，<code>DataflowBlock</code> 中的正常的 <code>Var</code> 转义到包含该块的作用域（可以是函数作用域或其他作用域，如 if 分支）。</li>
+</ul>
+<p>下面是一个relax程序，<code>relax_func</code>包含<code>seqExpr</code>，<code>seqExpr</code>包含一个<code>DataflowBlock</code>（with 2 VarBinding）和<code>BindingBlock</code>（包含<code>VarBinding</code>）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.func</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">relax_func</span>(x: R<span style="color:#f92672">.</span>Tensor[(n, k), <span style="color:#e6db74">&#34;f32&#34;</span>], w: R<span style="color:#f92672">.</span>Tensor[(k, m), <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># start a DataflowBlock</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow(): <span style="color:#75715e">## &lt;= DataflowBlock</span>
+</span></span><span style="display:flex;"><span>        lv0: R<span style="color:#f92672">.</span>Tensor[(n, m), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>dot(x, w) <span style="color:#75715e">## &lt;= VarBinding, lv0 is a DataflowVar</span>
+</span></span><span style="display:flex;"><span>        gv0: R<span style="color:#f92672">.</span>Tensor[(n <span style="color:#f92672">*</span> m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>flatten(lv0) <span style="color:#75715e">## &lt;= VarBinding, gv0 is a Var that escapes to the outer scope</span>
+</span></span><span style="display:flex;"><span>        R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># start a BindingBlock</span>
+</span></span><span style="display:flex;"><span>    gv1 <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;custom_inplace_update&#34;</span>, gv0) <span style="color:#75715e">## &lt;= side-effect binding</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv1
+</span></span></code></pre></div><h2 id="为什么要区分dataflowblock和bindingblock">
+  为什么要区分DataflowBlock和BindingBlock
+  <a class="anchor" href="#%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%8c%ba%e5%88%86dataflowblock%e5%92%8cbindingblock">#</a>
+</h2>
+<p>大多数编写Pass的人是没有编译器或 PL 背景的 ML 研究人员和 ML 工程师，因此他们基于一个简单的假设来编写传递，即PASS正在改变一个pure的计算图。</p>
+<ul>
+<li>Relay 没有明确说明哪些表达式具有副作用（side-effects），哪些表达式是纯的，因此，在存在副作用的情况下，许多优化是不合理的。</li>
+<li>relax中，<code>DataflowBlock</code>表示计算图该区域中的binding是pure的（无控制流，无side-effects）。明确地划分该计算图区域并将其作为一等公民，使终端用户可以轻松编写计算图PASS。</li>
+<li>由于“纯”和“不纯”区域之间的这种明确分离，函数的主体可以由一个或多个纯或不纯的块组成，因此 <code>SeqExpr</code> 的主体带有 <code>Array&lt;BindingBlock&gt;</code>。</li>
+</ul>
+<h2 id="matchshape也是binding类型">
+  MatchShape也是Binding类型
+  <a class="anchor" href="#matchshape%e4%b9%9f%e6%98%afbinding%e7%b1%bb%e5%9e%8b">#</a>
+</h2>
+<p><code>MatchShape(value: Expr, pattern: List[PrimExpr], var: Var)</code></p>
+<ul>
+<li>MatchShape有两个重载语义：
+<ul>
+<li>假设<code>x</code>是一个2维张量
+（1）<code>MatchShape(x.shape, [m, n], var)</code> → 将<code>x.shape</code> 与符号变量 (m, n)相匹配, 并将 Shape 返回给返回变量;
+（2）<code>MatchShape(x, [m, n], var)</code> → 将<code>x.shape</code> 与符号变量 (m, n)相匹配, 并将与张量 x 形状相同的二维张量（但具有显式形状字段<code> [m， n]</code>）返回到输出 var。</li>
+</ul>
+</li>
+</ul>
+<h2 id="ir转换的含义">
+  IR转换的含义
+  <a class="anchor" href="#ir%e8%bd%ac%e6%8d%a2%e7%9a%84%e5%90%ab%e4%b9%89">#</a>
+</h2>
+<ul>
+<li>DataflowBlock 是一个独立的数据结构，其中包含Binding列表。PASS编写者可以使用 DataflowMutator 接口对纯数据流块进行访问和转换。对于那些只有 ML 背景且熟悉计算数据流的 pass writer 来说，它可能更人性化，因为他们只需要面对 DataflowBlock 这个简单的概念并override（重写） DataflowMutator 中的访问者。。</li>
+<li>一个BindingBlock包含Binding列表。ExprMutator 在 ANF 进程上工作，因此访问者无需记忆即可遍历绑定，并且由于没有递归，因此不会出现堆栈溢出。</li>
+<li>ExprMutator 有一个内部 BlockBuilder，可以向新创建的块emit binding。为什么在ExprMutator内部有一个BlockBuilder呢？
+<ul>
+<li>BlockBuilder 提供了用于向块emit bindings的 API。我们经常可以看到这样的情况：我们想将多个bindings折叠成一个 （n → 1），或者我们想将绑定重写为多个绑定 （1 → n）。使用 BlockBuilder 在访问者中发出绑定可以很容易地做到这两点。</li>
+<li>BlockBuilder 可以进行eager形状和类型推断，因此，在发出新bindings时，可以填充 LHS var 和 rhs expr 的 <code>shape_</code> 和<code> checked_type_</code> 字段。</li>
+</ul>
+</li>
+</ul>
+<h2 id="relax中visitor-pattern的层级">
+  relax中Visitor pattern的层级
+  <a class="anchor" href="#relax%e4%b8%advisitor-pattern%e7%9a%84%e5%b1%82%e7%ba%a7">#</a>
+</h2>
+<p>
+  <img src="/mlsys/relax_expr_1.svg" alt="" /></p>
+<h1 id="shape-computation设计">
+  Shape Computation设计
+  <a class="anchor" href="#shape-computation%e8%ae%be%e8%ae%a1">#</a>
+</h1>
+<p>在 relax 中设计形状计算时，需要考虑以下关键目标：</p>
+<h2 id="关键目标-1">
+  关键目标
+  <a class="anchor" href="#%e5%85%b3%e9%94%ae%e7%9b%ae%e6%a0%87-1">#</a>
+</h2>
+<h3 id="g0第一类-支持动态符号整数形状">
+  G0：第一类-支持动态符号整数形状
+  <a class="anchor" href="#g0%e7%ac%ac%e4%b8%80%e7%b1%bb-%e6%94%af%e6%8c%81%e5%8a%a8%e6%80%81%e7%ac%a6%e5%8f%b7%e6%95%b4%e6%95%b0%e5%bd%a2%e7%8a%b6">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shape_example</span>(x: R<span style="color:#f92672">.</span>Tensor[(n, m, <span style="color:#ae81ff">2</span>), <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># symbolic and static shape deduction</span>
+</span></span><span style="display:flex;"><span>	lv0: R<span style="color:#f92672">.</span>Tensor[(n, m <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>reshape(x, (n, m<span style="color:#f92672">*</span><span style="color:#ae81ff">2</span>)) 
+</span></span><span style="display:flex;"><span>	lv1: R<span style="color:#f92672">.</span>Tensor[(n <span style="color:#f92672">*</span> m <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>flatten(lv0)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>符号整数形状使我们能够在符号表达式中有效地表示形状计算及其关系。
+上面的例子给出了这种情况的一个例子。编译器需要知道相同的 n 通过多个计算块进行线程处理。
+推导、常数折叠和分析（证明相等和其他关系）的能力将实现更多的优化。</p>
+<p>我们还需要从 API 层面轻松让开发人员（和用户）能够在 AST 构建、重写和检查期间直接查找、证明属性、运行符号计算。</p>
+<h3 id="g1一般情况下的安全网络">
+  G1：一般情况下的安全网络
+  <a class="anchor" href="#g1%e4%b8%80%e8%88%ac%e6%83%85%e5%86%b5%e4%b8%8b%e7%9a%84%e5%ae%89%e5%85%a8%e7%bd%91%e7%bb%9c">#</a>
+</h3>
+<p>虽然rank是固定的，但动态的符号形状关系涵盖了大多数用例。不可避免地，我们还需要能够涵盖可能不属于该类别的一般情况：</p>
+<ul>
+<li>C0：动态形状关系，其中输出形状是依赖于输入的数据（例如唯一运算符）。</li>
+<li>C1：张量的秩是未知的（可能发生在极少数循环的情况下）</li>
+<li>C2：张量的dtype是未知的</li>
+<li>C3：其他情况，低级库的不透明运行时对象（例如 PRNG 句柄、cuDNN 上下文）。</li>
+</ul>
+<p>因此，重要的是要有一个“安全网络”解决方案，以便我们涵盖一般情况。</p>
+<h3 id="g2未来的提升改进路线">
+  G2：未来的提升改进路线
+  <a class="anchor" href="#g2%e6%9c%aa%e6%9d%a5%e7%9a%84%e6%8f%90%e5%8d%87%e6%94%b9%e8%bf%9b%e8%b7%af%e7%ba%bf">#</a>
+</h3>
+<p>与往常一样，有一些方法可以<strong>不断提高总体上进行形状支持的能力</strong>。</p>
+<ul>
+<li>例如，构建有效地为动态rank运算符生成代码的能力。</li>
+<li>我们需要确保的一件事是，所提出的设计具有与未来高级改进兼容的路径。</li>
+<li>这个观点也与 G1 密切相关，因为在我们添加高级形状推导机制之前，我们总是可以暂时回退到安全网络。</li>
+</ul>
+<h2 id="形状限制表示">
+  形状限制表示
+  <a class="anchor" href="#%e5%bd%a2%e7%8a%b6%e9%99%90%e5%88%b6%e8%a1%a8%e7%a4%ba">#</a>
+</h2>
+<p>张量的形状（约束）由relax.Expr（RelayExpr）的两个字段表示。</p>
+<ul>
+<li>checked_type_: Type, 存储泛型 rank 和 dtype 约束</li>
+<li>shape_：Expr，存储用于在运行时<strong>计算表达式形状</strong>的方法。</li>
+</ul>
+<h3 id="dyntensortype">
+  DynTensorType
+  <a class="anchor" href="#dyntensortype">#</a>
+</h3>
+<p><code>checked_type_</code>：存储表达式的编译时推导类型。Tensor Expr包含下面两个fields：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DynTensorType</span>: 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># rank can be unknown</span>
+</span></span><span style="display:flex;"><span>    rank: int
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># dtype can be unknown</span>
+</span></span><span style="display:flex;"><span>    dtype: DataType
+</span></span></code></pre></div><p>在大多数情况下，给定 Tensor expr 的秩和 dtype 是已知的。但是我们也允许具有未知等级和 dtype 的类型（由于考虑了 G1 和 G2）。</p>
+<h3 id="shape-field">
+  Shape Field
+  <a class="anchor" href="#shape-field">#</a>
+</h3>
+<p><code>DynTensorType</code>：不包含形状信息。相反，Tensor 的形状存储在 Expr 的可选 <code>shape_</code>字段中。</p>
+<p>对于一个Expr <code>x</code>，<code>x.shape_</code>，包含下面的值：</p>
+<ul>
+<li>V0：ShapeExpr，包含一个<code>Array&lt;PrimExpr&gt;</code>,表示<code>x</code>有一个已知的动态形状，可以从先前的符号值中推导出来。</li>
+<li>V1：通用relax.Expr，可以调用不透明（形状）函数或形状推导内部函数。</li>
+<li>V2：None，表示形状在编译时未知，需要在运行时查找。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shape_example</span>(x: R<span style="color:#f92672">.</span>Tensor[(n, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>), <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># V0: symbolic and static shape deduction</span>
+</span></span><span style="display:flex;"><span>		lv0: R<span style="color:#f92672">.</span>Tensor[(n, <span style="color:#ae81ff">4</span>), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>reshape(x, (n, <span style="color:#ae81ff">4</span>)) 
+</span></span><span style="display:flex;"><span>		lv1: R<span style="color:#f92672">.</span>Tensor[(n <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>flatten(lv0)
+</span></span><span style="display:flex;"><span>		lv2: R<span style="color:#f92672">.</span>Shape <span style="color:#f92672">=</span> (n <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>,)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># V1: external opaque shape function</span>
+</span></span><span style="display:flex;"><span>		lv3: R<span style="color:#f92672">.</span>Shape <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;myshape_func&#34;</span>, lv2)
+</span></span><span style="display:flex;"><span>		lv4: R<span style="color:#f92672">.</span>Tensor[lv3, <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_tir(lv3, <span style="color:#e6db74">&#34;custom_func&#34;</span>, [lv1]) 
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># V2: data dependent case</span>
+</span></span><span style="display:flex;"><span>		lv5: R<span style="color:#f92672">.</span>Tensor[_, <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>unique(lv4)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># re-match shape</span>
+</span></span><span style="display:flex;"><span>		lv6: R<span style="color:#f92672">.</span>Tensor[(m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(lv5, (m,))
+</span></span><span style="display:flex;"><span>		gv0: R<span style="color:#f92672">.</span>Tensor[(m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>exp(lv6)
+</span></span><span style="display:flex;"><span>		R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv0
+</span></span></code></pre></div><p>上面的代码块显示了三种方案的示例。</p>
+<ul>
+<li>V0 是我们希望提供一类支持的最常见情况</li>
+<li>V1：用于处理可能无法用符号表达式relax.Expr的情况（例如动态排名情况）</li>
+<li>V2：我们的安全网络（G1）
+当形状推导器无法推导出形状时，无论是由于缺乏分析能力还是由于无法解决的障碍（在数据依赖的情况下），我们可以回退到 V2。</li>
+</ul>
+<h3 id="shape修订">
+  Shape修订
+  <a class="anchor" href="#shape%e4%bf%ae%e8%ae%a2">#</a>
+</h3>
+<p>在依赖数据的计算或外部调用之后，我们可能需要能够恢复/优化形状信息以实现更多优化。
+match_shape构造被用于执行此类改进</p>
+<p><code>value = match_shape(lhs, pattern)</code></p>
+<p>match shape构造采用 lhs 值和pattern（符号整数表达式）。它有两个覆盖的语义：</p>
+<ul>
+<li>当lhs是一个张量时，它将match <code>lhs.shape</code>到pattern，如果该变量首次出现在模式中，则填充相应的符号整数变量，然后返回与 lhs 相同但 shape 字段更新为模式的新 Tensor。</li>
+<li>lhs 也可以是直接匹配pattern的 Shape。当我们想要隔离出与任何张量值不对应的形状函数时，这很有用。</li>
+</ul>
+<h2 id="形状传播">
+  形状传播
+  <a class="anchor" href="#%e5%bd%a2%e7%8a%b6%e4%bc%a0%e6%92%ad">#</a>
+</h2>
+<p>本节讨论 Relax 中的形状传播策略。</p>
+<h3 id="d0安全链路--没有形状计算">
+  D0：安全链路&ndash;没有形状计算
+  <a class="anchor" href="#d0%e5%ae%89%e5%85%a8%e9%93%be%e8%b7%af--%e6%b2%a1%e6%9c%89%e5%bd%a2%e7%8a%b6%e8%ae%a1%e7%ae%97">#</a>
+</h3>
+<p>我们需要构建的第一件事是在没有执行形状计算时进行安全链路计算。对无形状计算的支持创建了一个安全网，<strong>我们总是可以回退到这个安全网中</strong>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">shape_example</span>(x: R<span style="color:#f92672">.</span>Tensor[_, _]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># computation without shape</span>
+</span></span><span style="display:flex;"><span>		lv0: R<span style="color:#f92672">.</span>Tensor[_, _] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>log(x) 
+</span></span><span style="display:flex;"><span>		lv1: R<span style="color:#f92672">.</span>Tensor[_, _] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>flatten(lv0)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># bring things back to the shape computatuion land</span>
+</span></span><span style="display:flex;"><span>		lv2: R<span style="color:#f92672">.</span>Tensor[(m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(lv1, (m,))
+</span></span><span style="display:flex;"><span>		gv0: R<span style="color:#f92672">.</span>Tensor[(m,), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>exp(lv2)
+</span></span><span style="display:flex;"><span>		R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv0
+</span></span></code></pre></div><p>上面的代码片段示例显示了一个没有形状的 AST。</p>
+<ul>
+<li>在降级期间，这些调用不会翻译为为目标传递样式，因为无法获取形状信息并预先分配内存</li>
+<li>相反，它们被直接翻译为分配和返回结果张量的调用。</li>
+</ul>
+<p><code>R.log</code>：可以映射到运行时 PackedFunc 调用，该调用接受 NDArray x 并执行elementwise日志操作。</p>
+<ul>
+<li>我们甚至可以调度到常见的运行时库，例如 torch.log</li>
+</ul>
+<p>VM 可以很容易地支持这些功能，因为 PackedFunc 调用返回对象。通过使用匹配形状和后续传播，我们可以将张量从无形状计算区域带到形状感知区域。</p>
+<p>无形状计算绝不是处理事情的最有效方法。对于依赖于数据的计算以及与形状信息较弱的外部库的接口等情况，这是必需的。</p>
+<p>重要的是，它创建了一个重要的安全网，使我们能够以渐进的方式探索先进的形状推导机制，而不必担心所有可能情况的 100% 覆盖率（回到 G2）。</p>
+<h3 id="d1针对元ops的编译器形状传播">
+  D1：针对元OPS的编译器形状传播
+  <a class="anchor" href="#d1%e9%92%88%e5%af%b9%e5%85%83ops%e7%9a%84%e7%bc%96%e8%af%91%e5%99%a8%e5%bd%a2%e7%8a%b6%e4%bc%a0%e6%92%ad">#</a>
+</h3>
+<p>处理具有二元广播关系的基础算子（如 R.add）的编译时形状传播。我们注册以下推导函数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@register_op_attr</span>(<span style="color:#e6db74">&#34;relax.add&#34;</span>, <span style="color:#e6db74">&#34;FInferShape&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">finfer_shape</span>(call: Call) <span style="color:#f92672">-&gt;</span> Shape:
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># note: if x.shape_ is None</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># x.shape() will return shape_of(x) that obtains shape in runtime.</span>
+</span></span><span style="display:flex;"><span>    lhs <span style="color:#f92672">=</span> call<span style="color:#f92672">.</span>args[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>shape();
+</span></span><span style="display:flex;"><span>    rhs <span style="color:#f92672">=</span> call<span style="color:#f92672">.</span>args[<span style="color:#ae81ff">1</span>]<span style="color:#f92672">.</span>shape(); <span style="color:#75715e"># 如果x.shape_为空，将会返回运行期shape</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># pattern match to symbolic deduction case</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> isinstance(lhs, ShapeExpr) <span style="color:#f92672">and</span> isinstance(rhs, ShapeExpr):
+</span></span><span style="display:flex;"><span>	    <span style="color:#75715e"># 符号shape</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># construct a symbolic shape according to lhs and rhs</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># Examples:</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># (n, m) + (m) =&gt; (n, m)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># (n, 1, m) + (2, m) =&gt; (n, 2, m)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> deduced_shape_expr
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> call(op<span style="color:#f92672">.</span>get(<span style="color:#e6db74">&#34;binary_broadcast&#34;</span>), lhs,rhs)
+</span></span></code></pre></div><p>然后，<code>finfer_shape</code>可用于形状传播。具体说来：</p>
+<ul>
+<li>它处理最常需要的符号形状 （G0） 情况</li>
+<li>允许回退到不透明形状的二元广播</li>
+<li>在最糟糕的情况中，我们仍然返回None，在这个例子中，我们回滚到我们的安全网络（G1）
+请注意，可能需要为高级推导引入其他签名信息。这些推导HOOK可以作为单独的注册引入，而不会影响整体设计。</li>
+</ul>
+<h3 id="d2跨transform的额外改进和形状预留">
+  D2：跨transform的额外改进和形状预留
+  <a class="anchor" href="#d2%e8%b7%a8transform%e7%9a%84%e9%a2%9d%e5%a4%96%e6%94%b9%e8%bf%9b%e5%92%8c%e5%bd%a2%e7%8a%b6%e9%a2%84%e7%95%99">#</a>
+</h3>
+<p>形状推导是不完美的。在低级调用转换为TIR的例子中。有时<strong>必须显式指定输出形状本身</strong>。</p>
+<p>为了补充这一点，我们需要能够利用额外的形状改进（通过<code>match_shape</code>），并在可能的情况下在转换中保留形状信息。具体说来：</p>
+<ul>
+<li>启用PASS以便于在分析PASS后注释其他形状信息。</li>
+<li>更改为低级函数后，从高级别显式保留输出形状信息。</li>
+</ul>
+<p>现在我们需要确保我们有足够的 D2，以便它们与未来的改进 （G2） 兼容。有关更多讨论，请参见 A0。</p>
+<h3 id="d3跨函数边界的形状传播">
+  D3：跨函数边界的形状传播
+  <a class="anchor" href="#d3%e8%b7%a8%e5%87%bd%e6%95%b0%e8%be%b9%e7%95%8c%e7%9a%84%e5%bd%a2%e7%8a%b6%e4%bc%a0%e6%92%ad">#</a>
+</h3>
+<p>对子函数的调用可以由构造或融合PASS而生成。本节讨论跨函数边界的形状传播。</p>
+<p>默认的函数调用惯例如下所示：</p>
+<ul>
+<li><code>tir.PrimFunc</code>：在运行时在被调用方中检查形状，调用方需要显式指定输出形状。</li>
+<li>relax编译的<code>PackedFunc</code>：输入形状由被调用方检查，如果返回值的形状未知，则需要<code>match_shape</code> 对返回值的形状进行包装。</li>
+</ul>
+<p>请注意，当前的调用约定在函数边界隔离了形状约束，因此它在运行时创建了安全网。</p>
+<p>重要的是，调用者希望尽可能多地传播形状信息（尽管由于安全网的原因，这并不是绝对必要的）。这里有一些方法：</p>
+<ul>
+<li>W0：在融合PASS中，形状信息最初在融合前可用，生成包含这些形状信息的子函数，保留从融合前到融合后的形状信息，必要时在调用方端插入匹配形状。</li>
+<li>W1：利用子relax函数的常数传播进行形状推导
+<ul>
+<li>将输入中的符号形状替换为输入参数的形状</li>
+<li>Constant 评估进程，看看我们是否可以获得独立于其他执行的输出参数的形状。</li>
+</ul>
+</li>
+<li>W2：如果形状函数与值无关，则提取出该函数
+<ul>
+<li>分析函数内部的计算</li>
+<li>如果形状计算延续独立的路径，则提取形状计算函数</li>
+</ul>
+</li>
+</ul>
+<p>请注意，W1/W2 并不总是可行的。只要我们有添加更多注释或依赖 D0 的后备安全网，就可以尽最大努力。
+注意：这里的计划不够详细，无法立即采取行动，但考虑到 G2，我们可以继续进行必要的手段 （W0），然后稍后添加 W1/W2。</p>
+<h2 id="其它考虑">
+  其它考虑
+  <a class="anchor" href="#%e5%85%b6%e5%ae%83%e8%80%83%e8%99%91">#</a>
+</h2>
+<p>这些是额外的考虑因素，不属于直接范围，而是可能的未来目标，值得根据考虑因素 G2 进行调整。</p>
+<h3 id="a0更高级的形状推导机制">
+  A0：更高级的形状推导机制
+  <a class="anchor" href="#a0%e6%9b%b4%e9%ab%98%e7%ba%a7%e7%9a%84%e5%bd%a2%e7%8a%b6%e6%8e%a8%e5%af%bc%e6%9c%ba%e5%88%b6">#</a>
+</h3>
+<p>有了清晰的安全网，我们可以利用高级重写，在必要时增强形状信息。请参阅以下示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">before</span>(x: R<span style="color:#f92672">.</span>Tensor[_, _], y: R<span style="color:#f92672">.</span>Tensor[(m, n), <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># computation without shape</span>
+</span></span><span style="display:flex;"><span>		lv0: R<span style="color:#f92672">.</span>Tensor[_, _] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>log(x) 
+</span></span><span style="display:flex;"><span>		gv0: R<span style="color:#f92672">.</span>Tensor[(m, n), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>ewise_add(lv0, y)
+</span></span><span style="display:flex;"><span>		R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">after</span>(x: R<span style="color:#f92672">.</span>Tensor[(m, n), <span style="color:#e6db74">&#34;f32&#34;</span>], y: R<span style="color:#f92672">.</span>Tensor[(m, n), <span style="color:#e6db74">&#34;f32&#34;</span>]):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e"># computation without shape</span>
+</span></span><span style="display:flex;"><span>		lv0: R<span style="color:#f92672">.</span>Tensor[(m, n), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>log(x) 
+</span></span><span style="display:flex;"><span>		gv0: R<span style="color:#f92672">.</span>Tensor[(m, n), <span style="color:#e6db74">&#34;f32&#34;</span>] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>ewise_add(lv0, y)
+</span></span><span style="display:flex;"><span>		R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv0
+</span></span></code></pre></div><p>上面的代码显示了利用更高级的形状分析的可能转换。在这种情况下，请使用 <code>ewise_add</code> 来确定输入 x 的形状和类型。这些改进可以以增量方式添加，而无需更改整体体系结构。</p>
+<h3 id="a1符号形状更接近expr">
+  A1：符号形状更接近Expr
+  <a class="anchor" href="#a1%e7%ac%a6%e5%8f%b7%e5%bd%a2%e7%8a%b6%e6%9b%b4%e6%8e%a5%e8%bf%91expr">#</a>
+</h3>
+<p>现在，符号形状位于自己的类型上，需要包装（<code>ShapeExpr</code>）才能用作relax.Expr。</p>
+<h1 id="compilation-mvp设计">
+  Compilation MVP设计
+  <a class="anchor" href="#compilation-mvp%e8%ae%be%e8%ae%a1">#</a>
+</h1>
+<h2 id="关键目标-2">
+  关键目标
+  <a class="anchor" href="#%e5%85%b3%e9%94%ae%e7%9b%ae%e6%a0%87-2">#</a>
+</h2>
+<ul>
+<li>将relax程序编译为VM能够执行的格式</li>
+<li>一个多阶段的编译pipeline，支持可组合的多阶段编译管道
+<ul>
+<li>每个transformation是：IRModule &ndash;&gt; IRModule</li>
+<li>用户可能会使用第三方库（如 cudnn）运行程序的一部分。我们需要有能力来优化剩余的部分</li>
+</ul>
+</li>
+</ul>
+<h2 id="relax程序案例">
+  relax程序案例
+  <a class="anchor" href="#relax%e7%a8%8b%e5%ba%8f%e6%a1%88%e4%be%8b">#</a>
+</h2>
+<p>我们以编译以下简单的 Relax 程序为例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> tvm.script
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> tir <span style="color:#66d9ef">as</span> T, relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.script.ir_module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MyIRModule</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tirexp</span>(a: ty<span style="color:#f92672">.</span>handle, b: ty<span style="color:#f92672">.</span>handle):
+</span></span><span style="display:flex;"><span>        n1, m1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;n1&#34;</span>), T<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;m1&#34;</span>)
+</span></span><span style="display:flex;"><span>		X <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(x, (n1, m1))
+</span></span><span style="display:flex;"><span>		Y <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(y, (n1, m1))
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(n1, m1) <span style="color:#66d9ef">as</span> i, j:
+</span></span><span style="display:flex;"><span>		    Y[i, j] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>exp(X[i, j])
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">myfunc</span>(x: Tensor[(n, m)]):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> R<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>		    lv0: Tensor[(n, m)] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_tir((n, m), tirexp, [x])
+</span></span><span style="display:flex;"><span>		    gv0: Tensor[(m<span style="color:#f92672">*</span>n,)] <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_tir((m<span style="color:#f92672">*</span>n,), <span style="color:#e6db74">&#34;flatten&#34;</span>, [lv0])
+</span></span><span style="display:flex;"><span>		    R<span style="color:#f92672">.</span>outputs(gv0)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> gv0
+</span></span></code></pre></div><p>我们在relax中引入了一个新的intrinsic：<code>relax.call_tir</code>，并使用它来构建程序。<code>CallTIR</code>包含下面的特征：</p>
+<ul>
+<li>没有side effect</li>
+<li>有形状标注</li>
+<li>核心的表达式：<code>call_tir(output_shape, func, [arg0, arg1, ...], Optional&lt;shape_expr&gt;) -&gt; Expr</code>
+<ul>
+<li>这意味着我们采用一个 TIR 调用约定（目标传递样式）中的函数，例如：<code>mylog(in, out)</code>,并且将它包装到<code>call_tir</code>函数中，<code>call_tir(out_shape, mylog, in)</code>将会返回输出</li>
+<li><code>func</code> 可以是一个TIR函数或者一个packed函数</li>
+<li><code>shape_expr</code>是一个可选的参数（可以传递整数），https://github.com/tlc-pack/relax/wiki/EmitTE-Staging-Integration#dynamic-shape-case</li>
+<li><code>output_shape</code>：是ShapeExpr或者一个Tuple</li>
+</ul>
+</li>
+</ul>
+<h2 id="将该程序降级为vm指令的挑战">
+  将该程序降级为VM指令的挑战
+  <a class="anchor" href="#%e5%b0%86%e8%af%a5%e7%a8%8b%e5%ba%8f%e9%99%8d%e7%ba%a7%e4%b8%bavm%e6%8c%87%e4%bb%a4%e7%9a%84%e6%8c%91%e6%88%98">#</a>
+</h2>
+<ul>
+<li>C0：每个<code>call_tir</code>都需要被降级（relax VM支持<code>call</code>指令，可用于直接调用packed func）&ndash;&gt; 我们需要插入显式地输出内存分配（with 内存计划）</li>
+<li>C1：符号形状 n 和 m 不是运行时可以表示的（relax VM只支持<code>NDArray</code>和<code>ShapeTuple</code>运行时数据结构）&ndash;&gt;我们需要<strong>在VM中使用堆来执行形状计算</strong></li>
+</ul>
+<h3 id="首先将call_tir降级为显式地内存形式">
+  首先，将call_tir降级为显式地内存形式
+  <a class="anchor" href="#%e9%a6%96%e5%85%88%e5%b0%86call_tir%e9%99%8d%e7%ba%a7%e4%b8%ba%e6%98%be%e5%bc%8f%e5%9c%b0%e5%86%85%e5%ad%98%e5%bd%a2%e5%bc%8f">#</a>
+</h3>
+<p>一个显式地内存形式程序有下列性质：</p>
+<ul>
+<li>显式地分配和kill存储器和tensors</li>
+<li>有side effect</li>
+<li>没有形状标注</li>
+<li>核心表达式：<code>call(func_name, arg0, arg1, ...) -&gt; optional&lt;Expr&gt;</code>，将其映射为VM可以执行的<code>Call</code>指令</li>
+</ul>
+<p>四个intrinsics/内置函数：</p>
+<ul>
+<li><code>relax.vm.builtin.alloc_storage(size, device) -&gt; storage</code>：分配可用于创建张量的存储</li>
+<li><code>relax.vm.builtin.alloc_tensor(storage, shape, offset, dtype) -&gt; tensor</code>：在存储中分配张量</li>
+<li><code>relax.vm.builtin.free_storage(storage)</code>：释放分配的存储</li>
+<li><code>relax.vm.builtin.free_tensor(tensor)</code>：释放分配的张量</li>
+</ul>
+<p>由于<code>alloc_storage</code>和<code>alloc_tensor</code>的参数是整数和dtype，并且它们不能表示为 Expr 作为 CallNode 的参数，<strong>alloc_storage 和 alloc_tensor 在 Relax 中被设计为内部函数，并包含包含 int 和 dtype 的属性</strong>。</p>
+<p>下面的程序是对call_tir降级后的表示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> tir <span style="color:#66d9ef">as</span> T, relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">myfunc</span>(x):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># has side effect, so it&#39;s now in a BindingBlock instead of a DataflowBlock</span>
+</span></span><span style="display:flex;"><span>    n, m <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>match_shape(x<span style="color:#f92672">.</span>shape)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>    storage0 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_storage(size<span style="color:#f92672">=</span>[n<span style="color:#f92672">*</span>m], device<span style="color:#f92672">=</span>cpu)
+</span></span><span style="display:flex;"><span>    tensor0 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_tensor(storage0, shape<span style="color:#f92672">=</span>[n, m], offset<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;f32&#34;</span>)
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;tirexp&#34;</span>), x, tensor0)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>    storage1 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_storage(size<span style="color:#f92672">=</span>[n<span style="color:#f92672">*</span>m], device<span style="color:#f92672">=</span>cpu)
+</span></span><span style="display:flex;"><span>    tensor1 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_tensor(storage1, shape<span style="color:#f92672">=</span>[m<span style="color:#f92672">*</span>n,], offset<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;f32&#34;</span>)
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;flatten&#34;</span>), tensor0, tensor1)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;free_tensor&#34;</span>), tensor0)
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;free_storage&#34;</span>), storage0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> tensor1
+</span></span></code></pre></div><h3 id="下一步通过vm堆操作实现shape降级">
+  下一步，通过VM堆操作实现shape降级
+  <a class="anchor" href="#%e4%b8%8b%e4%b8%80%e6%ad%a5%e9%80%9a%e8%bf%87vm%e5%a0%86%e6%93%8d%e4%bd%9c%e5%ae%9e%e7%8e%b0shape%e9%99%8d%e7%ba%a7">#</a>
+</h3>
+<ul>
+<li>三个内置函数：
+<ul>
+<li><code>relax.vm.builtin.alloc_heap(size) -&gt; heap</code>：分配具有特定大小的堆（NDArray）以执行形状计算（我们可以使用<code>alloc_tensor</code>实现相同的目标）</li>
+<li><code>relax.vm.builtin.store_shape(shape, heap, idx0, ...)</code>：将形状存储到 vm 堆中的特定indices中</li>
+<li><code>relax.vm.builtin.load_shape(heap, idx0, ...) -&gt; shape</code>：根据切片从 vm 堆构造shape
+（由于 <code>store_shape</code> 和 <code>load_shape</code> 包含索引（整数数组）作为其参数，并且它们不能表示为 Expr，因此它们在 Relax 中被设计为内部函数，并包含描述 int 和 dtype 的属性。</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> tir <span style="color:#66d9ef">as</span> T, relax <span style="color:#66d9ef">as</span> R
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Program after shape lowering, shape降级后的程序</span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@R.function</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">myfunc</span>(x):
+</span></span><span style="display:flex;"><span>    shape_heap <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;vm.builtin.alloc_shape_heap&#34;</span>, size<span style="color:#f92672">=</span>k) 
+</span></span><span style="display:flex;"><span>    relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>store_shape(x<span style="color:#f92672">.</span>shape, shape_heap, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    sh <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>load_shape(shape_heap, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># this product_shape function (to compute n*m) is generated as TIR primfunc when visiting ShapeExpr in the shape lowering pass</span>
+</span></span><span style="display:flex;"><span>    shape_size <span style="color:#f92672">=</span> product_shape(sh) 
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>    storage0 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_storage(size<span style="color:#f92672">=</span>shape_size, device<span style="color:#f92672">=</span>cpu)
+</span></span><span style="display:flex;"><span>    gv0 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_tensor(storage0, sh, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;f32&#34;</span>)
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;tirexp&#34;</span>), x, gv0)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>    sh1 <span style="color:#f92672">=</span> R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;load_shape&#34;</span>), heap, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>    storage1 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_storage(size<span style="color:#f92672">=</span>shape_size, device<span style="color:#f92672">=</span>cpu)
+</span></span><span style="display:flex;"><span>    gv1 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>vm<span style="color:#f92672">.</span>builtin<span style="color:#f92672">.</span>alloc_tensor(storage1, sh1, <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;f32&#34;</span>)
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;flatten&#34;</span>), gv0, gv1)
+</span></span><span style="display:flex;"><span>		
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;free_tensor&#34;</span>), gv0)
+</span></span><span style="display:flex;"><span>    R<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;free_storage&#34;</span>), storage0)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> gv1
+</span></span></code></pre></div><h2 id="relax构建和编译workflow">
+  Relax构建和编译workflow
+  <a class="anchor" href="#relax%e6%9e%84%e5%bb%ba%e5%92%8c%e7%bc%96%e8%af%91workflow">#</a>
+</h2>
+<p>在<code>vm.build(ir_mod, target)</code>中，四个降级pass：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    passes <span style="color:#f92672">=</span> [relax<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>ToNonDataflow()]
+</span></span><span style="display:flex;"><span>    passes<span style="color:#f92672">.</span>append(relax<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>CallTIRRewrite())
+</span></span><span style="display:flex;"><span>    passes<span style="color:#f92672">.</span>append(relax<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>VMMemoryLower())
+</span></span><span style="display:flex;"><span>    passes<span style="color:#f92672">.</span>append(relax<span style="color:#f92672">.</span>transform<span style="color:#f92672">.</span>VMShapeLower())
+</span></span></code></pre></div><p>在对passes降级后，<code>relax.vm.build(ir_mod, target)</code> 调用<code>tvm::build</code>来构建IRModule中的所有的TIR primfuncs，并且使用<code>CodeGenVM</code>来visit IRModule中的所有的relax 函数，并在visit的时候生成可执行的VM。</p>
+<h1 id="vm设计">
+  VM设计
+  <a class="anchor" href="#vm%e8%ae%be%e8%ae%a1">#</a>
+</h1>
+<p>设计目标：</p>
+<ul>
+<li>设计一个灵活的基于寄存器的VM，用于执行包含动态shape和控制流的relax程序</li>
+<li>最小的指令集：
+<ul>
+<li><code>Call</code> packed func作为其的核心指令</li>
+<li>内置packed function library（例如：<code>shape_of(tensor)</code>）</li>
+</ul>
+</li>
+<li>通过shape heap (NDArray) 操作完成形状计算
+<ul>
+<li>假设张量A的形状在编译器是（m, n），relax程序中我们希望计算（j, k）=（m+1，n+1）。在运行期，A的形状将通过调用vm内置函数<code>store_shape(A.shape)</code>存储到shape堆的索引0和索引1中。m+1和n+1将会在shape降级pass生成的TIR函数计算，并且 j 和 k 将会被存储到index 2和 3中。</li>
+</ul>
+</li>
+</ul>
+<h2 id="指令集">
+  指令集
+  <a class="anchor" href="#%e6%8c%87%e4%bb%a4%e9%9b%86">#</a>
+</h2>
+<p>relax vm只包含四种指令：（Call，Ret、If、Goto）</p>
+<ul>
+<li>Call：调用带有参数的packed函数，并选择性地将输出写入返回寄存器
+<code>call &lt;packed_func&gt; [arg0, ...] dst: optional&lt;reg&gt;</code>
+参数可以是 寄存器、整数立即数或常量。</li>
+<li>Ret：返回结果寄存器中的值
+<code>ret &lt;res_reg&gt;</code></li>
+<li>If：如果<code>cond</code> 寄存器是true，继续执行下一条指令（true 分支），否则将 pc（program counter） 增加 false_offset 以转到 false 分支。
+<code>If &lt;cond&gt; false_offset</code></li>
+<li>Goto：通过<code>pc_offset</code>增加pc（程序计数器）
+<code>Goto pc_offset</code></li>
+</ul>
+<h2 id="架构-1">
+  架构
+  <a class="anchor" href="#%e6%9e%b6%e6%9e%84-1">#</a>
+</h2>
+<p>
+  <img src="/mlsys/virtualMachine_struct_1.png" alt="" /></p>
+<h3 id="execbuilder">
+  ExecBuilder
+  <a class="anchor" href="#execbuilder">#</a>
+</h3>
+<p>ExecBuilder 是我们用来为虚拟机<strong>Emit指令和构建可执行程序</strong>的工具。<strong>它本身不维护任何数据成员</strong>，但提供了操作内部Executable程序的方法。
+下面是一个用于展示builder是如何工作的例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.register_func</span>(<span style="color:#e6db74">&#34;test.vm.move&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">move</span>(src):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> src
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.register_func</span>(<span style="color:#e6db74">&#34;vm.add&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">add</span>(a, b):
+</span></span><span style="display:flex;"><span>    ret <span style="color:#f92672">=</span> a<span style="color:#f92672">.</span>asnumpy() <span style="color:#f92672">+</span> b<span style="color:#f92672">.</span>asnumpy()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(ret)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@tvm.register_func</span>(<span style="color:#e6db74">&#34;vm.mul&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mul</span>(a, b):
+</span></span><span style="display:flex;"><span>    ret <span style="color:#f92672">=</span> a<span style="color:#f92672">.</span>asnumpy() <span style="color:#f92672">*</span> b<span style="color:#f92672">.</span>asnumpy()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(ret)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm <span style="color:#f92672">import</span> relax <span style="color:#66d9ef">as</span> rx
+</span></span><span style="display:flex;"><span>ib <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>ExecBuilder()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ib<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;main&#34;</span>, num_inputs<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.move&#34;</span>, [ib<span style="color:#f92672">.</span>c(<span style="color:#ae81ff">0</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>)) <span style="color:#75715e"># 常量0-&gt;寄存器1</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.add&#34;</span>, [ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>imm(<span style="color:#ae81ff">10</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>)) <span style="color:#75715e"># 寄存器0 + 立即数10 -&gt; 寄存器2</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.mul&#34;</span>, [ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>), ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>)) <span style="color:#75715e"># 寄存器2 * 寄存器1 -&gt; 寄存器3</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_ret(ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>))
+</span></span><span style="display:flex;"><span>executable <span style="color:#f92672">=</span> ib<span style="color:#f92672">.</span>get()
+</span></span></code></pre></div><p>这里</p>
+<ul>
+<li><code>ib.r(x)</code> 表示当前帧中的寄存器 <code>x</code>;</li>
+<li><code>ib.c(i)</code>表示常量池中的第i个常量，当前的常量池支持NDArray和DLDataType；</li>
+<li><code>ib.imm(val)</code>：表示等价于<code>val</code>的立即数（inline constant）</li>
+</ul>
+<h4 id="ibfunction和惯例">
+  ib.function和惯例
+  <a class="anchor" href="#ibfunction%e5%92%8c%e6%83%af%e4%be%8b">#</a>
+</h4>
+<p>我们使用<code>ib.function(func_name, num_inputs)</code> 来注释发出的代码中函数的作用域。
+必须提供输入的数量，例如k，以便前k个寄存器将用于存储函数的输入。在上面的例子中，寄存器 r（0） 存储函数输入。</p>
+<h4 id="check和格式化">
+  Check和格式化
+  <a class="anchor" href="#check%e5%92%8c%e6%a0%bc%e5%bc%8f%e5%8c%96">#</a>
+</h4>
+<p>由于上面提到的函数约定，这使得检查用户是否正确使用寄存器会很棒。因此，我们将在 ib.function 的出口处验证发出的指令的几件事：</p>
+<ul>
+<li><strong>用户是否使用意外的寄存器作为输入</strong>。例如，当输入数量为2的时候，<code>ib.r(3)</code>被用于作为输入。在这种情况中，我们将会报错；</li>
+<li>用户<strong>是否遗漏任何输入寄存器</strong>。例如，输入的数量为3，但是用户只使用<code>ib.r(0)</code>和<code>ib.r(2)</code>作为输入。在这种情况下，我们将发出警告。</li>
+</ul>
+<p>检查是在 CheckExecutable 中完成的。
+此外，如果用户使用任意寄存器索引，则不利于寄存器分配。比如说，<code>ib.r(10000)</code>，虽然这是正确的，但我们不想在执行过程中分配 10000 个寄存器。因此，我们将有一个formalize PASS，以按使用顺序重命名这些寄存器，这是在<code>ExecBuilderNode::Formalize</code> 中实现的。</p>
+<h3 id="executable">
+  Executable
+  <a class="anchor" href="#executable">#</a>
+</h3>
+<p>可执行文档存储虚拟机所需的内容，包括：字节码、函数表、常量池等。它必须支持序列化和反序列化，以便我们可以将其传递给另一个设备并将其加载到 vm 中。</p>
+<h4 id="数据结构">
+  数据结构
+  <a class="anchor" href="#%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84">#</a>
+</h4>
+<p>我们精心设计了 Executable 的数据结构，使其可以轻松序列化/反序列化。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">VMFunction</span> {
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>string name; 
+</span></span><span style="display:flex;"><span>  Index start_instr;
+</span></span><span style="display:flex;"><span>  Index num_args;
+</span></span><span style="display:flex;"><span>  Index register_file_size;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ExecutableNode</span> <span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Object {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* the global function informations */</span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>VMFunction<span style="color:#f92672">&gt;</span> global_funcs;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* the constant pool */</span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>TVMRetValue<span style="color:#f92672">&gt;</span> constants;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* packed function names, corresponding to the
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     func_idx in Call instruction */</span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span> func_names;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* the emitted byte code of instrucitons */</span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>ExecWord<span style="color:#f92672">&gt;</span> instr_data;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/* since the instruction&#39;s length is variable,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">     we need to store the offset for indexing */</span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>Index<span style="color:#f92672">&gt;</span> instr_offset;
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><h4 id="emit指令和获取指令">
+  Emit指令和获取指令
+  <a class="anchor" href="#emit%e6%8c%87%e4%bb%a4%e5%92%8c%e8%8e%b7%e5%8f%96%e6%8c%87%e4%bb%a4">#</a>
+</h4>
+<p>在这样的数据结构中，当我们发出类似 <code>ib.emit_call(&quot;add&quot;， [ib.r(0)， ib.r(1)]， dst=ib.r(2))</code> 的调用指令时，我们将：</p>
+<ul>
+<li>如果之前没有packed函数名字为&quot;add&quot;的话，我们将&quot;add&quot;添加到packed_func_names中；</li>
+<li>将<code>instr_data</code>的实际大小push到<code>instr_offset</code>中，<code>instr_offset.push_back(instr_data.size())</code>用于索引指令；</li>
+<li>将指令的opcode、func index、arguments、destination作为字节码push到instr_data中；
+获取指令很简单，我们只需使用 <code>instr_offset</code> 在<code>instr_data</code>中索引指令：</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Instruction ExecutableNode<span style="color:#f92672">::</span>GetInstruction(Index i) <span style="color:#66d9ef">const</span> {
+</span></span><span style="display:flex;"><span>  size_t offset <span style="color:#f92672">=</span> instr_offset[i];
+</span></span><span style="display:flex;"><span>  Opcode op <span style="color:#f92672">=</span> <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Opcode<span style="color:#f92672">&gt;</span>(instr_data[offset]);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (op) {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ...
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// dispatch according to the op code
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="序列化和反序列化">
+  序列化和反序列化
+  <a class="anchor" href="#%e5%ba%8f%e5%88%97%e5%8c%96%e5%92%8c%e5%8f%8d%e5%ba%8f%e5%88%97%e5%8c%96">#</a>
+</h4>
+<p>在这种情况下，序列化和反序列化也更容易。由于我们不需要将 Instruction 从内存中的数据结构转换为字节码，因此我们只需要序列化 <code>instr_data</code> 和 <code>instr_offset</code>，这已经是字节码了。</p>
+<h4 id="文本格式">
+  文本格式
+  <a class="anchor" href="#%e6%96%87%e6%9c%ac%e6%a0%bc%e5%bc%8f">#</a>
+</h4>
+<p>我们支持以文本格式dump可执行文档的内容，以便用户可以检查代码。例如：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>ib <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>rx<span style="color:#f92672">.</span>ExecBuilder()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ib<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;func0&#34;</span>, num_inputs<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.op.add&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.move&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.print&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>)])
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_ret(ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>exec0 <span style="color:#f92672">=</span> ib<span style="color:#f92672">.</span>get()
+</span></span><span style="display:flex;"><span>print(exec0<span style="color:#f92672">.</span>stats())
+</span></span><span style="display:flex;"><span>print(exec0<span style="color:#f92672">.</span>astext()) 
+</span></span></code></pre></div><p>输出：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>Relax VM executable statistics:
+</span></span><span style="display:flex;"><span>  Constant <span style="color:#a6e22e">shapes</span> (<span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#ae81ff">0</span>)<span style="color:#f92672">:</span> []
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">Globals</span> (<span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">1</span>)<span style="color:#f92672">:</span> [func0]
+</span></span><span style="display:flex;"><span>  Packed <span style="color:#a6e22e">functions</span> (<span style="color:#960050;background-color:#1e0010">#</span><span style="color:#ae81ff">3</span>)<span style="color:#f92672">:</span> [vm.op.add, vm.builtin.move, vm.builtin.print]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">@</span>func0:
+</span></span><span style="display:flex;"><span>  call  vm.op.add        in: <span style="color:#f92672">%</span><span style="color:#ae81ff">0</span>, <span style="color:#f92672">%</span><span style="color:#ae81ff">1</span>       dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>  call  vm.builtin.move  in: <span style="color:#f92672">%</span><span style="color:#ae81ff">2</span>           dst: <span style="color:#f92672">%</span><span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>  call  vm.builtin.print in: <span style="color:#f92672">%</span><span style="color:#ae81ff">3</span>           dst: <span style="color:#66d9ef">void</span>
+</span></span><span style="display:flex;"><span>  ret   ret <span style="color:#f92672">%</span><span style="color:#ae81ff">3</span>
+</span></span></code></pre></div><h4 id="dump-as-python-code">
+  Dump as Python Code
+  <a class="anchor" href="#dump-as-python-code">#</a>
+</h4>
+<p>我们还支持将其转储回 python 代码，以便用户可以轻松hack它：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># output of exec.aspython()</span>
+</span></span><span style="display:flex;"><span>ib <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>ExecBuilder()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ib<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;func0&#34;</span>, num_inputs<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.op.add&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;time&#34;</span>, dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">100</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.move&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;time&#34;</span>, dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">101</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.print&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>)])
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_ret(ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">3</span>))
+</span></span></code></pre></div><h3 id="virtual-machine">
+  Virtual Machine
+  <a class="anchor" href="#virtual-machine">#</a>
+</h3>
+<p>VM 可以加载到包含生成的代码的executable和runtime module中，通过解释字节码，使用给定的输入执行特定函数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e"># building</span>
+</span></span><span style="display:flex;"><span>ib <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>ExecBuilder()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ib<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;func0&#34;</span>, num_inputs<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;test.vm.add&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_ret(ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ib<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;func1&#34;</span>, num_inputs<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>):
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;test.vm.mul&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_ret(ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>ex <span style="color:#f92672">=</span> ib<span style="color:#f92672">.</span>get()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># execution</span>
+</span></span><span style="display:flex;"><span>vm <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>VirtualMachine(ex)
+</span></span><span style="display:flex;"><span>a <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">4</span>,))
+</span></span><span style="display:flex;"><span>b <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#ae81ff">4</span>,))
+</span></span><span style="display:flex;"><span>mul_res <span style="color:#f92672">=</span> vm[<span style="color:#e6db74">&#34;func1&#34;</span>](a, b)
+</span></span><span style="display:flex;"><span>add_res <span style="color:#f92672">=</span> vm[<span style="color:#e6db74">&#34;func0&#34;</span>](a, b)
+</span></span><span style="display:flex;"><span>np<span style="color:#f92672">.</span>testing<span style="color:#f92672">.</span>assert_allclose(add_res<span style="color:#f92672">.</span>asnumpy(), a<span style="color:#f92672">.</span>asnumpy() <span style="color:#f92672">+</span> b<span style="color:#f92672">.</span>asnumpy())
+</span></span><span style="display:flex;"><span>np<span style="color:#f92672">.</span>testing<span style="color:#f92672">.</span>assert_allclose(mul_res<span style="color:#f92672">.</span>asnumpy(), a<span style="color:#f92672">.</span>asnumpy() <span style="color:#f92672">*</span> b<span style="color:#f92672">.</span>asnumpy())
+</span></span></code></pre></div><h4 id="vm状态">
+  VM状态
+  <a class="anchor" href="#vm%e7%8a%b6%e6%80%81">#</a>
+</h4>
+<p>内置函数（例如，alloc_storage）可能需要访问 VM 的内部状态（例如，allocators）。VMState 存储在一个特殊的寄存器中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">VMState</span> {
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/*! \brief The memory allocators. */</span>
+</span></span><span style="display:flex;"><span>  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>Allocator<span style="color:#f92672">*&gt;</span> allocators;
+</span></span><span style="display:flex;"><span>};
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">constexpr</span> RegName kVMStateRegister <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x008D14FA4379015C</span>; <span style="color:#75715e">// magic number
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ib.emit_call(&#34;vm.builtin.alloc_storage&#34;, args=[ib.vm_state(), ...])
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>};
+</span></span></code></pre></div><h4 id="形状计算">
+  形状计算
+  <a class="anchor" href="#%e5%bd%a2%e7%8a%b6%e8%ae%a1%e7%ae%97">#</a>
+</h4>
+<p>VM 使用shape堆 （NDArray） 进行形状计算。（ShapeTuple 也是一种运行时数据类型。）</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>ib <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>ExecBuilder()
+</span></span><span style="display:flex;"><span>shape <span style="color:#f92672">=</span> (<span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">16</span>)
+</span></span><span style="display:flex;"><span>x <span style="color:#f92672">=</span> tvm<span style="color:#f92672">.</span>nd<span style="color:#f92672">.</span>array(np<span style="color:#f92672">.</span>random<span style="color:#f92672">.</span>rand(<span style="color:#f92672">*</span>shape))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> ib<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;main&#34;</span>, num_inputs<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># alloc a shape heap of size 2, and store it in r(0)</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.alloc_shape_heap&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>imm(<span style="color:#ae81ff">2</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># get the shape of tensor x, and store the ShapeTuple to r(1)</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.shape_of&#34;</span>, args<span style="color:#f92672">=</span>[x], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># store the shape of x to index 0 and index 1 of the shape heap</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># shape_heap[0] = 32, shape_heap[1] = 16</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.store_shape&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">1</span>), ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>imm(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>imm(<span style="color:#ae81ff">1</span>)])
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># construct a ShapeTuple from the values in index 0 and index 1 of the shape heap</span>
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_call(<span style="color:#e6db74">&#34;vm.builtin.load_shape&#34;</span>, args<span style="color:#f92672">=</span>[ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>imm(<span style="color:#ae81ff">0</span>), ib<span style="color:#f92672">.</span>imm(<span style="color:#ae81ff">1</span>)], dst<span style="color:#f92672">=</span>ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span><span style="display:flex;"><span>    ib<span style="color:#f92672">.</span>emit_ret(ib<span style="color:#f92672">.</span>r(<span style="color:#ae81ff">2</span>))
+</span></span></code></pre></div><h3 id="内置的runtime-packed函数">
+  内置的runtime packed函数
+  <a class="anchor" href="#%e5%86%85%e7%bd%ae%e7%9a%84runtime-packed%e5%87%bd%e6%95%b0">#</a>
+</h3>
+<p>VM 运行时库是packed函数的集合，可以使用 <code>Call </code>指令调用这些函数（以便 relax vm 具有最小指令集）
+
+  <a href="https://github.com/octoml/relax/blob/relax/src/relax/vm/builtin.cc">https://github.com/octoml/relax/blob/relax/src/relax/vm/builtin.cc</a></p>
+<h1 id="emitte-staging集成">
+  EmitTE Staging集成
+  <a class="anchor" href="#emitte-staging%e9%9b%86%e6%88%90">#</a>
+</h1>
+<p>tensor expression</p>
+<p>本文档是relax集成TE的工程计划草图。Relax 支持通过 <code>call_tir</code> 直接嵌入 <code>TIR</code> 功能。然而，通过TVMScript手动构建TIR函数仍然很困难。</p>
+<p>TE（tensor expression）是一种DSL，我们传统上用它来构造很多算子。虽然我们正在向 TIR 迈进以进行调度，但 te 作为创建 TIR 函数的简洁 API 仍然非常有用。</p>
+<p>现在，我们引入了一个 API <code>create_prim_func</code>，使我们能够有效地从 TE 创建 TIR 功能。下面的代码块给出了一个示例。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> tvm.script <span style="color:#f92672">import</span> tir <span style="color:#66d9ef">as</span> T
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tir_element_wise</span>(a: T<span style="color:#f92672">.</span>handle, c: T<span style="color:#f92672">.</span>handle) <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>    A <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(a, (<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">128</span>))
+</span></span><span style="display:flex;"><span>    B <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(b, (<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">128</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block([<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">128</span>]) <span style="color:#66d9ef">as</span> [i, j]:
+</span></span><span style="display:flex;"><span>        B[i, j] <span style="color:#f92672">=</span> A[i, j] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>A <span style="color:#f92672">=</span> te<span style="color:#f92672">.</span>placeholder((<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">128</span>), name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;A&#34;</span>)
+</span></span><span style="display:flex;"><span>B <span style="color:#f92672">=</span> te<span style="color:#f92672">.</span>compute((<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">128</span>), <span style="color:#66d9ef">lambda</span> x, y: A[x, y] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;B&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>func <span style="color:#f92672">=</span> te<span style="color:#f92672">.</span>create_prim_func([A, B]) 
+</span></span><span style="display:flex;"><span>tvm<span style="color:#f92672">.</span>ir<span style="color:#f92672">.</span>assert_structural_equal(func, tir_element_wise)
+</span></span></code></pre></div><p>有关其他读数，请参阅下面的文档列表：</p>
+<ul>
+<li>
+  <a href="https://github.com/apache/tvm/blob/main/src/te/operation/create_primfunc.cc">https://github.com/apache/tvm/blob/main/src/te/operation/create_primfunc.cc</a> ：TE创建PrimFunc的当前逻辑</li>
+<li>
+  <a href="https://github.com/apache/tvm/blob/main/tests/python/unittest/test_te_create_primfunc.py">https://github.com/apache/tvm/blob/main/tests/python/unittest/test_te_create_primfunc.py</a></li>
+</ul>
+<p>重要的是，我们利用 TE 编写了丰富的运算符库集合（例如 topi）。重用这些库对于快速创建工作负载和算子降级非常有用。</p>
+<p>本说明概述了一种将 TE 机制紧密重用的方法，用于 Relax ast 暂存和高级算子降级。</p>
+<h2 id="关键目标-3">
+  关键目标
+  <a class="anchor" href="#%e5%85%b3%e9%94%ae%e7%9b%ae%e6%a0%87-3">#</a>
+</h2>
+<p>下面的代码片段显示了我们的设计目标：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>bb <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>BlockBuilder()
+</span></span><span style="display:flex;"><span>n, m <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;n&#34;</span>), tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;m&#34;</span>)
+</span></span><span style="display:flex;"><span>x : rx<span style="color:#f92672">.</span>Var <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;x&#34;</span>, shape<span style="color:#f92672">=</span>[n, m])
+</span></span><span style="display:flex;"><span>a : rx<span style="color:#f92672">.</span>Expr <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>emit(x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># create a te tensor</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># requires a.shape to be a known ShapeExpr, otherwise match shape is needed here</span>
+</span></span><span style="display:flex;"><span>A : te<span style="color:#f92672">.</span>Tensor<span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>te_tensor(a)
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># construct a te expression via arbitrary topi/te calls</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># This will create the prim_func that is related to te, and add a call_tir to it</span>
+</span></span><span style="display:flex;"><span>b : rx<span style="color:#f92672">.</span>Expr <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>emit(te<span style="color:#f92672">.</span>compute((n, m), <span style="color:#66d9ef">lambda</span> x, y: A[x, y] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>, name<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;B&#34;</span>))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># light weight decorator style that does automatic conversion</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># (turn rx arguments into rx.te_tensor if needed)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># otherwise, simply pass things as te</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># this decorator can be applied to topi functions in the future so they can directly</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># be used to stage relax functions as well.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">te_func</span>(X: te<span style="color:#f92672">.</span>Tensor, Y: te<span style="color:#f92672">.</span>Tensor):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> te<span style="color:#f92672">.</span>compute((<span style="color:#ae81ff">128</span>, <span style="color:#ae81ff">128</span>), <span style="color:#66d9ef">lambda</span> x, y: A[x, y] <span style="color:#f92672">+</span> B[x, y])
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># directly call into te function to be able to construct the </span>
+</span></span><span style="display:flex;"><span>bb<span style="color:#f92672">.</span>emit_te(te_func, x, a)
+</span></span></code></pre></div><p>关键步骤是：</p>
+<ul>
+<li>D0：允许将一个带有已知符号形状的relax.Expr 包装成一个 te.Tensor</li>
+<li>D1：重用基于 te 的库来创建算子实现</li>
+<li>D2：emit后，调用 <code>create_prim_func</code> 创建 tir 函数，生成对 tir 函数的<code>call_tir</code></li>
+</ul>
+<h2 id="动态shape情况">
+  动态shape情况
+  <a class="anchor" href="#%e5%8a%a8%e6%80%81shape%e6%83%85%e5%86%b5">#</a>
+</h2>
+<p>为了正确支持这种类型的 DSL，对动态形状有一些特殊的注意事项。参考下面的例子：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>n, m <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;n&#34;</span>), tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;m&#34;</span>)
+</span></span><span style="display:flex;"><span>x : rx<span style="color:#f92672">.</span>Var <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;x&#34;</span>, shape<span style="color:#f92672">=</span>[n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)])
+</span></span><span style="display:flex;"><span>A : te<span style="color:#f92672">.</span>Tensor<span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>te_tensor(a)
+</span></span><span style="display:flex;"><span>B <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>emit(te<span style="color:#f92672">.</span>compute([n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)], <span style="color:#66d9ef">lambda</span> i, j: A[i, j] <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>))
+</span></span></code></pre></div><p>如果我们简单地遵循上面的算法，生成的<code>call_tir</code>可以如下所示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@T.func</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">ewise_fun</span>(A, B):
+</span></span><span style="display:flex;"><span>    n <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;n&#34;</span>)
+</span></span><span style="display:flex;"><span>    m <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;m&#34;</span>)
+</span></span><span style="display:flex;"><span>    A <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(a, (n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)))
+</span></span><span style="display:flex;"><span>    B <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(b, (n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block([n, <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)]) <span style="color:#66d9ef">as</span> [i, j]:
+</span></span><span style="display:flex;"><span>        B[i, j] <span style="color:#f92672">=</span> A[i, j] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>x : rx<span style="color:#f92672">.</span>Var <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;x&#34;</span>, shape<span style="color:#f92672">=</span>[n, <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)])
+</span></span><span style="display:flex;"><span>B <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>call_tir([n, <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)], ewise_func, [x])
+</span></span></code></pre></div><p>上述代码的主要问题是 <code>2*floordiv(m， 2)</code> 中的符号变量 m 未在 ewise_fun 中定义。
+这是因为<code>match_buffer</code>只定义一个普通变量 <code>n</code> 的变量，而不是表达式 <code>2*floordiv(m, 2)</code>。请注意，我们当然可以增强 <code>match </code>的行为以支持一些复杂的模式，例如 <code>m*2</code>，这有时是可取的。然而，像 <code>2*floordiv(m, 2)</code> 这样的复杂模式需要我们在函数的开头知道 m。</p>
+<p>一种解决方案是：应用match shape来创建一个与 <code>2*floordiv(m, 2)</code> 匹配的新符号 var <code>z</code>。这将导致 tir 的信息丢失（形状是 2 的倍数）。</p>
+<p>相反，我们增强了生成的 <code>tir</code> 和 <code>call_tir_dyn</code>，以生成以下代码</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@T.func</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">ewise_fun</span>(A, B, m: T<span style="color:#f92672">.</span>int64):
+</span></span><span style="display:flex;"><span>    n <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;n&#34;</span>)
+</span></span><span style="display:flex;"><span>    A <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(a, (n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)))
+</span></span><span style="display:flex;"><span>    B <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>match_buffer(b, (n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block([n, <span style="color:#ae81ff">2</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)]) <span style="color:#66d9ef">as</span> [i, j]:
+</span></span><span style="display:flex;"><span>        B[i, j] <span style="color:#f92672">=</span> A[i, j] <span style="color:#f92672">*</span> <span style="color:#ae81ff">2.0</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>x : rx<span style="color:#f92672">.</span>Var <span style="color:#f92672">=</span> rx<span style="color:#f92672">.</span>var(<span style="color:#e6db74">&#34;x&#34;</span>, shape<span style="color:#f92672">=</span>[n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)])
+</span></span><span style="display:flex;"><span>B <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>call_tir_dyn([n, <span style="color:#ae81ff">2</span><span style="color:#f92672">*</span>floordiv(m, <span style="color:#ae81ff">2</span>)], ewise_func, [x], ShapeExpr([m]))
+</span></span></code></pre></div><p>我们首先推断未绑定的 TIR 变量，例如 m，并将其作为附加参数添加到函数中。我们使用增强的<code>call_tir_dyn</code>约定（如下所示，通过添加<code>symbolic_int_shape</code>），还允许指示符号整数值的 ShapeExpr 解压缩并调用函数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">call_tir_dyn</span>(shape, lowlevel_func, inputs, symbolic_var_tuple):
+</span></span><span style="display:flex;"><span>    out <span style="color:#f92672">=</span> alloc_tensor(shape)
+</span></span><span style="display:flex;"><span>    lowlevel_func(<span style="color:#f92672">*</span>inputs, out, <span style="color:#f92672">*</span>symbolic_var_tuple)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> out
+</span></span></code></pre></div><p>需要单独的 <code>symbolic_var_tuple</code>，主要是因为我们需要，因为：</p>
+<ul>
+<li>C0：我们需要在输出值之后传递符号 int 提示</li>
+<li>C1：relax符号整数本身的设计约束不显示为 rx.Expr</li>
+</ul>
+<p>请注意，如果我们最终决定允许进一步混合 TIR/relax expr，则可以取消 C1，但这需要更多的设计考虑（另请参阅其他考虑因素）。</p>
+<p>有几种不同的方法可以在编译和 VM 中实现这一点。目前使用的方法是</p>
+<ul>
+<li>将 args unpack约定引入寄存器，这意味着我们在进入打包的 fn 之前解包 r1（当它是 ShapeTuple 或 Array 时）。我们通过引入runtime intrinsic（<code>vm.call_tir_dyn</code>）来解决这个。</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>r1 <span style="color:#f92672">=</span> [<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>]
+</span></span><span style="display:flex;"><span>call fn, r0, <span style="color:#f92672">*</span>r1
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># semantics
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>call fn, r0, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">4</span>
+</span></span></code></pre></div><p>另一种解决方案是通过寄存器掩码指示解包的 args 调用约定，并与 python 的解包调用 conv 保持一致。</p>
+<h2 id="其它考虑-1">
+  其它考虑
+  <a class="anchor" href="#%e5%85%b6%e5%ae%83%e8%80%83%e8%99%91-1">#</a>
+</h2>
+<p>请注意，有许多变体可以使staging和重载更容易。目前，该说明概述了可管理工作负载的可能第一步。我们可以考虑未来可能的后续步骤。
+其它可能的想法：</p>
+<ul>
+<li>允许计算作为宏扩展的 relax 脚本格式的宏语法糖，这当然是可行的。然而，当我们开始构建导入器和降级机制时，我们可能需要一个 staging构建器样式的 API</li>
+<li>允许 rx.Expr 像 te.Tensor 一样直接运算。这将导致更深层次的 TIR/Relax expr。这将是一个长期的考虑因素，需要对设计权衡进行更多思考</li>
+</ul>
+</article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+  <div>
+    <a class="flex align-center" href="https://github.com/L0phTg/L0phTg.github.io/edit/main/exampleSite/content/docs/shortcodes/%e7%bc%96%e8%af%91%e5%99%a8%e5%92%8c%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%a1%86%e6%9e%b6/TVM%e4%b9%8bRelax%e8%ae%be%e8%ae%a1%e6%96%87%e6%a1%a3.md" target="_blank" rel="noopener">
+      <img src="/svg/edit.svg" class="book-icon" alt="" />
+      <span>编辑本页</span>
+    </a>
+  </div>
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#架构">架构</a>
+      <ul>
+        <li><a href="#关键目标">关键目标</a>
+          <ul>
+            <li><a href="#g0支持动态shape-workloads">G0：支持动态shape workloads</a></li>
+            <li><a href="#g1支持携带高级语义的计算图">G1：支持携带高级语义的“计算图”</a></li>
+            <li><a href="#g2统一跨层优化抽象">G2：统一跨层优化抽象</a></li>
+          </ul>
+        </li>
+        <li><a href="#关键设计点">关键设计点</a>
+          <ul>
+            <li><a href="#d0第一个构造的类是数据流块">D0：第一个构造的类是数据流块</a></li>
+            <li><a href="#d1第一个计算的类是shape-deduction">D1：第一个计算的类是shape deduction</a></li>
+            <li><a href="#d2可以与tensorir和packedfunc直接交互">D2：可以与TensorIR和PackedFunc直接交互</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#ast-设计">AST 设计</a>
+      <ul>
+        <li><a href="#为什么要区分dataflowblock和bindingblock">为什么要区分DataflowBlock和BindingBlock</a></li>
+        <li><a href="#matchshape也是binding类型">MatchShape也是Binding类型</a></li>
+        <li><a href="#ir转换的含义">IR转换的含义</a></li>
+        <li><a href="#relax中visitor-pattern的层级">relax中Visitor pattern的层级</a></li>
+      </ul>
+    </li>
+    <li><a href="#shape-computation设计">Shape Computation设计</a>
+      <ul>
+        <li><a href="#关键目标-1">关键目标</a>
+          <ul>
+            <li><a href="#g0第一类-支持动态符号整数形状">G0：第一类-支持动态符号整数形状</a></li>
+            <li><a href="#g1一般情况下的安全网络">G1：一般情况下的安全网络</a></li>
+            <li><a href="#g2未来的提升改进路线">G2：未来的提升改进路线</a></li>
+          </ul>
+        </li>
+        <li><a href="#形状限制表示">形状限制表示</a>
+          <ul>
+            <li><a href="#dyntensortype">DynTensorType</a></li>
+            <li><a href="#shape-field">Shape Field</a></li>
+            <li><a href="#shape修订">Shape修订</a></li>
+          </ul>
+        </li>
+        <li><a href="#形状传播">形状传播</a>
+          <ul>
+            <li><a href="#d0安全链路--没有形状计算">D0：安全链路&ndash;没有形状计算</a></li>
+            <li><a href="#d1针对元ops的编译器形状传播">D1：针对元OPS的编译器形状传播</a></li>
+            <li><a href="#d2跨transform的额外改进和形状预留">D2：跨transform的额外改进和形状预留</a></li>
+            <li><a href="#d3跨函数边界的形状传播">D3：跨函数边界的形状传播</a></li>
+          </ul>
+        </li>
+        <li><a href="#其它考虑">其它考虑</a>
+          <ul>
+            <li><a href="#a0更高级的形状推导机制">A0：更高级的形状推导机制</a></li>
+            <li><a href="#a1符号形状更接近expr">A1：符号形状更接近Expr</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#compilation-mvp设计">Compilation MVP设计</a>
+      <ul>
+        <li><a href="#关键目标-2">关键目标</a></li>
+        <li><a href="#relax程序案例">relax程序案例</a></li>
+        <li><a href="#将该程序降级为vm指令的挑战">将该程序降级为VM指令的挑战</a>
+          <ul>
+            <li><a href="#首先将call_tir降级为显式地内存形式">首先，将call_tir降级为显式地内存形式</a></li>
+            <li><a href="#下一步通过vm堆操作实现shape降级">下一步，通过VM堆操作实现shape降级</a></li>
+          </ul>
+        </li>
+        <li><a href="#relax构建和编译workflow">Relax构建和编译workflow</a></li>
+      </ul>
+    </li>
+    <li><a href="#vm设计">VM设计</a>
+      <ul>
+        <li><a href="#指令集">指令集</a></li>
+        <li><a href="#架构-1">架构</a>
+          <ul>
+            <li><a href="#execbuilder">ExecBuilder</a></li>
+            <li><a href="#executable">Executable</a></li>
+            <li><a href="#virtual-machine">Virtual Machine</a></li>
+            <li><a href="#内置的runtime-packed函数">内置的runtime packed函数</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#emitte-staging集成">EmitTE Staging集成</a>
+      <ul>
+        <li><a href="#关键目标-3">关键目标</a></li>
+        <li><a href="#动态shape情况">动态shape情况</a></li>
+        <li><a href="#其它考虑-1">其它考虑</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="下面是TIR的AST结构： TIR Schedule # 解析mod信息：
+获取block：sch.get_block 获取loops：sch.get_loops 线程相关：
+（线程绑定）sch.bind：sch.bind(bx, &ldquo;blockIdx.x&rdquo;)、sch.bind(tx, &ldquo;threadIdx.x&rdquo;) 循环相关： （循环拆分）sch.split （循环重排）sch.reorder （循环展开标注）sch.annotate(tx, ann_key=&ldquo;pragma_auto_unroll_max_step&rdquo;/&ldquo;pragma_unroll_explicit&rdquo;） （向量化）sch.vectorize （合并）sch.fuse 块相关： sch.reindex sch.cache_read, sch.cache_write 存储相关： sch.transform_layout Thread # 线程分配和运行： 高级原语：thread_binding 低级原语：allocate、launch_thread allocate 和 launch_thread（T.thread_binding） # thread reduce # 提供API # NormalizePrimFunc # # src/tir/schedule/transform.cc TVM_REGISTER_GLOBAL(&#34;tir.schedule.NormalizePrimFunc&#34;).set_body_typed(NormalizePrimFunc); 函数流程：
+check 构造index_map_inputs和index_map_outputs 根据map对block的layer进行变换 判断block是否是reduction block Optional&lt;ObjectRef&gt; NormalizePrimFunc(Schedule sch) { BlockRV root_block = sch-&gt;GetBlock(&#34;root&#34;); Array&lt;BlockRV&gt; blocks = sch-&gt;GetChildBlocks(root_block); # 1. check for (const BlockRV&amp; block : blocks) { StmtSRef block_sref = sch-&gt;GetSRef(block); Array&lt;StmtSRef&gt; loops = GetLoops(block_sref); Array&lt;PrimExpr&gt; binds = GetBlockRealize(sch-&gt;state(), block_sref)-&gt;iter_values; if (loops.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="http://localhost:1313/docs/TVM%E4%B9%8BDlight%E5%AD%A6%E4%B9%A0/">
+  <meta property="og:site_name" content="L0phTg&#39; Blog">
+  <meta property="og:title" content="【TVM】TIR Schedule和Dlight学习">
+  <meta property="og:description" content="下面是TIR的AST结构： TIR Schedule # 解析mod信息：
+获取block：sch.get_block 获取loops：sch.get_loops 线程相关：
+（线程绑定）sch.bind：sch.bind(bx, “blockIdx.x”)、sch.bind(tx, “threadIdx.x”) 循环相关： （循环拆分）sch.split （循环重排）sch.reorder （循环展开标注）sch.annotate(tx, ann_key=“pragma_auto_unroll_max_step”/“pragma_unroll_explicit”） （向量化）sch.vectorize （合并）sch.fuse 块相关： sch.reindex sch.cache_read, sch.cache_write 存储相关： sch.transform_layout Thread # 线程分配和运行： 高级原语：thread_binding 低级原语：allocate、launch_thread allocate 和 launch_thread（T.thread_binding） # thread reduce # 提供API # NormalizePrimFunc # # src/tir/schedule/transform.cc TVM_REGISTER_GLOBAL(&#34;tir.schedule.NormalizePrimFunc&#34;).set_body_typed(NormalizePrimFunc); 函数流程：
+check 构造index_map_inputs和index_map_outputs 根据map对block的layer进行变换 判断block是否是reduction block Optional&lt;ObjectRef&gt; NormalizePrimFunc(Schedule sch) { BlockRV root_block = sch-&gt;GetBlock(&#34;root&#34;); Array&lt;BlockRV&gt; blocks = sch-&gt;GetChildBlocks(root_block); # 1. check for (const BlockRV&amp; block : blocks) { StmtSRef block_sref = sch-&gt;GetSRef(block); Array&lt;StmtSRef&gt; loops = GetLoops(block_sref); Array&lt;PrimExpr&gt; binds = GetBlockRealize(sch-&gt;state(), block_sref)-&gt;iter_values; if (loops.">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+<title>【TVM】TIR Schedule和Dlight学习 | L0phTg&#39; Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" >
+<link rel="canonical" href="http://localhost:1313/docs/TVM%E4%B9%8BDlight%E5%AD%A6%E4%B9%A0/">
+<link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/zh.search.min.e7f0e1faff97d476b820bb62deb8231798a33a63cfc849366dc87a2ab49ad18b.js" integrity="sha256-5/Dh&#43;v&#43;X1Ha4ILti3rgjF5ijOmPPyEk2bch6KrSa0Ys=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+
+  
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>L0phTg&#39; Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="搜索" aria-label="搜索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex justify-between">
+      <a role="button" class="flex align-center">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        中文
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="http://localhost:1313/en/">
+          English
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/TVM%E4%B9%8BRuntime%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">【TVM】Runtime源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/TVM%E4%B9%8BDlight%E5%AD%A6%E4%B9%A0/" class="active">【TVM】TIR Schedule和Dlight学习</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/" class="">我的zsh和vim配置</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="">Kaleidoscope: 前五章总结</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/" class="">如果你冲动删除了python</a>
+  
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Shortcodes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-70316d26641ff7ce811873ef904e600a" class="toggle"  />
+    <label for="section-70316d26641ff7ce811873ef904e600a" class="flex justify-between">
+      <a role="button" class="">编译器和深度学习框架</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/TVM%E4%B9%8BRelax%E8%AE%BE%E8%AE%A1%E6%96%87%E6%A1%A3/" class="">【TVM】Relax设计文档</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeConclusion-and-other-useful-LLVM-tidbits/" class="">Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeAdding-Debug-Information/" class="">Kaleidoscope：Adding Debug Information</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeCompile-to-Object-Code/" class="">Kaleidoscope：Compile to Object Code</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageMutable-Variables/" class="">Kaleidoscope：Extending the Language：Mutable Variables</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageUser-defined-Operators/" class="">Kaleidoscope：Extending the Language：User Defined Operators</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/" class="">Kaleidoscope: Extending the Language Control Flow</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Adding-JIT-and-Optimizer-Support/" class="">Kaleidoscope: Adding JIT and Optimizer Support</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Code-generation-to-LLVM-IR/" class="">Kaleidoscope: Code Generation to LLVM IR</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Implementing-a-Parser-and-AST/" class="">Kaleidoscope: Implementing a Parser and AST</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Tutorial-Introduction-and-Lexer/" class="">Kaleidoscope: Tutorial Introduction and Lexer</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Static-Single-Assignment/" class="">Static Single Assignment</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/" class="">Dominator(graph Theory)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/" class="">thumb指令虚拟化学习(一)</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-1a271ccce1389f2d7c14aea1fd752a30" class="toggle"  />
+    <label for="section-1a271ccce1389f2d7c14aea1fd752a30" class="flex justify-between">
+      <a role="button" class="">大数据技术</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/" class="">使用docker搭建spark集群</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/Spark%E7%AC%94%E8%AE%B0/" class="">Spark笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/hive%E7%AC%94%E8%AE%B0/" class="">Hive笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-31c89efe36fd3de07e773c00b8997045" class="toggle"  />
+    <label for="section-31c89efe36fd3de07e773c00b8997045" class="flex justify-between">
+      <a role="button" class="">漏洞分析和网络攻防</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6XHook%E5%88%86%E6%9E%90/" class="">Iqiyi开源hook框架XHook分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/InlineHook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/" class="">InlineHook学习分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88CVE-2014-7911/" class="">第一篇博文-谈谈CVE-2014-7911</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-018af693a2b5f52952d9292f7c738548" class="toggle"  />
+    <label for="section-018af693a2b5f52952d9292f7c738548" class="flex justify-between">
+      <a role="button" class="">安卓学习</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/Pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" class="">Pixel1 源码编译</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8CAndroidLinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">elf文件格式和AndroidLinker加载.so的源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/%E5%88%86%E6%9E%90Android%E7%9A%84JNI%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/" class="">分析Android的JNI编程时所使用的一些函数功能</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-8605de7ed46e24ba27108b98bdcb646f" class="toggle"  />
+    <label for="section-8605de7ed46e24ba27108b98bdcb646f" class="flex justify-between">
+      <a role="button" class="">编程语言</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="">C&#43;&#43;：设计一个抽象数据类型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-02d37011b401bd1ddc5041abe78510ce" class="toggle"  />
+    <label for="section-02d37011b401bd1ddc5041abe78510ce" class="flex justify-between">
+      <a role="button" class="">安全工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%85%A8%E5%B7%A5%E5%85%B7/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/" class="">Radare2入门指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f1aa4e69c00a03c190bef2ee00739d18" class="toggle"  />
+    <label for="section-f1aa4e69c00a03c190bef2ee00739d18" class="flex justify-between">
+      <a role="button" class="">笔试面试</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/" class="">二叉树及其推广</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E7%AE%97%E6%B3%95%E7%AF%87%E4%B9%8B%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/" class="">算法篇之排序算法</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" class="">本科应届生安全岗面试总结</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-adf7f0289c2f5c3424463b717a2507e1" class="toggle"  />
+    <label for="section-adf7f0289c2f5c3424463b717a2507e1" class="flex justify-between">
+      <a role="button" class="">生活随笔</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E5%B7%A6%E4%BC%A0%E4%B9%8B%E5%AD%90%E9%B1%BC%E8%AE%BA%E6%88%98/" class="">左传之子鱼论战</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/" class="">习字：入门</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ed5a276e6651bb1bc42104ff560b0ad9" class="toggle"  />
+    <label for="section-ed5a276e6651bb1bc42104ff560b0ad9" class="flex justify-between">
+      <a role="button" class="">杂七杂八</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="">信号与系统-学习笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/" class="">书签整理</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="">Hugo搭建博客</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/" class="">装机日志-deepin</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/L0phTg"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/themes/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>【TVM】TIR Schedule和Dlight学习</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#tir-schedule">TIR Schedule</a>
+      <ul>
+        <li><a href="#thread">Thread</a>
+          <ul>
+            <li><a href="#allocate-和-launch_threadtthread_binding">allocate 和 launch_thread（T.thread_binding）</a></li>
+            <li><a href="#thread-reduce">thread reduce</a></li>
+          </ul>
+        </li>
+        <li><a href="#提供api">提供API</a>
+          <ul>
+            <li><a href="#normalizeprimfunc">NormalizePrimFunc</a></li>
+            <li><a href="#is_reduction">is_reduction</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#dlight">DLight</a>
+      <ul>
+        <li><a href="#matmul">Matmul</a></li>
+        <li><a href="#gemv">GEMV</a>
+          <ul>
+            <li><a href="#normalize">normalize</a></li>
+            <li><a href="#sch_inner_reduction">sch_inner_reduction</a></li>
+          </ul>
+        </li>
+        <li><a href="#reduction">Reduction</a>
+          <ul>
+            <li><a href="#_normalize">_normalize</a></li>
+            <li><a href="#schedule">schedule</a></li>
+          </ul>
+        </li>
+        <li><a href="#tranpose">Tranpose</a></li>
+      </ul>
+    </li>
+    <li><a href="#build">build</a>
+      <ul>
+        <li><a href="#reduction-1">Reduction</a>
+          <ul>
+            <li><a href="#unroll">Unroll</a></li>
+            <li><a href="#shfl替换warp内add">shfl替换warp内add</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#案例分析">案例分析</a>
+      <ul>
+        <li><a href="#reducemean">reduce：mean</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p>下面是TIR的AST结构：
+
+  <img src="/mlsys/PrimFuncStmt.png" alt="PrimFunc" /></p>
+<h1 id="tir-schedule">
+  TIR Schedule
+  <a class="anchor" href="#tir-schedule">#</a>
+</h1>
+<p>解析mod信息：</p>
+<ul>
+<li>获取block：sch.get_block</li>
+<li>获取loops：sch.get_loops</li>
+</ul>
+<p>线程相关：</p>
+<ul>
+<li>（线程绑定）sch.bind：sch.bind(bx, &ldquo;blockIdx.x&rdquo;)、sch.bind(tx, &ldquo;threadIdx.x&rdquo;)
+循环相关：</li>
+<li>（循环拆分）sch.split</li>
+<li>（循环重排）sch.reorder</li>
+<li>（循环展开标注）sch.annotate(tx, ann_key=&ldquo;pragma_auto_unroll_max_step&rdquo;/&ldquo;pragma_unroll_explicit&rdquo;）</li>
+<li>（向量化）sch.vectorize</li>
+<li>（合并）sch.fuse
+块相关：</li>
+<li>sch.reindex</li>
+<li>sch.cache_read, sch.cache_write
+存储相关：</li>
+<li>sch.transform_layout</li>
+</ul>
+<h2 id="thread">
+  Thread
+  <a class="anchor" href="#thread">#</a>
+</h2>
+<ul>
+<li>线程分配和运行：
+<ul>
+<li>高级原语：thread_binding</li>
+<li>低级原语：allocate、launch_thread</li>
+</ul>
+</li>
+</ul>
+<h3 id="allocate-和-launch_threadtthread_binding">
+  allocate 和 launch_thread（T.thread_binding）
+  <a class="anchor" href="#allocate-%e5%92%8c-launch_threadtthread_binding">#</a>
+</h3>
+<h3 id="thread-reduce">
+  thread reduce
+  <a class="anchor" href="#thread-reduce">#</a>
+</h3>
+<h2 id="提供api">
+  提供API
+  <a class="anchor" href="#%e6%8f%90%e4%be%9bapi">#</a>
+</h2>
+<h3 id="normalizeprimfunc">
+  NormalizePrimFunc
+  <a class="anchor" href="#normalizeprimfunc">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e"># src/tir/schedule/transform.cc
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>TVM_REGISTER_GLOBAL(<span style="color:#e6db74">&#34;tir.schedule.NormalizePrimFunc&#34;</span>).set_body_typed(NormalizePrimFunc);
+</span></span></code></pre></div><p>函数流程：</p>
+<ol>
+<li>check</li>
+<li>构造index_map_inputs和index_map_outputs</li>
+<li>根据map对block的layer进行变换</li>
+<li>判断block是否是reduction block</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Optional<span style="color:#f92672">&lt;</span>ObjectRef<span style="color:#f92672">&gt;</span> NormalizePrimFunc(Schedule sch) {
+</span></span><span style="display:flex;"><span>  BlockRV root_block <span style="color:#f92672">=</span> sch<span style="color:#f92672">-&gt;</span>GetBlock(<span style="color:#e6db74">&#34;root&#34;</span>);
+</span></span><span style="display:flex;"><span>  Array<span style="color:#f92672">&lt;</span>BlockRV<span style="color:#f92672">&gt;</span> blocks <span style="color:#f92672">=</span> sch<span style="color:#f92672">-&gt;</span>GetChildBlocks(root_block);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 1. check
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> BlockRV<span style="color:#f92672">&amp;</span> block : blocks) {
+</span></span><span style="display:flex;"><span>    StmtSRef block_sref <span style="color:#f92672">=</span> sch<span style="color:#f92672">-&gt;</span>GetSRef(block);
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>StmtSRef<span style="color:#f92672">&gt;</span> loops <span style="color:#f92672">=</span> GetLoops(block_sref);
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>PrimExpr<span style="color:#f92672">&gt;</span> binds <span style="color:#f92672">=</span> GetBlockRealize(sch<span style="color:#f92672">-&gt;</span>state(), block_sref)<span style="color:#f92672">-&gt;</span>iter_values;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (loops.size() <span style="color:#f92672">!=</span> binds.size()) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span> NullOpt;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>, n <span style="color:#f92672">=</span> loops.size(); i <span style="color:#f92672">&lt;</span> n; <span style="color:#f92672">++</span>i) {
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">const</span> ForNode<span style="color:#f92672">*</span> loop <span style="color:#f92672">=</span> TVM_SREF_TO_FOR(loops[i]);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (binds[i].get() <span style="color:#f92672">!=</span> loop<span style="color:#f92672">-&gt;</span>loop_var.get()) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NullOpt;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>is_zero(loop<span style="color:#f92672">-&gt;</span>min)) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NullOpt;
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  Array<span style="color:#f92672">&lt;</span>Array<span style="color:#f92672">&lt;</span>LoopRV<span style="color:#f92672">&gt;&gt;</span> block_loops;
+</span></span><span style="display:flex;"><span>  Array<span style="color:#f92672">&lt;</span>Array<span style="color:#f92672">&lt;</span>IterVar<span style="color:#f92672">&gt;&gt;</span> block_iters;
+</span></span><span style="display:flex;"><span>  Array<span style="color:#f92672">&lt;</span>IntImm<span style="color:#f92672">&gt;</span> block_is_reduction;
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> BlockRV<span style="color:#f92672">&amp;</span> block : blocks) {
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>IterVar<span style="color:#f92672">&gt;</span> iters <span style="color:#f92672">=</span> sch<span style="color:#f92672">-&gt;</span>Get(block)<span style="color:#f92672">-&gt;</span>iter_vars;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">bool</span> has_spatial_iter <span style="color:#f92672">=</span> false;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 2. 构造index_map_inputs和index_map_outputs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    Array<span style="color:#f92672">&lt;</span>Var<span style="color:#f92672">&gt;</span> index_map_inputs;
+</span></span><span style="display:flex;"><span>    Array<span style="color:#f92672">&lt;</span>PrimExpr<span style="color:#f92672">&gt;</span> index_map_outputs;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">const</span> IterVar<span style="color:#f92672">&amp;</span> iter : sch<span style="color:#f92672">-&gt;</span>Get(block)<span style="color:#f92672">-&gt;</span>iter_vars) {
+</span></span><span style="display:flex;"><span>      Var var <span style="color:#f92672">=</span> iter<span style="color:#f92672">-&gt;</span>var.copy_with_suffix(<span style="color:#e6db74">&#34;&#34;</span>);
+</span></span><span style="display:flex;"><span>      index_map_inputs.push_back(var);
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>is_one(iter<span style="color:#f92672">-&gt;</span>dom<span style="color:#f92672">-&gt;</span>extent)) {
+</span></span><span style="display:flex;"><span>        index_map_outputs.push_back(var);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (iter<span style="color:#f92672">-&gt;</span>iter_type <span style="color:#f92672">==</span> IterVarType<span style="color:#f92672">::</span>kDataPar) {
+</span></span><span style="display:flex;"><span>          has_spatial_iter <span style="color:#f92672">=</span> true;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> (index_map_outputs.empty() <span style="color:#f92672">||</span> <span style="color:#f92672">!</span>has_spatial_iter) {
+</span></span><span style="display:flex;"><span>      index_map_outputs.insert(index_map_outputs.begin(), tir<span style="color:#f92672">::</span>make_const(DataType<span style="color:#f92672">::</span>Int(<span style="color:#ae81ff">64</span>), <span style="color:#ae81ff">0</span>));
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 3. 根据map对block的layer进行变换
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    sch<span style="color:#f92672">-&gt;</span>TransformBlockLayout(block, IndexMap(index_map_inputs, index_map_outputs));
+</span></span><span style="display:flex;"><span>    block_loops.push_back(sch<span style="color:#f92672">-&gt;</span>GetLoops(block));
+</span></span><span style="display:flex;"><span>    block_iters.push_back(sch<span style="color:#f92672">-&gt;</span>Get(block)<span style="color:#f92672">-&gt;</span>iter_vars);
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 4. 判断block是否是reduction block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">bool</span> is_reduction <span style="color:#f92672">=</span> IsReductionBlock(sch<span style="color:#f92672">-&gt;</span>state(),         <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                         sch<span style="color:#f92672">-&gt;</span>GetSRef(block),  <span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                         sch<span style="color:#f92672">-&gt;</span>GetSRef(root_block));
+</span></span><span style="display:flex;"><span>    block_is_reduction.push_back(Bool(is_reduction));
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> Array<span style="color:#f92672">&lt;</span>ObjectRef<span style="color:#f92672">&gt;</span>{blocks, block_loops, block_iters, block_is_reduction};
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="is_reduction">
+  is_reduction
+  <a class="anchor" href="#is_reduction">#</a>
+</h3>
+<p>针对是否reduction函数的判断：</p>
+<ol>
+<li>收集所有的reduction轴；</li>
+<li>收集所有的write buffer；</li>
+<li>收集所有的alloc buffer；</li>
+</ol>
+<h1 id="dlight">
+  DLight
+  <a class="anchor" href="#dlight">#</a>
+</h1>
+<h2 id="matmul">
+  Matmul
+  <a class="anchor" href="#matmul">#</a>
+</h2>
+<p>源码路径：python/tvm/dlight/gpu/matmul.py
+sch流程：</p>
+<ol>
+<li>检查tensor core支持</li>
+<li>获取schedule config</li>
+<li>do schedule</li>
+</ol>
+<h2 id="gemv">
+  GEMV
+  <a class="anchor" href="#gemv">#</a>
+</h2>
+<p>案例展示：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>E <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>Var(<span style="color:#e6db74">&#34;A&#34;</span>, R<span style="color:#f92672">.</span>Tensor([<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;int64&#34;</span>))
+</span></span><span style="display:flex;"><span>F <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>Var(<span style="color:#e6db74">&#34;B&#34;</span>, R<span style="color:#f92672">.</span>Tensor([<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">30</span>], <span style="color:#e6db74">&#34;int64&#34;</span>))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> bb<span style="color:#f92672">.</span>function(<span style="color:#e6db74">&#34;matmul_5&#34;</span>):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> bb<span style="color:#f92672">.</span>dataflow():
+</span></span><span style="display:flex;"><span>        lv0 <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>op<span style="color:#f92672">.</span>matmul(E, F)
+</span></span><span style="display:flex;"><span>        gv <span style="color:#f92672">=</span> bb<span style="color:#f92672">.</span>emit_output(lv0)
+</span></span><span style="display:flex;"><span>    bb<span style="color:#f92672">.</span>emit_func_output(gv, [E, F])
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> 
+</span></span></code></pre></div><p>实现：</p>
+<ol>
+<li>Norm Block，得到block_info</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">apply</span>(  <span style="color:#75715e"># pylint: disable=too-many-locals,too-many-branches,too-many-return-statements</span>
+</span></span><span style="display:flex;"><span>        self,
+</span></span><span style="display:flex;"><span>        func: tir<span style="color:#f92672">.</span>PrimFunc,
+</span></span><span style="display:flex;"><span>        target: Target,
+</span></span><span style="display:flex;"><span>        _: bool,
+</span></span><span style="display:flex;"><span>    ) <span style="color:#f92672">-&gt;</span> Union[<span style="color:#66d9ef">None</span>, tir<span style="color:#f92672">.</span>Schedule, List[tir<span style="color:#f92672">.</span>Schedule]]:
+</span></span><span style="display:flex;"><span>        sch <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>Schedule(func)
+</span></span><span style="display:flex;"><span>        block_infos <span style="color:#f92672">=</span> normalize_prim_func(sch)
+</span></span><span style="display:flex;"><span>        block_infos <span style="color:#f92672">=</span> try_inline_contiguous_spatial(sch, block_infos)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(block_infos) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>:
+</span></span><span style="display:flex;"><span>            epilogue <span style="color:#f92672">=</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">elif</span> len(block_infos) <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>:
+</span></span><span style="display:flex;"><span>            epilogue <span style="color:#f92672">=</span> block_infos[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> epilogue<span style="color:#f92672">.</span>is_injective():
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        block_info <span style="color:#f92672">=</span> block_infos[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> len(block_info<span style="color:#f92672">.</span>iters) <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> [<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>]:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># either [B, S, R] = [B, S, R] * [B, R]</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># or [S, R] = [S, R] * [R]</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>        block <span style="color:#f92672">=</span> block_info<span style="color:#f92672">.</span>block_rv
+</span></span><span style="display:flex;"><span>        vector_input_buffers <span style="color:#f92672">=</span> is_gemv(sch, block_info)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> vector_input_buffers <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Step 1. Normalize the block, merge spatial and reduction iters</span>
+</span></span><span style="display:flex;"><span>        is_inner_reduction <span style="color:#f92672">=</span> normalize(sch, block_info)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Step 2. Do the scheduling</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> is_inner_reduction:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>sch_inner_reduction(sch, target, block, vector_input_buffers, epilogue)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> sch
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># TODO: Need to handle GEMV with KN layout</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span></code></pre></div><h3 id="normalize">
+  normalize
+  <a class="anchor" href="#normalize">#</a>
+</h3>
+<h3 id="sch_inner_reduction">
+  sch_inner_reduction
+  <a class="anchor" href="#sch_inner_reduction">#</a>
+</h3>
+<h2 id="reduction">
+  Reduction
+  <a class="anchor" href="#reduction">#</a>
+</h2>
+<p>案例展示：tir_script：包含3个spatial轴，一个reduce轴</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@T.prim_func</span>(private<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>(
+</span></span><span style="display:flex;"><span>    A: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>)), <span style="color:#e6db74">&#34;int64&#34;</span>),
+</span></span><span style="display:flex;"><span>    B: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">30</span>)), <span style="color:#e6db74">&#34;int64&#34;</span>),
+</span></span><span style="display:flex;"><span>    matmul: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">30</span>)), <span style="color:#e6db74">&#34;int64&#34;</span>),
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>    T<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;op_pattern&#34;</span>: <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)})
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># with T.block(&#34;root&#34;):</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> i0, i1, i2, k <span style="color:#f92672">in</span> T<span style="color:#f92672">.</span>grid(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">30</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>)):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;matmul&#34;</span>):
+</span></span><span style="display:flex;"><span>            v_i0, v_i1, v_i2, v_k <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>remap(<span style="color:#e6db74">&#34;SSSR&#34;</span>, [i0, i1, i2, k])
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>reads(A[v_i0, v_i1, v_k], B[v_i0, v_k, v_i2])
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>writes(matmul[v_i0, v_i1, v_i2])
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>init():
+</span></span><span style="display:flex;"><span>                matmul[v_i0, v_i1, v_i2] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>            matmul[v_i0, v_i1, v_i2] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>                matmul[v_i0, v_i1, v_i2] <span style="color:#f92672">+</span> A[v_i0, v_i1, v_k] <span style="color:#f92672">*</span> B[v_i0, v_k, v_i2]
+</span></span><span style="display:flex;"><span>            )
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># 1. Norm</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> block_infos <span style="color:#f92672">=</span> dl<span style="color:#f92672">.</span>base<span style="color:#f92672">.</span>analysis<span style="color:#f92672">.</span>normalize_prim_func(sch)
+</span></span><span style="display:flex;"><span>[BlockInfo(<span style="color:#e6db74">&#34;matmul&#34;</span>, <span style="color:#e6db74">&#34;SSS&#34;</span>, [<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">30</span>])] <span style="color:#75715e"># 只有三个spatial轴</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> block_info<span style="color:#f92672">.</span>is_reduction(), block_stmt<span style="color:#f92672">.</span>writes, dl<span style="color:#f92672">.</span>gpu<span style="color:#f92672">.</span>reduction<span style="color:#f92672">.</span>_get_reduction_expr(block_stmt)
+</span></span><span style="display:flex;"><span>T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>) <span style="color:#75715e"># 注意, 这里为true</span>
+</span></span><span style="display:flex;"><span>[matmul[v0, v1, v2]] 
+</span></span><span style="display:flex;"><span>A[v0, v1, T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>)] <span style="color:#f92672">*</span> B[v0, T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>), v2]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> block_stmt <span style="color:#f92672">=</span> sch<span style="color:#f92672">.</span>get(block) <span style="color:#75715e"># 这里没有reduce轴</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;matmul&#34;</span>, no_realize<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>):
+</span></span><span style="display:flex;"><span>    v0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>spatial(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>))
+</span></span><span style="display:flex;"><span>    v1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>spatial(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>))
+</span></span><span style="display:flex;"><span>    v2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>spatial(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">30</span>))
+</span></span><span style="display:flex;"><span>    A <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>)), <span style="color:#e6db74">&#34;int64&#34;</span>)
+</span></span><span style="display:flex;"><span>    B <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">30</span>)), <span style="color:#e6db74">&#34;int64&#34;</span>)
+</span></span><span style="display:flex;"><span>    T<span style="color:#f92672">.</span>reads(A[v0, v1, T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>)], B[v0, T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>), v2])
+</span></span><span style="display:flex;"><span>    matmul <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">30</span>)), <span style="color:#e6db74">&#34;int64&#34;</span>)
+</span></span><span style="display:flex;"><span>    T<span style="color:#f92672">.</span>writes(matmul[v0, v1, v2])
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>init():
+</span></span><span style="display:flex;"><span>        matmul[v0, v1, v2] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>    matmul[v0, v1, v2] <span style="color:#f92672">=</span> matmul[v0, v1, v2] <span style="color:#f92672">+</span> A[v0, v1, T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>)] <span style="color:#f92672">*</span> B[v0, T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>), v2]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> dl<span style="color:#f92672">.</span>base<span style="color:#f92672">.</span>analysis<span style="color:#f92672">.</span>detect_dominant_read(block_stmt)
+</span></span><span style="display:flex;"><span>v0 <span style="color:#f92672">*</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>) <span style="color:#f92672">+</span> v1
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> access <span style="color:#75715e"># 读取的轴：v0, v1</span>
+</span></span><span style="display:flex;"><span>IterSum([
+</span></span><span style="display:flex;"><span> IterSplit(IterMark(v0, extent<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>)), lower_factor<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>), extent<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">10</span>), scale<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>)), IterSplit(IterMark(v1, extent<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>)), lower_factor<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>), extent<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">20</span>), scale<span style="color:#f92672">=</span>T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>))], T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">0</span>))
+</span></span></code></pre></div><p>schedule流程：</p>
+<ol>
+<li>对func进行norm，得到block_infos</li>
+<li>检查reduction block</li>
+<li>合并spatial和reduction iters</li>
+<li>do schedule</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>	<span style="color:#75715e"># 1. 得到block_infos</span>
+</span></span><span style="display:flex;"><span>	sch <span style="color:#f92672">=</span> tir<span style="color:#f92672">.</span>Schedule(func)
+</span></span><span style="display:flex;"><span>	block_infos <span style="color:#f92672">=</span> normalize_prim_func(sch)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 2. check </span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (
+</span></span><span style="display:flex;"><span>		(<span style="color:#f92672">not</span> block_info<span style="color:#f92672">.</span>is_reduction())
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">or</span> len(block_stmt<span style="color:#f92672">.</span>writes) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#f92672">or</span> _get_reduction_expr(block_stmt) <span style="color:#f92672">is</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>	):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">None</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 3. 合并spatial和reduction iters</span>
+</span></span><span style="display:flex;"><span>	is_inner_reduction, c_factor <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>_normalize(
+</span></span><span style="display:flex;"><span>		sch,
+</span></span><span style="display:flex;"><span>		block_info,
+</span></span><span style="display:flex;"><span>		arith<span style="color:#f92672">.</span>normalize_to_iter_sum(
+</span></span><span style="display:flex;"><span>			detect_dominant_read(block_stmt),
+</span></span><span style="display:flex;"><span>			input_iters<span style="color:#f92672">=</span>{i<span style="color:#f92672">.</span>var: i<span style="color:#f92672">.</span>dom <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> block_stmt<span style="color:#f92672">.</span>iter_vars},
+</span></span><span style="display:flex;"><span>		),
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 4. 执行schedule</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> is_inner_reduction:
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_sch_inner_reduction(sch, target, block, c_factor, epilogue)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span>:
+</span></span><span style="display:flex;"><span>		self<span style="color:#f92672">.</span>_sch_inner_spatial(sch, target, block, c_factor, epilogue)
+</span></span></code></pre></div><h3 id="_normalize">
+  _normalize
+  <a class="anchor" href="#_normalize">#</a>
+</h3>
+<h3 id="schedule">
+  schedule
+  <a class="anchor" href="#schedule">#</a>
+</h3>
+<p>函数签名：</p>
+<ul>
+<li>参数：mod的sch, target,</li>
+<li>返回：sch</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_sch_inner_spatial</span>(
+</span></span><span style="display:flex;"><span>	self,
+</span></span><span style="display:flex;"><span>	sch: tir<span style="color:#f92672">.</span>Schedule,
+</span></span><span style="display:flex;"><span>	target: Target,
+</span></span><span style="display:flex;"><span>	block: tir<span style="color:#f92672">.</span>schedule<span style="color:#f92672">.</span>BlockRV,
+</span></span><span style="display:flex;"><span>	unroll_spatial_factor: Optional[int],
+</span></span><span style="display:flex;"><span>	epilogue_info: Optional[BlockInfo],
+</span></span><span style="display:flex;"><span>):
+</span></span></code></pre></div><h4 id="_sch_inner_reduction">
+  _sch_inner_reduction
+  <a class="anchor" href="#_sch_inner_reduction">#</a>
+</h4>
+<h4 id="_sch_inner_spatial">
+  _sch_inner_spatial
+  <a class="anchor" href="#_sch_inner_spatial">#</a>
+</h4>
+<h2 id="tranpose">
+  Tranpose
+  <a class="anchor" href="#tranpose">#</a>
+</h2>
+<h1 id="build">
+  build
+  <a class="anchor" href="#build">#</a>
+</h1>
+<h2 id="reduction-1">
+  Reduction
+  <a class="anchor" href="#reduction-1">#</a>
+</h2>
+<ol>
+<li>循环展开，warp/block外add</li>
+<li>二次warpReduce</li>
+</ol>
+<ul>
+<li>warp内shfl，计算结果存储到shared memory中</li>
+<li>一组thread继续shfl，得到计算结果</li>
+</ul>
+<p>lower to tir mod 降级之后的tir script：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>(
+</span></span><span style="display:flex;"><span>	A: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">8192</span>)), <span style="color:#e6db74">&#34;float32&#34;</span>),
+</span></span><span style="display:flex;"><span>	A_red: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), <span style="color:#e6db74">&#34;float32&#34;</span>),
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>func_attr(
+</span></span><span style="display:flex;"><span>		{<span style="color:#e6db74">&#34;op_pattern&#34;</span>: <span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;tir.is_scheduled&#34;</span>: <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)}
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	blockIdx_x <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>launch_thread(<span style="color:#e6db74">&#34;blockIdx.x&#34;</span>, <span style="color:#ae81ff">2048</span>) <span style="color:#75715e"># blockIdx</span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	A_red_rf_local <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	cross_thread_A_red <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	threadIdx_x <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>launch_thread(<span style="color:#e6db74">&#34;threadIdx.x&#34;</span>, <span style="color:#ae81ff">256</span>) <span style="color:#75715e"># threadIdx</span>
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>),), data<span style="color:#f92672">=</span>A_red_rf_local, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	A_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">16777216</span>),), data<span style="color:#f92672">=</span>A<span style="color:#f92672">.</span>data) <span style="color:#75715e"># 引用参数数据</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 循环展开</span>
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span> <span style="color:#f92672">+</span> threadIdx_x]
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>		A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">256</span>]
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>		A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">512</span>]
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>		A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">768</span>]
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>		A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1024</span>]
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#f92672">...</span>
+</span></span><span style="display:flex;"><span>	cross_thread_A_red_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>cross_thread_A_red, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 256个线程reduce</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>attr(
+</span></span><span style="display:flex;"><span>		T<span style="color:#f92672">.</span>comm_reducer(<span style="color:#66d9ef">lambda</span> x0, y0: x0 <span style="color:#f92672">+</span> y0, [T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)]),
+</span></span><span style="display:flex;"><span>		<span style="color:#e6db74">&#34;reduce_scope&#34;</span>,
+</span></span><span style="display:flex;"><span>		T<span style="color:#f92672">.</span>reinterpret(<span style="color:#e6db74">&#34;handle&#34;</span>, T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>)),
+</span></span><span style="display:flex;"><span>	):
+</span></span><span style="display:flex;"><span>		T<span style="color:#f92672">.</span>tvm_thread_allreduce(
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>uint32(<span style="color:#ae81ff">1</span>),
+</span></span><span style="display:flex;"><span>			A_red_rf_local_1[<span style="color:#ae81ff">0</span>],
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>),
+</span></span><span style="display:flex;"><span>			cross_thread_A_red_1[<span style="color:#ae81ff">0</span>],
+</span></span><span style="display:flex;"><span>			threadIdx_x,
+</span></span><span style="display:flex;"><span>		)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># 写回返回参数中</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>		A_red_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), data<span style="color:#f92672">=</span>A_red<span style="color:#f92672">.</span>data)
+</span></span><span style="display:flex;"><span>		A_red_1[blockIdx_x] <span style="color:#f92672">=</span> cross_thread_A_red_1[<span style="color:#ae81ff">0</span>]
+</span></span></code></pre></div><p>【tvm.build-&gt;tir_to_runtime】mix mod lower之后：</p>
+<ul>
+<li>包含main_kernel和main 元函数</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@I.ir_module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Module</span>:
+</span></span><span style="display:flex;"><span>    I<span style="color:#f92672">.</span>module_attrs({<span style="color:#e6db74">&#34;runtime&#34;</span>: <span style="color:#66d9ef">None</span>})
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main_kernel</span>(A: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;global&#34;</span>), A_red: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;global&#34;</span>)):
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;calling_conv&#34;</span>: <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;target&#34;</span>: T<span style="color:#f92672">.</span>target({<span style="color:#e6db74">&#34;arch&#34;</span>: <span style="color:#e6db74">&#34;sm_75&#34;</span>, <span style="color:#e6db74">&#34;keys&#34;</span>: [<span style="color:#e6db74">&#34;cuda&#34;</span>, <span style="color:#e6db74">&#34;gpu&#34;</span>], <span style="color:#e6db74">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;cuda&#34;</span>, <span style="color:#e6db74">&#34;max_num_threads&#34;</span>: <span style="color:#ae81ff">1024</span>, <span style="color:#e6db74">&#34;max_shared_memory_per_block&#34;</span>: <span style="color:#ae81ff">49152</span>, <span style="color:#e6db74">&#34;max_threads_per_block&#34;</span>: <span style="color:#ae81ff">1024</span>, <span style="color:#e6db74">&#34;registers_per_block&#34;</span>: <span style="color:#ae81ff">65536</span>, <span style="color:#e6db74">&#34;tag&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;thread_warp_size&#34;</span>: <span style="color:#ae81ff">32</span>}), <span style="color:#e6db74">&#34;tir.is_global_func&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>), <span style="color:#e6db74">&#34;tir.kernel_launch_params&#34;</span>: [<span style="color:#e6db74">&#34;blockIdx.x&#34;</span>, <span style="color:#e6db74">&#34;threadIdx.x&#34;</span>], <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)})
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        blockIdx_x <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>launch_thread(<span style="color:#e6db74">&#34;blockIdx.x&#34;</span>, <span style="color:#ae81ff">2048</span>)
+</span></span><span style="display:flex;"><span>        A_red_rf_local <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>        red_result <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>attr(red_result, <span style="color:#e6db74">&#34;volatile_scope&#34;</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        threadIdx_x <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>launch_thread(<span style="color:#e6db74">&#34;threadIdx.x&#34;</span>, <span style="color:#ae81ff">256</span>)
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>A_red_rf_local, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        A_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">4194304</span>),), data<span style="color:#f92672">=</span>A)
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">256</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">512</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">768</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1024</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1280</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1536</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1792</span>]
+</span></span><span style="display:flex;"><span>        red_result_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_result, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>attr(T<span style="color:#f92672">.</span>comm_reducer(<span style="color:#66d9ef">lambda</span> x0, y0: x0 <span style="color:#f92672">+</span> y0, [T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)]), <span style="color:#e6db74">&#34;reduce_scope&#34;</span>, T<span style="color:#f92672">.</span>reinterpret(<span style="color:#e6db74">&#34;handle&#34;</span>, T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>))):
+</span></span><span style="display:flex;"><span>            red_buf0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;uint32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;uint32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf_staging <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">8</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_buf0_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            mask_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;uint32&#34;</span>, data<span style="color:#f92672">=</span>mask_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_activemask()
+</span></span><span style="display:flex;"><span>            t0_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>t0_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            red_buf_staging_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">8</span>,), data<span style="color:#f92672">=</span>red_buf_staging, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">%</span> <span style="color:#ae81ff">32</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                red_buf_staging_1[threadIdx_x <span style="color:#f92672">//</span> <span style="color:#ae81ff">32</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>tvm_storage_sync(<span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_buf0, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>:
+</span></span><span style="display:flex;"><span>                red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf_staging_1[threadIdx_x]
+</span></span><span style="display:flex;"><span>            mask_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;uint32&#34;</span>, data<span style="color:#f92672">=</span>mask, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>bitwise_and(T<span style="color:#f92672">.</span>tvm_warp_activemask(), T<span style="color:#f92672">.</span>uint32(<span style="color:#ae81ff">255</span>))
+</span></span><span style="display:flex;"><span>            t0_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>t0, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                red_result_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>tvm_storage_sync(<span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            A_red_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), data<span style="color:#f92672">=</span>A_red)
+</span></span><span style="display:flex;"><span>            A_red_1[blockIdx_x] <span style="color:#f92672">=</span> red_result_1[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>(args: T<span style="color:#f92672">.</span>handle, arg_type_ids: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;int32&#34;</span>), num_args: T<span style="color:#f92672">.</span>int32, out_ret_value: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;void&#34;</span>), out_ret_tcode: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;int32&#34;</span>), resource_handle: T<span style="color:#f92672">.</span>handle) <span style="color:#f92672">-&gt;</span> T<span style="color:#f92672">.</span>int32:
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;calling_conv&#34;</span>: <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;op_pattern&#34;</span>: <span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;target&#34;</span>: T<span style="color:#f92672">.</span>target({<span style="color:#e6db74">&#34;keys&#34;</span>: [<span style="color:#e6db74">&#34;cpu&#34;</span>], <span style="color:#e6db74">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;llvm&#34;</span>, <span style="color:#e6db74">&#34;tag&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>}), <span style="color:#e6db74">&#34;tir.is_entry_func&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>), <span style="color:#e6db74">&#34;tir.is_scheduled&#34;</span>: <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)})
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> num_args <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;main: num_args should be 2&#34;</span>
+</span></span><span style="display:flex;"><span>        arg_type_ids_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((<span style="color:#ae81ff">2</span>,), <span style="color:#e6db74">&#34;int32&#34;</span>, data<span style="color:#f92672">=</span>arg_type_ids)
+</span></span><span style="display:flex;"><span>        var_A_code: T<span style="color:#f92672">.</span>int32 <span style="color:#f92672">=</span> arg_type_ids_1[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>        var_A_red_code: T<span style="color:#f92672">.</span>int32 <span style="color:#f92672">=</span> arg_type_ids_1[<span style="color:#ae81ff">1</span>]
+</span></span><span style="display:flex;"><span>        var_A: T<span style="color:#f92672">.</span>handle <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(args, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">12</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        var_A_red: T<span style="color:#f92672">.</span>handle <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(args, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">12</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        A: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;global&#34;</span>) <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>attr(A, <span style="color:#e6db74">&#34;storage_alignment&#34;</span>, <span style="color:#ae81ff">64</span>)
+</span></span><span style="display:flex;"><span>        main_var_A_shape: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;int64&#34;</span>) <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        main_var_A_shape_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((<span style="color:#ae81ff">2</span>,), <span style="color:#e6db74">&#34;int64&#34;</span>, data<span style="color:#f92672">=</span>main_var_A_shape)
+</span></span><span style="display:flex;"><span>        main_var_A_strides: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;int64&#34;</span>) <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        main_var_A_strides_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((<span style="color:#ae81ff">0</span>,), <span style="color:#e6db74">&#34;int64&#34;</span>, data<span style="color:#f92672">=</span>main_var_A_strides)
+</span></span><span style="display:flex;"><span>        dev_id: T<span style="color:#f92672">.</span>int32 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">9</span>, <span style="color:#e6db74">&#34;int32&#34;</span>)
+</span></span><span style="display:flex;"><span>        A_red: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;global&#34;</span>) <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>attr(A_red, <span style="color:#e6db74">&#34;storage_alignment&#34;</span>, <span style="color:#ae81ff">64</span>)
+</span></span><span style="display:flex;"><span>        main_var_A_red_shape: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;int64&#34;</span>) <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        main_var_A_red_shape_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;int64&#34;</span>, data<span style="color:#f92672">=</span>main_var_A_red_shape)
+</span></span><span style="display:flex;"><span>        main_var_A_red_strides: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;int64&#34;</span>) <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#34;handle&#34;</span>)
+</span></span><span style="display:flex;"><span>        main_var_A_red_strides_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((<span style="color:#ae81ff">0</span>,), <span style="color:#e6db74">&#34;int64&#34;</span>, data<span style="color:#f92672">=</span>main_var_A_red_strides)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> var_A_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">or</span> var_A_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">13</span> <span style="color:#f92672">or</span> var_A_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">7</span> <span style="color:#f92672">or</span> var_A_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;main: Expect arg[0] to be pointer&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> var_A_red_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">or</span> var_A_red_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">13</span> <span style="color:#f92672">or</span> var_A_red_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">7</span> <span style="color:#f92672">or</span> var_A_red_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;main: Expect arg[1] to be pointer&#34;</span>
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>attr(<span style="color:#e6db74">&#34;default&#34;</span>, <span style="color:#e6db74">&#34;device_id&#34;</span>, dev_id)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>attr(<span style="color:#e6db74">&#34;default&#34;</span>, <span style="color:#e6db74">&#34;device_type&#34;</span>, <span style="color:#ae81ff">2</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;int32&#34;</span>), <span style="color:#e6db74">&#34;main.var_A.ndim is expected to equal 2&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;int32&#34;</span>), <span style="color:#e6db74">&#34;main.var_A.ndim is expected to equal 2&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">5</span>, <span style="color:#e6db74">&#34;uint8&#34;</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>uint8(<span style="color:#ae81ff">2</span>) <span style="color:#f92672">and</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">6</span>, <span style="color:#e6db74">&#34;uint8&#34;</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>uint8(<span style="color:#ae81ff">32</span>) <span style="color:#f92672">and</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">7</span>, <span style="color:#e6db74">&#34;uint16&#34;</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>uint16(<span style="color:#ae81ff">1</span>), <span style="color:#e6db74">&#34;main.var_A.dtype is expected to be float32&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> main_var_A_shape_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), <span style="color:#e6db74">&#34;Argument main.var_A.shape[0] has an unsatisfied constraint: T.int64(2048) == main_var_A_shape[0]&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> main_var_A_shape_1[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), <span style="color:#e6db74">&#34;Argument main.var_A.shape[1] has an unsatisfied constraint: T.int64(2048) == main_var_A_shape[1]&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> T<span style="color:#f92672">.</span>isnullptr(main_var_A_strides):
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">==</span> main_var_A_strides_1[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">and</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>) <span style="color:#f92672">==</span> main_var_A_strides_1[<span style="color:#ae81ff">0</span>], <span style="color:#e6db74">&#34;main.var_A.strides: expected to be compact array&#34;</span>
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>evaluate(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">8</span>, <span style="color:#e6db74">&#34;uint64&#34;</span>), <span style="color:#e6db74">&#34;Argument main.var_A.byte_offset has an unsatisfied constraint: T.uint64(0) == T.tvm_struct_get(var_A, 0, 8, </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">uint64</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#34;int32&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;Argument main.var_A.device_type has an unsatisfied constraint: 2 == T.tvm_struct_get(var_A, 0, 10, </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">int32</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;int32&#34;</span>), <span style="color:#e6db74">&#34;main.var_A_red.ndim is expected to equal 1&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;int32&#34;</span>), <span style="color:#e6db74">&#34;main.var_A_red.ndim is expected to equal 1&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">5</span>, <span style="color:#e6db74">&#34;uint8&#34;</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>uint8(<span style="color:#ae81ff">2</span>) <span style="color:#f92672">and</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">6</span>, <span style="color:#e6db74">&#34;uint8&#34;</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>uint8(<span style="color:#ae81ff">32</span>) <span style="color:#f92672">and</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">7</span>, <span style="color:#e6db74">&#34;uint16&#34;</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>uint16(<span style="color:#ae81ff">1</span>), <span style="color:#e6db74">&#34;main.var_A_red.dtype is expected to be float32&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> main_var_A_red_shape_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), <span style="color:#e6db74">&#34;Argument main.var_A_red.shape[0] has an unsatisfied constraint: T.int64(2048) == main_var_A_red_shape[0]&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> T<span style="color:#f92672">.</span>isnullptr(main_var_A_red_strides):
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>) <span style="color:#f92672">==</span> main_var_A_red_strides_1[<span style="color:#ae81ff">0</span>], <span style="color:#e6db74">&#34;main.var_A_red.strides: expected to be compact array&#34;</span>
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>evaluate(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>) <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">8</span>, <span style="color:#e6db74">&#34;uint64&#34;</span>), <span style="color:#e6db74">&#34;Argument main.var_A_red.byte_offset has an unsatisfied constraint: T.uint64(0) == T.tvm_struct_get(var_A_red, 0, 8, </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">uint64</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>, <span style="color:#e6db74">&#34;int32&#34;</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;Argument main.var_A_red.device_type has an unsatisfied constraint: 2 == T.tvm_struct_get(var_A_red, 0, 10, </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">int32</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">assert</span> dev_id <span style="color:#f92672">==</span> T<span style="color:#f92672">.</span>tvm_struct_get(var_A_red, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">9</span>, <span style="color:#e6db74">&#34;int32&#34;</span>), <span style="color:#e6db74">&#34;Argument main.var_A_red.device_id has an unsatisfied constraint: dev_id == T.tvm_struct_get(var_A_red, 0, 9, </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">int32</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">)&#34;</span>
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        A_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>)), data<span style="color:#f92672">=</span>A)
+</span></span><span style="display:flex;"><span>        A_red_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>decl_buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), data<span style="color:#f92672">=</span>A_red)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;__tvm_set_device&#34;</span>, <span style="color:#ae81ff">2</span>, dev_id)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>attr(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;compute_scope&#34;</span>, <span style="color:#e6db74">&#34;main_compute_&#34;</span>):
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>call_packed(<span style="color:#e6db74">&#34;main_kernel&#34;</span>, A, A_red, <span style="color:#ae81ff">2048</span>, <span style="color:#ae81ff">256</span>)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>ret(<span style="color:#ae81ff">0</span>)
+</span></span></code></pre></div><p>after device mod transform:</p>
+<ul>
+<li>T.tvm_warp_activemask -&gt; T.tir.cuda.__activemask</li>
+<li>T.tvm_warp_shuffle_down &ndash;&gt; T.tir.cuda.__shfl_down_sync</li>
+<li>truncmod</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@I.ir_module</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Module</span>:
+</span></span><span style="display:flex;"><span>    I<span style="color:#f92672">.</span>module_attrs({<span style="color:#e6db74">&#34;runtime&#34;</span>: <span style="color:#66d9ef">None</span>})
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">@T.prim_func</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main_kernel</span>(A: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;global&#34;</span>), A_red: T<span style="color:#f92672">.</span>handle(<span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;global&#34;</span>)):
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;calling_conv&#34;</span>: <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;target&#34;</span>: T<span style="color:#f92672">.</span>target({<span style="color:#e6db74">&#34;arch&#34;</span>: <span style="color:#e6db74">&#34;sm_75&#34;</span>, <span style="color:#e6db74">&#34;host&#34;</span>: {<span style="color:#e6db74">&#34;keys&#34;</span>: [<span style="color:#e6db74">&#34;cpu&#34;</span>], <span style="color:#e6db74">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;llvm&#34;</span>, <span style="color:#e6db74">&#34;tag&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>}, <span style="color:#e6db74">&#34;keys&#34;</span>: [<span style="color:#e6db74">&#34;cuda&#34;</span>, <span style="color:#e6db74">&#34;gpu&#34;</span>], <span style="color:#e6db74">&#34;kind&#34;</span>: <span style="color:#e6db74">&#34;cuda&#34;</span>, <span style="color:#e6db74">&#34;max_num_threads&#34;</span>: <span style="color:#ae81ff">1024</span>, <span style="color:#e6db74">&#34;max_shared_memory_per_block&#34;</span>: <span style="color:#ae81ff">49152</span>, <span style="color:#e6db74">&#34;max_threads_per_block&#34;</span>: <span style="color:#ae81ff">1024</span>, <span style="color:#e6db74">&#34;registers_per_block&#34;</span>: <span style="color:#ae81ff">65536</span>, <span style="color:#e6db74">&#34;tag&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#e6db74">&#34;thread_warp_size&#34;</span>: <span style="color:#ae81ff">32</span>}), <span style="color:#e6db74">&#34;tir.is_global_func&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>), <span style="color:#e6db74">&#34;tir.kernel_launch_params&#34;</span>: [<span style="color:#e6db74">&#34;blockIdx.x&#34;</span>, <span style="color:#e6db74">&#34;threadIdx.x&#34;</span>], <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)})
+</span></span><span style="display:flex;"><span>        blockIdx_x <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>launch_thread(<span style="color:#e6db74">&#34;blockIdx.x&#34;</span>, <span style="color:#ae81ff">2048</span>)
+</span></span><span style="display:flex;"><span>        A_red_rf_local <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>        red_result <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>        T<span style="color:#f92672">.</span>attr(red_result, <span style="color:#e6db74">&#34;volatile_scope&#34;</span>, <span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>        threadIdx_x <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>launch_thread(<span style="color:#e6db74">&#34;threadIdx.x&#34;</span>, <span style="color:#ae81ff">256</span>)
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>A_red_rf_local, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>        A_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">4194304</span>),), data<span style="color:#f92672">=</span>A)
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">256</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">512</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">768</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1024</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1280</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1536</span>]
+</span></span><span style="display:flex;"><span>        A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A_1[blockIdx_x <span style="color:#f92672">*</span> <span style="color:#ae81ff">2048</span> <span style="color:#f92672">+</span> threadIdx_x <span style="color:#f92672">+</span> <span style="color:#ae81ff">1792</span>]
+</span></span><span style="display:flex;"><span>        red_result_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_result, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># attr node</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>attr(T<span style="color:#f92672">.</span>comm_reducer(<span style="color:#66d9ef">lambda</span> x0, y0: x0 <span style="color:#f92672">+</span> y0, [T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)]), <span style="color:#e6db74">&#34;reduce_scope&#34;</span>, T<span style="color:#f92672">.</span>reinterpret(<span style="color:#e6db74">&#34;handle&#34;</span>, T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>))):
+</span></span><span style="display:flex;"><span>            red_buf0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;uint32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;uint32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf_staging <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">8</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># seq stmt node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># ... BufferStore stmt node</span>
+</span></span><span style="display:flex;"><span>            red_buf0_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_buf0_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            mask_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;uint32&#34;</span>, data<span style="color:#f92672">=</span>mask_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__activemask()
+</span></span><span style="display:flex;"><span>            t0_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>t0_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># if then else node</span>
+</span></span><span style="display:flex;"><span>            red_buf_staging_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">8</span>,), data<span style="color:#f92672">=</span>red_buf_staging, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> T<span style="color:#f92672">.</span>truncmod(threadIdx_x, <span style="color:#ae81ff">32</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                red_buf_staging_1[T<span style="color:#f92672">.</span>shift_right(threadIdx_x, <span style="color:#ae81ff">5</span>)] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># evaluate node</span>
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>tvm_storage_sync(<span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># if then else node</span>
+</span></span><span style="display:flex;"><span>            red_buf0_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_buf0, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>:
+</span></span><span style="display:flex;"><span>                red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf_staging_1[threadIdx_x]
+</span></span><span style="display:flex;"><span>            mask_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;uint32&#34;</span>, data<span style="color:#f92672">=</span>mask, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            mask_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>bitwise_and(T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__activemask(), T<span style="color:#f92672">.</span>uint32(<span style="color:#ae81ff">255</span>))
+</span></span><span style="display:flex;"><span>            t0_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>t0, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>            t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>cuda<span style="color:#f92672">.</span>__shfl_down_sync(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>            red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e"># if then else node</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>                red_result_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>            T<span style="color:#f92672">.</span>tvm_storage_sync(<span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>            A_red_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), data<span style="color:#f92672">=</span>A_red)
+</span></span><span style="display:flex;"><span>            A_red_1[blockIdx_x] <span style="color:#f92672">=</span> red_result_1[<span style="color:#ae81ff">0</span>]
+</span></span></code></pre></div><h3 id="unroll">
+  Unroll
+  <a class="anchor" href="#unroll">#</a>
+</h3>
+<h3 id="shfl替换warp内add">
+  shfl替换warp内add
+  <a class="anchor" href="#shfl%e6%9b%bf%e6%8d%a2warp%e5%86%85add">#</a>
+</h3>
+<h4 id="lower-to-tir-mod">
+  lower to tir mod
+  <a class="anchor" href="#lower-to-tir-mod">#</a>
+</h4>
+<p>lower后的tir script，这是一个stmt.AttrStmt节点：</p>
+<ul>
+<li>node：ObjectRef &ndash;&gt; tvm.tir.expr.CommReducer</li>
+<li>attr_key：String</li>
+<li>value：PrimExpr &ndash;&gt; tvm.tir.expr.Call</li>
+<li>body: stmt.Evaluate</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>attr(
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>comm_reducer(<span style="color:#66d9ef">lambda</span> x0, y0: x0 <span style="color:#f92672">+</span> y0, [T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)]), <span style="color:#75715e"># node</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;reduce_scope&#34;</span>, <span style="color:#75715e"># attr_key</span>
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>reinterpret(<span style="color:#e6db74">&#34;handle&#34;</span>, T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>)), <span style="color:#75715e"># value</span>
+</span></span><span style="display:flex;"><span>): <span style="color:#75715e"># body</span>
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>tvm_thread_allreduce(
+</span></span><span style="display:flex;"><span>		T<span style="color:#f92672">.</span>uint32(<span style="color:#ae81ff">1</span>),
+</span></span><span style="display:flex;"><span>		A_red_rf_local_1[<span style="color:#ae81ff">0</span>],
+</span></span><span style="display:flex;"><span>		T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>),
+</span></span><span style="display:flex;"><span>		cross_thread_A_red_1[<span style="color:#ae81ff">0</span>],
+</span></span><span style="display:flex;"><span>		threadIdx_x,
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>node, type(seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>node)
+</span></span><span style="display:flex;"><span>T<span style="color:#f92672">.</span>comm_reducer(<span style="color:#66d9ef">lambda</span> x0, y0: x0 <span style="color:#f92672">+</span> y0, [T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)]),
+</span></span><span style="display:flex;"><span>tvm<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>expr<span style="color:#f92672">.</span>CommReducer
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>attr_key, 
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;reduce_scope&#39;</span>,
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>value, type(seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>value)
+</span></span><span style="display:flex;"><span>T<span style="color:#f92672">.</span>reinterpret(<span style="color:#e6db74">&#34;handle&#34;</span>, T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>))
+</span></span><span style="display:flex;"><span>tvm<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>expr<span style="color:#f92672">.</span>Call
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>body
+</span></span><span style="display:flex;"><span><span style="color:#f92672">...</span>
+</span></span></code></pre></div><p>分析Evaluate节点：</p>
+<ul>
+<li>value：expr.Call</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>body<span style="color:#f92672">.</span>value,
+</span></span><span style="display:flex;"><span>T<span style="color:#f92672">.</span>tvm_thread_allreduce(T<span style="color:#f92672">.</span>uint32(<span style="color:#ae81ff">1</span>), A_red_rf_local_1[<span style="color:#ae81ff">0</span>], T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>), cross_thread_A_red_1[<span style="color:#ae81ff">0</span>], threadIdx_x),
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> type(seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>body<span style="color:#f92672">.</span>value)
+</span></span><span style="display:flex;"><span>tvm<span style="color:#f92672">.</span>tir<span style="color:#f92672">.</span>expr<span style="color:#f92672">.</span>Call
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&gt;&gt;&gt;</span> seq_stmt[<span style="color:#ae81ff">9</span>]<span style="color:#f92672">.</span>body<span style="color:#f92672">.</span>value<span style="color:#f92672">.</span>op <span style="color:#75715e"># call.op</span>
+</span></span><span style="display:flex;"><span>Op(tir<span style="color:#f92672">.</span>tvm_thread_allreduce)
+</span></span></code></pre></div><h4 id="lower-to-mixed-transform-mod">
+  lower to mixed transform mod
+  <a class="anchor" href="#lower-to-mixed-transform-mod">#</a>
+</h4>
+<p>在tir to runtime中的split mixed mod中 apply mixed seq passes</p>
+<ul>
+<li>其中对T.tvm_thread_allreduce的转换-&gt;</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>attr(T<span style="color:#f92672">.</span>comm_reducer(<span style="color:#66d9ef">lambda</span> x0, y0: x0 <span style="color:#f92672">+</span> y0, [T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)]), <span style="color:#e6db74">&#34;reduce_scope&#34;</span>, T<span style="color:#f92672">.</span>reinterpret(<span style="color:#e6db74">&#34;handle&#34;</span>, T<span style="color:#f92672">.</span>uint64(<span style="color:#ae81ff">0</span>))):
+</span></span><span style="display:flex;"><span>	red_buf0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	mask <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;uint32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	t0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	mask_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;uint32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	t0_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	red_buf_staging <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>allocate([<span style="color:#ae81ff">8</span>], <span style="color:#e6db74">&#34;float32&#34;</span>, <span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_buf0_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local_1[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	mask_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;uint32&#34;</span>, data<span style="color:#f92672">=</span>mask_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	mask_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_activemask()
+</span></span><span style="display:flex;"><span>	t0_2 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>t0_1, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># warp shuffle</span>
+</span></span><span style="display:flex;"><span>	t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	t0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_2[<span style="color:#ae81ff">0</span>], red_buf0_2[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># combine warped reduced value</span>
+</span></span><span style="display:flex;"><span>	red_buf_staging_1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">8</span>,), data<span style="color:#f92672">=</span>red_buf_staging, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">%</span> <span style="color:#ae81ff">32</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>		red_buf_staging_1[threadIdx_x <span style="color:#f92672">//</span> <span style="color:#ae81ff">32</span>] <span style="color:#f92672">=</span> red_buf0_2[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>tvm_storage_sync(<span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>red_buf0, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>:
+</span></span><span style="display:flex;"><span>		red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf_staging_1[threadIdx_x]
+</span></span><span style="display:flex;"><span>	mask_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), <span style="color:#e6db74">&#34;uint32&#34;</span>, data<span style="color:#f92672">=</span>mask, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	mask_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>bitwise_and(T<span style="color:#f92672">.</span>tvm_warp_activemask(), T<span style="color:#f92672">.</span>uint32(<span style="color:#ae81ff">255</span>))
+</span></span><span style="display:flex;"><span>	t0_3 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>Buffer((<span style="color:#ae81ff">1</span>,), data<span style="color:#f92672">=</span>t0, scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	t0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>tvm_warp_shuffle_down(mask_3[<span style="color:#ae81ff">0</span>], red_buf0_3[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>, <span style="color:#ae81ff">32</span>)
+</span></span><span style="display:flex;"><span>	red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># write to ret</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> threadIdx_x <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+</span></span><span style="display:flex;"><span>		red_result_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0_3[<span style="color:#ae81ff">0</span>]
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>tvm_storage_sync(<span style="color:#e6db74">&#34;shared&#34;</span>)
+</span></span></code></pre></div><h4 id="codegen">
+  codegen
+  <a class="anchor" href="#codegen">#</a>
+</h4>
+<h5 id="attrstmtnode">
+  AttrStmtNode
+  <a class="anchor" href="#attrstmtnode">#</a>
+</h5>
+<p>数据成员：</p>
+<ul>
+<li>node：ObjectRef &ndash;&gt; tvm.tir.expr.CommReducer</li>
+<li>attr_key：String</li>
+<li>value：PrimExpr &ndash;&gt; tvm.tir.expr.Call</li>
+<li>body: stmt.Evaluate</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> CodeGenCUDA<span style="color:#f92672">::</span>VisitStmt_(<span style="color:#66d9ef">const</span> AttrStmtNode<span style="color:#f92672">*</span> op) {
+</span></span><span style="display:flex;"><span>	CodeGenC<span style="color:#f92672">::</span>VisitStmt_(op);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h5 id="evaluatenode">
+  EvaluateNode
+  <a class="anchor" href="#evaluatenode">#</a>
+</h5>
+<p>数据成员：</p>
+<ul>
+<li>value：expr.Call</li>
+</ul>
+<h5 id="visitexprcall">
+  VisitExpr：Call
+  <a class="anchor" href="#visitexprcall">#</a>
+</h5>
+<p>函数描述
+函数流程：</p>
+<ol>
+<li>默认开启warp_shuffle</li>
+<li>根据不同的op类型，执行不同的codegen</li>
+</ol>
+<ul>
+<li>【TensorCore】tvm_fill_fragment</li>
+<li>【TensorCore】tvm_load_matrix_sync</li>
+<li>【TensorCore】tvm_store_matrix_sync</li>
+<li>【TensorCore】tvm_mma_sync</li>
+<li>【TensorCore】tvm_bmma_sync</li>
+<li>【TensorCore】ptx_mma</li>
+<li>【TensorCore】ptx_mma_sp</li>
+<li>【TensorCore】ptx_ldmatrix</li>
+<li>【TensorCore】mma_store</li>
+<li>【TensorCore】mma_fill</li>
+<li>ptx_cp_async</li>
+<li>ptx_commit_group</li>
+<li>ptx_wait_group</li>
+<li>ptx_ldg32</li>
+</ul>
+<ol>
+<li>调用CodegenC的visit call</li>
+</ol>
+<h1 id="案例分析">
+  案例分析
+  <a class="anchor" href="#%e6%a1%88%e4%be%8b%e5%88%86%e6%9e%90">#</a>
+</h1>
+<h2 id="reducemean">
+  reduce：mean
+  <a class="anchor" href="#reducemean">#</a>
+</h2>
+<p>mean实现：</p>
+<ol>
+<li>求和：sum(axis=-1)</li>
+<li>除法：divide</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@T.prim_func</span>(private<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mean</span>(
+</span></span><span style="display:flex;"><span>	A: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">8192</span>)), <span style="color:#e6db74">&#34;float32&#34;</span>),
+</span></span><span style="display:flex;"><span>	T_divide: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), <span style="color:#e6db74">&#34;float32&#34;</span>),
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>func_attr({<span style="color:#e6db74">&#34;op_pattern&#34;</span>: <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)})
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># with T.block(&#34;root&#34;):</span>
+</span></span><span style="display:flex;"><span>	A_red <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>alloc_buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),)) <span style="color:#75715e"># 负责求和, (2048, 8192) -&gt; (2048, )</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> ax0, k1 <span style="color:#f92672">in</span> T<span style="color:#f92672">.</span>grid(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">8192</span>)):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;A_red&#34;</span>):
+</span></span><span style="display:flex;"><span>			v_ax0, v_k1 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>remap(<span style="color:#e6db74">&#34;SR&#34;</span>, [ax0, k1])
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>reads(A[v_ax0, v_k1])
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>writes(A_red[v_ax0])
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>init():
+</span></span><span style="display:flex;"><span>				A_red[v_ax0] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>			A_red[v_ax0] <span style="color:#f92672">=</span> A_red[v_ax0] <span style="color:#f92672">+</span> A[v_ax0, v_k1]
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> ax0 <span style="color:#f92672">in</span> range(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>)): <span style="color:#75715e"># 负责求均值, (2048,) -&gt; (2048,)</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;T_divide&#34;</span>):
+</span></span><span style="display:flex;"><span>			v_ax0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>spatial(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), ax0)
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>reads(A_red[v_ax0])
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>writes(T_divide[v_ax0])
+</span></span><span style="display:flex;"><span>			T_divide[v_ax0] <span style="color:#f92672">=</span> A_red[v_ax0] <span style="color:#f92672">*</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0.0001220703125</span>)
+</span></span></code></pre></div><p>dlight schedule后：</p>
+<ol>
+<li>blockIdx绑定到weight的第一个维度</li>
+<li>【build之后为循环展开+直接sum】threadIdx限制为256，每个reduce轴计算得到256元素，用于处理reduce轴, 每个线程处理32个元素，包含一个for循环
+<ul>
+<li>指定unroll标记参数：&ldquo;pragma_unroll_explicit&rdquo;: 1，表示使用循环展开</li>
+<li>指定展开最大深度：256</li>
+</ul>
+</li>
+<li>【build之后为：warp内部shfl reduce到shared memory中；一组thread继续读取shared memory进行shfl reduce，得到sum结果；】由于第二步计算得到了256元素，还需要reduce：继续开辟256个线程对256元素求和</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#a6e22e">@T.prim_func</span>(private<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">mean</span>(
+</span></span><span style="display:flex;"><span>	A: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">8192</span>)), <span style="color:#e6db74">&#34;float32&#34;</span>),
+</span></span><span style="display:flex;"><span>	T_divide: T<span style="color:#f92672">.</span>Buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), <span style="color:#e6db74">&#34;float32&#34;</span>),
+</span></span><span style="display:flex;"><span>):
+</span></span><span style="display:flex;"><span>	T<span style="color:#f92672">.</span>func_attr(
+</span></span><span style="display:flex;"><span>		{<span style="color:#e6db74">&#34;op_pattern&#34;</span>: <span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#34;tir.is_scheduled&#34;</span>: <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;tir.noalias&#34;</span>: T<span style="color:#f92672">.</span>bool(<span style="color:#66d9ef">True</span>)}
+</span></span><span style="display:flex;"><span>	)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># with T.block(&#34;root&#34;):</span>
+</span></span><span style="display:flex;"><span>	A_red_local <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>alloc_buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>),), scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	A_red_rf_local <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>alloc_buffer((T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">256</span>), T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>)), scope<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;local&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e"># sch: thread_binding</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> ax0_fused <span style="color:#f92672">in</span> T<span style="color:#f92672">.</span>thread_binding(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), thread<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;blockIdx.x&#34;</span>):
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> ax1_fused_1 <span style="color:#f92672">in</span> T<span style="color:#f92672">.</span>thread_binding(
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">256</span>),
+</span></span><span style="display:flex;"><span>			thread<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;threadIdx.x&#34;</span>,
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e"># sch: unroll</span>
+</span></span><span style="display:flex;"><span>			annotations<span style="color:#f92672">=</span>{
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;pragma_auto_unroll_max_step&#34;</span>: <span style="color:#ae81ff">256</span>,
+</span></span><span style="display:flex;"><span>				<span style="color:#e6db74">&#34;pragma_unroll_explicit&#34;</span>: <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>			},
+</span></span><span style="display:flex;"><span>		): <span style="color:#75715e"># 循环展开, (2048, 8192) -&gt; (2048, 256) // 32循环展开</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;A_red_rf_init&#34;</span>):
+</span></span><span style="display:flex;"><span>				vax1_fused_1, v0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>remap(<span style="color:#e6db74">&#34;SS&#34;</span>, [ax1_fused_1, ax0_fused])
+</span></span><span style="display:flex;"><span>				T<span style="color:#f92672">.</span>reads()
+</span></span><span style="display:flex;"><span>				T<span style="color:#f92672">.</span>writes(A_red_rf_local[vax1_fused_1, v0])
+</span></span><span style="display:flex;"><span>				A_red_rf_local[vax1_fused_1, v0] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span> ax1_fused_0, u <span style="color:#f92672">in</span> T<span style="color:#f92672">.</span>grid(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">32</span>), <span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;A_red_rf_update&#34;</span>):
+</span></span><span style="display:flex;"><span>					vax1_fused_1, v0, vax1_fused_0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>remap(
+</span></span><span style="display:flex;"><span>						<span style="color:#e6db74">&#34;SSR&#34;</span>, [ax1_fused_1, ax0_fused, ax1_fused_0]
+</span></span><span style="display:flex;"><span>					)
+</span></span><span style="display:flex;"><span>					T<span style="color:#f92672">.</span>reads(
+</span></span><span style="display:flex;"><span>						A_red_rf_local[vax1_fused_1, v0],
+</span></span><span style="display:flex;"><span>						A[v0, vax1_fused_0 <span style="color:#f92672">*</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">256</span>) <span style="color:#f92672">+</span> vax1_fused_1],
+</span></span><span style="display:flex;"><span>					)
+</span></span><span style="display:flex;"><span>					T<span style="color:#f92672">.</span>writes(A_red_rf_local[vax1_fused_1, v0])
+</span></span><span style="display:flex;"><span>					A_red_rf_local[vax1_fused_1, v0] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>						A_red_rf_local[vax1_fused_1, v0]
+</span></span><span style="display:flex;"><span>						<span style="color:#f92672">+</span> A[v0, vax1_fused_0 <span style="color:#f92672">*</span> T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">256</span>) <span style="color:#f92672">+</span> vax1_fused_1]
+</span></span><span style="display:flex;"><span>					)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">for</span> ax1_fused <span style="color:#f92672">in</span> range(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">1</span>)):
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">for</span> ax0 <span style="color:#f92672">in</span> T<span style="color:#f92672">.</span>thread_binding(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">256</span>), thread<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;threadIdx.x&#34;</span>): <span style="color:#75715e"># 求和</span>
+</span></span><span style="display:flex;"><span>				<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;A_red&#34;</span>):
+</span></span><span style="display:flex;"><span>					vax1_fused_1, v0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>remap(<span style="color:#e6db74">&#34;RS&#34;</span>, [ax0, ax0_fused])
+</span></span><span style="display:flex;"><span>					T<span style="color:#f92672">.</span>reads(A_red_rf_local[vax1_fused_1, v0])
+</span></span><span style="display:flex;"><span>					T<span style="color:#f92672">.</span>writes(A_red_local[v0])
+</span></span><span style="display:flex;"><span>					<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>init():
+</span></span><span style="display:flex;"><span>						A_red_local[v0] <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>					A_red_local[v0] <span style="color:#f92672">=</span> (
+</span></span><span style="display:flex;"><span>						A_red_local[v0] <span style="color:#f92672">+</span> A_red_rf_local[vax1_fused_1, v0]
+</span></span><span style="display:flex;"><span>					)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">with</span> T<span style="color:#f92672">.</span>block(<span style="color:#e6db74">&#34;T_divide&#34;</span>):
+</span></span><span style="display:flex;"><span>			v0 <span style="color:#f92672">=</span> T<span style="color:#f92672">.</span>axis<span style="color:#f92672">.</span>spatial(T<span style="color:#f92672">.</span>int64(<span style="color:#ae81ff">2048</span>), ax0_fused) <span style="color:#75715e"># 求均值</span>
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>reads(A_red_local[v0])
+</span></span><span style="display:flex;"><span>			T<span style="color:#f92672">.</span>writes(T_divide[v0])
+</span></span><span style="display:flex;"><span>			T_divide[v0] <span style="color:#f92672">=</span> A_red_local[v0] <span style="color:#f92672">*</span> T<span style="color:#f92672">.</span>float32(<span style="color:#ae81ff">0.0001220703125</span>)
+</span></span></code></pre></div><p>build之后：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>rt_mod <span style="color:#f92672">=</span> relax<span style="color:#f92672">.</span>build(After, target)
+</span></span><span style="display:flex;"><span>source <span style="color:#f92672">=</span> rt_mod<span style="color:#f92672">.</span>mod<span style="color:#f92672">.</span>imported_modules[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>imported_modules[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">.</span>get_source()
+</span></span></code></pre></div><p>build策略：</p>
+<ul>
+<li>变量分配</li>
+<li>循环展开</li>
+<li>shuffle</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#e6db74">&#34;C&#34;</span> __global__ <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">__launch_bounds__</span>(<span style="color:#ae81ff">256</span>) <span style="color:#a6e22e">mean_kernel</span>(<span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> __restrict__ A, <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span> __restrict__ T_divide) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">float</span> A_red_rf_local[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  __shared__ <span style="color:#66d9ef">float</span> red_result[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 1. 循环展开
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">0.000000e+00</span>f;
+</span></span><span style="display:flex;"><span>  A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A[((((<span style="color:#66d9ef">int</span>)blockIdx.x) <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span>) <span style="color:#f92672">+</span> ((<span style="color:#66d9ef">int</span>)threadIdx.x))]);
+</span></span><span style="display:flex;"><span>  A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A[(((((<span style="color:#66d9ef">int</span>)blockIdx.x) <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span>) <span style="color:#f92672">+</span> ((<span style="color:#66d9ef">int</span>)threadIdx.x)) <span style="color:#f92672">+</span> <span style="color:#ae81ff">256</span>)]);
+</span></span><span style="display:flex;"><span>  A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A[(((((<span style="color:#66d9ef">int</span>)blockIdx.x) <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span>) <span style="color:#f92672">+</span> ((<span style="color:#66d9ef">int</span>)threadIdx.x)) <span style="color:#f92672">+</span> <span style="color:#ae81ff">512</span>)]);
+</span></span><span style="display:flex;"><span>  A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A[(((((<span style="color:#66d9ef">int</span>)blockIdx.x) <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span>) <span style="color:#f92672">+</span> ((<span style="color:#66d9ef">int</span>)threadIdx.x)) <span style="color:#f92672">+</span> <span style="color:#ae81ff">768</span>)]);
+</span></span><span style="display:flex;"><span>  ...
+</span></span><span style="display:flex;"><span>  A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (A_red_rf_local[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> A[(((((<span style="color:#66d9ef">int</span>)blockIdx.x) <span style="color:#f92672">*</span> <span style="color:#ae81ff">8192</span>) <span style="color:#f92672">+</span> ((<span style="color:#66d9ef">int</span>)threadIdx.x)) <span style="color:#f92672">+</span> <span style="color:#ae81ff">7936</span>)]);
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 2. sum: 第一次warp reduce -&gt; 8
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">float</span> red_buf0[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  uint mask[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">float</span> t0[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">float</span> red_buf0_1[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  uint mask_1[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">float</span> t0_1[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  __shared__ <span style="color:#66d9ef">float</span> red_buf_staging[<span style="color:#ae81ff">8</span>];
+</span></span><span style="display:flex;"><span>  red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> A_red_rf_local[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>  mask_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__activemask</span>();
+</span></span><span style="display:flex;"><span>  t0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask_1[<span style="color:#ae81ff">0</span>], red_buf0_1[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">16</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_1[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  t0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask_1[<span style="color:#ae81ff">0</span>], red_buf0_1[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_1[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  t0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask_1[<span style="color:#ae81ff">0</span>], red_buf0_1[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_1[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  t0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask_1[<span style="color:#ae81ff">0</span>], red_buf0_1[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_1[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  t0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask_1[<span style="color:#ae81ff">0</span>], red_buf0_1[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0_1[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0_1[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> ((((<span style="color:#66d9ef">int</span>)threadIdx.x) <span style="color:#f92672">%</span> <span style="color:#ae81ff">32</span>) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    red_buf_staging[(((<span style="color:#66d9ef">int</span>)threadIdx.x) <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">5</span>)] <span style="color:#f92672">=</span> red_buf0_1[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">__syncthreads</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 2. sum: 第二次warp reduce -&gt; 1
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (((<span style="color:#66d9ef">int</span>)threadIdx.x) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">8</span>) {
+</span></span><span style="display:flex;"><span>    red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf_staging[((<span style="color:#66d9ef">int</span>)threadIdx.x)];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  mask[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (<span style="color:#a6e22e">__activemask</span>() <span style="color:#f92672">&amp;</span> (uint)<span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>  t0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask[<span style="color:#ae81ff">0</span>], red_buf0[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  t0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask[<span style="color:#ae81ff">0</span>], red_buf0[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  t0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">__shfl_down_sync</span>(mask[<span style="color:#ae81ff">0</span>], red_buf0[<span style="color:#ae81ff">0</span>], <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">32</span>);
+</span></span><span style="display:flex;"><span>  red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> (red_buf0[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> t0[<span style="color:#ae81ff">0</span>]);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (((<span style="color:#66d9ef">int</span>)threadIdx.x) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    ((<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)red_result)[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">=</span> red_buf0[<span style="color:#ae81ff">0</span>];
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">__syncthreads</span>();
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># 3. multiply
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">if</span> (((<span style="color:#66d9ef">int</span>)threadIdx.x) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+</span></span><span style="display:flex;"><span>    T_divide[((<span style="color:#66d9ef">int</span>)blockIdx.x)] <span style="color:#f92672">=</span> (((<span style="color:#66d9ef">volatile</span> <span style="color:#66d9ef">float</span><span style="color:#f92672">*</span>)red_result)[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> <span style="color:#ae81ff">1.220703e-04</span>f);
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+  <div>
+    <a class="flex align-center" href="https://github.com/L0phTg/L0phTg.github.io/edit/main/exampleSite/content/docs/TVM%e4%b9%8bDlight%e5%ad%a6%e4%b9%a0.md" target="_blank" rel="noopener">
+      <img src="/svg/edit.svg" class="book-icon" alt="" />
+      <span>编辑本页</span>
+    </a>
+  </div>
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#tir-schedule">TIR Schedule</a>
+      <ul>
+        <li><a href="#thread">Thread</a>
+          <ul>
+            <li><a href="#allocate-和-launch_threadtthread_binding">allocate 和 launch_thread（T.thread_binding）</a></li>
+            <li><a href="#thread-reduce">thread reduce</a></li>
+          </ul>
+        </li>
+        <li><a href="#提供api">提供API</a>
+          <ul>
+            <li><a href="#normalizeprimfunc">NormalizePrimFunc</a></li>
+            <li><a href="#is_reduction">is_reduction</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#dlight">DLight</a>
+      <ul>
+        <li><a href="#matmul">Matmul</a></li>
+        <li><a href="#gemv">GEMV</a>
+          <ul>
+            <li><a href="#normalize">normalize</a></li>
+            <li><a href="#sch_inner_reduction">sch_inner_reduction</a></li>
+          </ul>
+        </li>
+        <li><a href="#reduction">Reduction</a>
+          <ul>
+            <li><a href="#_normalize">_normalize</a></li>
+            <li><a href="#schedule">schedule</a></li>
+          </ul>
+        </li>
+        <li><a href="#tranpose">Tranpose</a></li>
+      </ul>
+    </li>
+    <li><a href="#build">build</a>
+      <ul>
+        <li><a href="#reduction-1">Reduction</a>
+          <ul>
+            <li><a href="#unroll">Unroll</a></li>
+            <li><a href="#shfl替换warp内add">shfl替换warp内add</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#案例分析">案例分析</a>
+      <ul>
+        <li><a href="#reducemean">reduce：mean</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

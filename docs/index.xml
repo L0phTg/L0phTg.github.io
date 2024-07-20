@@ -9,6 +9,13 @@
     <lastBuildDate>Mon, 15 Apr 2019 17:58:13 +0800</lastBuildDate>
     <atom:link href="https://l0phtg.top/docs/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>【TVM】Runtime源码分析</title>
+      <link>https://l0phtg.top/docs/TVM%E4%B9%8BRuntime%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://l0phtg.top/docs/TVM%E4%B9%8BRuntime%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</guid>
+      <description>参考文章：&#xA;https://github.com/tlc-pack/relax/wiki/Relax-VM-Design/ 相关源码文件：&#xA;【relax.build】python/tvm/relax/vm_build.py&#xA;【tvm.build】python/tvm/driver/build_module.py&#xA;src/relax/backend/vm/codegen_vm.cc&#xA;tests/python/relax/test_vm_build.py&#xA;tests/python/relax/test_vm_codegen_only.py&#xA;tests/python/relax/test_vm_codegen_tir.py&#xA;tests/python/relax/test_vm_execbuilder.py&#xA;核心API：&#xA;relax.build relax.VirtualMachine API 接口 # relax.build # 函数功能：将IRModule构建为可执行的VM 函数参数：&#xA;mod target：目标平台target exec_mode：执行模式（字节码或者编译） 返回类型： ex: tvm.relax.Executable（可以被virtual machine加载的可执行的&amp;hellip;） 函数流程： relax function transform relax function codegen -&amp;gt; tir function build -&amp;gt; tvm.Module vmlink -&amp;gt; executable 函数实现： def build( mod: tvm.IRModule, target: Union[str, tvm.target.Target],... ): # 1. 调用PASS完成mod转换 passes = [] passes.append(relax.transform.RewriteDataflowReshape()) passes.append(relax.transform.ToNonDataflow()) passes.append(relax.transform.RemovePurityChecking()) passes.append(relax.transform.CallTIRRewrite()) passes.append(relax.transform.StaticPlanBlockMemory()) if tvm.transform.PassContext.current().config.get(&amp;#34;relax.backend.use_cuda_graph&amp;#34;, False): passes.append(relax.transform.RewriteCUDAGraph()) passes.append(relax.transform.VMBuiltinLower()) passes.append(relax.transform.VMShapeLower()) passes.append(relax.transform.AttachGlobalSymbol()) seq = tvm.</description>
+    </item>
+    <item>
       <title>我的zsh和vim配置</title>
       <link>https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Wed, 24 Oct 2018 00:14:31 +0800</pubDate>
