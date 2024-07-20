@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Graph on L0phTg&#39; Blog</title>
+    <link>https://l0phtg.top/categories/graph/</link>
+    <description>Recent content in Graph on L0phTg&#39; Blog</description>
+    <generator>Hugo</generator>
+    <language>zh</language>
+    <lastBuildDate>Sat, 06 Apr 2019 18:00:53 +0800</lastBuildDate>
+    <atom:link href="https://l0phtg.top/categories/graph/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Dominator(graph Theory)</title>
+      <link>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/</link>
+      <pubDate>Sat, 06 Apr 2019 18:00:53 +0800</pubDate>
+      <guid>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/</guid>
+      <description>&lt;p&gt;translate from : &#xA;  &lt;a href=&#34;https://en.wikipedia.org/wiki/Dominator_%28graph_theory%29&#34;&gt;https://en.wikipedia.org/wiki/Dominator_(graph_theory)&lt;/a&gt;.&lt;/p&gt;&#xA;&lt;p&gt;最近在学习SSA(Static Single Assignment)时, 遇到了${dominance frontier}$的概念, 所以google之, 简单翻译了一下wikipedia上对Dominator内容的介绍.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

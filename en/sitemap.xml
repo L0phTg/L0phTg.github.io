@@ -2,40 +2,41 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://l0phtg.top/categories/</loc>
+    <loc>https://l0phtg.top/en/</loc>
+    <lastmod>2024-07-20T11:32:59+08:00</lastmod>
     <xhtml:link
                 rel="alternate"
-                hreflang="zh-cn"
-                href="https://l0phtg.top/zh/categories/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-us"
-                href="https://l0phtg.top/categories/"
-                />
-  </url><url>
-    <loc>https://l0phtg.top/</loc>
-    <xhtml:link
-                rel="alternate"
-                hreflang="zh-cn"
-                href="https://l0phtg.top/zh/"
-                />
-    <xhtml:link
-                rel="alternate"
-                hreflang="en-us"
+                hreflang="zh"
                 href="https://l0phtg.top/"
                 />
-  </url><url>
-    <loc>https://l0phtg.top/tags/</loc>
     <xhtml:link
                 rel="alternate"
-                hreflang="zh-cn"
-                href="https://l0phtg.top/zh/tags/"
+                hreflang="en"
+                href="https://l0phtg.top/en/"
+                />
+  </url><url>
+    <loc>https://l0phtg.top/en/categories/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
+                href="https://l0phtg.top/categories/"
                 />
     <xhtml:link
                 rel="alternate"
-                hreflang="en-us"
+                hreflang="en"
+                href="https://l0phtg.top/en/categories/"
+                />
+  </url><url>
+    <loc>https://l0phtg.top/en/tags/</loc>
+    <xhtml:link
+                rel="alternate"
+                hreflang="zh"
                 href="https://l0phtg.top/tags/"
+                />
+    <xhtml:link
+                rel="alternate"
+                hreflang="en"
+                href="https://l0phtg.top/en/tags/"
                 />
   </url>
 </urlset>

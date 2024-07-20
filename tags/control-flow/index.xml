@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Control Flow on L0phTg&#39; Blog</title>
+    <link>https://l0phtg.top/tags/control-flow/</link>
+    <description>Recent content in Control Flow on L0phTg&#39; Blog</description>
+    <generator>Hugo</generator>
+    <language>zh</language>
+    <lastBuildDate>Sun, 14 Apr 2019 14:43:17 +0800</lastBuildDate>
+    <atom:link href="https://l0phtg.top/tags/control-flow/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Kaleidoscope: Extending the Language Control Flow</title>
+      <link>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/</link>
+      <pubDate>Sun, 14 Apr 2019 14:43:17 +0800</pubDate>
+      <guid>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/</guid>
+      <description>&lt;p&gt;translate from: &#xA;  &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl05.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl05.html&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;本文为Kaleidoscope添加条件判断控制流和循环控制流.&lt;/p&gt;&#xA;&lt;p&gt;注意: 本文假定你已经阅读过前面几篇文章, 所以在词法解析和AST生成就写的比较简单(当然了, 这部分内容本身阅读起来就比较轻松), 着重介绍控制流的Codegen部分.&lt;/p&gt;&#xA;&lt;p&gt;因为这个系列主要是翻译, 所以基本没有涉及自己的理解. &lt;strong&gt;之后我会单独写一篇文章, 来对Kaleidoscope的前五章做一个总结&lt;/strong&gt;.&lt;/p&gt;&#xA;&lt;!-- ![](/docs-pic/llvm/loop.png) --&gt;&#xA;&lt;figure&gt;&lt;img src=&#34;https://l0phtg.top/docs-pic/llvm/loop.png&#34; width=&#34;50%&#34; height=&#34;50%&#34;&gt;&#xA;&lt;/figure&gt;</description>
+    </item>
+  </channel>
+</rss>
