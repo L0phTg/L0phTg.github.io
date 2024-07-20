@@ -1,0 +1,1841 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="对LLVM Tutorial Toy前五章做了一个总结, 侧重Codegen部分.">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#343a40">
+<meta name="color-scheme" content="light dark"><meta property="og:url" content="https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/">
+  <meta property="og:site_name" content="L0phTg&#39; Blog">
+  <meta property="og:title" content="Kaleidoscope: 前五章总结">
+  <meta property="og:description" content="对LLVM Tutorial Toy前五章做了一个总结, 侧重Codegen部分.">
+  <meta property="og:locale" content="zh">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="docs">
+    <meta property="article:published_time" content="2019-04-15T17:58:13+08:00">
+    <meta property="article:modified_time" content="2019-04-15T17:58:13+08:00">
+    <meta property="article:tag" content="Llvm">
+    <meta property="article:tag" content="Kaleidoscope">
+<title>Kaleidoscope: 前五章总结 | L0phTg&#39; Blog</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/favicon.png" >
+<link rel="canonical" href="https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/">
+<link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
+  <script defer src="/fuse.min.js"></script>
+  <script defer src="/zh.search.min.a95ae2adf77cef346a1ba35bc916b4a5738899827e87e3f3d7e14a531190decf.js" integrity="sha256-qVrirfd87zRqG6NbyRa0pXOImYJ&#43;h&#43;Pz1&#43;FKUxGQ3s8=" crossorigin="anonymous"></script>
+
+  <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
+
+  
+
+<!--
+Made with Book Theme
+https://github.com/alex-shpak/hugo-book
+-->
+  
+</head>
+<body dir="ltr">
+  <input type="checkbox" class="hidden toggle" id="menu-control" />
+  <input type="checkbox" class="hidden toggle" id="toc-control" />
+  <main class="container flex">
+    <aside class="book-menu">
+      <div class="book-menu-content">
+        
+  <nav>
+<h2 class="book-brand">
+  <a class="flex align-center" href="/"><span>L0phTg&#39; Blog</span>
+  </a>
+</h2>
+
+
+<div class="book-search hidden">
+  <input type="text" id="book-search-input" placeholder="搜索" aria-label="搜索" maxlength="64" data-hotkeys="s/" />
+  <div class="book-search-spinner hidden"></div>
+  <ul id="book-search-results"></ul>
+</div>
+<script>document.querySelector(".book-search").classList.remove("hidden")</script>
+
+
+
+  
+
+
+
+  
+    
+  
+
+
+
+<ul class="book-languages">
+  <li>
+    <input type="checkbox" id="languages" class="toggle" />
+    <label for="languages" class="flex justify-between">
+      <a role="button" class="flex align-center">
+        <img src="/svg/translate.svg" class="book-icon" alt="Languages" />
+        中文
+      </a>
+    </label>
+
+    <ul>
+      
+      <li>
+        <a href="https://l0phtg.top/en/">
+          English
+        </a>
+      </li>
+      
+    </ul>
+  </li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="active">Kaleidoscope: 前五章总结</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E5%A6%82%E6%9E%9C%E4%BD%A0%E5%86%B2%E5%8A%A8%E5%88%A0%E9%99%A4%E4%BA%86python/" class="">如果你冲动删除了python</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/" class="">我的zsh和vim配置</a>
+  
+
+        </li>
+      
+    
+      
+        <li class="book-section-flat" >
+          
+  
+  
+
+  
+    <span>Shortcodes</span>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-1a271ccce1389f2d7c14aea1fd752a30" class="toggle"  />
+    <label for="section-1a271ccce1389f2d7c14aea1fd752a30" class="flex justify-between">
+      <a role="button" class="">大数据技术</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/%E4%BD%BF%E7%94%A8docker%E6%90%AD%E5%BB%BAspark%E9%9B%86%E7%BE%A4/" class="">使用docker搭建spark集群</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/Spark%E7%AC%94%E8%AE%B0/" class="">Spark笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%A4%A7%E6%95%B0%E6%8D%AE%E6%8A%80%E6%9C%AF/hive%E7%AC%94%E8%AE%B0/" class="">Hive笔记</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-f1aa4e69c00a03c190bef2ee00739d18" class="toggle"  />
+    <label for="section-f1aa4e69c00a03c190bef2ee00739d18" class="flex justify-between">
+      <a role="button" class="">笔试面试</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E4%BA%8C%E5%8F%89%E6%A0%91%E5%8F%8A%E5%85%B6%E6%8E%A8%E5%B9%BF/" class="">二叉树及其推广</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%AC%94%E8%AF%95%E9%9D%A2%E8%AF%95/%E6%9C%AC%E7%A7%91%E5%BA%94%E5%B1%8A%E7%94%9F%E5%AE%89%E5%85%A8%E5%B2%97%E9%9D%A2%E8%AF%95%E6%80%BB%E7%BB%93/" class="">本科应届生安全岗面试总结</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-adf7f0289c2f5c3424463b717a2507e1" class="toggle"  />
+    <label for="section-adf7f0289c2f5c3424463b717a2507e1" class="flex justify-between">
+      <a role="button" class="">生活随笔</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E5%B7%A6%E4%BC%A0%E4%B9%8B%E5%AD%90%E9%B1%BC%E8%AE%BA%E6%88%98/" class="">左传之子鱼论战</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%94%9F%E6%B4%BB%E9%9A%8F%E7%AC%94/%E4%B9%A0%E5%AD%97%E5%85%A5%E9%97%A8/" class="">习字：入门</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-02d37011b401bd1ddc5041abe78510ce" class="toggle"  />
+    <label for="section-02d37011b401bd1ddc5041abe78510ce" class="flex justify-between">
+      <a role="button" class="">安全工具</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%85%A8%E5%B7%A5%E5%85%B7/radare2%E5%85%A5%E9%97%A8%E6%8C%87%E5%8D%97/" class="">Radare2入门指南</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-70316d26641ff7ce811873ef904e600a" class="toggle"  />
+    <label for="section-70316d26641ff7ce811873ef904e600a" class="flex justify-between">
+      <a role="button" class="">编译器和深度学习框架</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeConclusion-and-other-useful-LLVM-tidbits/" class="">Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeAdding-Debug-Information/" class="">Kaleidoscope：Adding Debug Information</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeCompile-to-Object-Code/" class="">Kaleidoscope：Compile to Object Code</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageMutable-Variables/" class="">Kaleidoscope：Extending the Language：Mutable Variables</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageUser-defined-Operators/" class="">Kaleidoscope：Extending the Language：User Defined Operators</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/" class="">Kaleidoscope: Extending the Language Control Flow</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Adding-JIT-and-Optimizer-Support/" class="">Kaleidoscope: Adding JIT and Optimizer Support</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Code-generation-to-LLVM-IR/" class="">Kaleidoscope: Code Generation to LLVM IR</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Implementing-a-Parser-and-AST/" class="">Kaleidoscope: Implementing a Parser and AST</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Tutorial-Introduction-and-Lexer/" class="">Kaleidoscope: Tutorial Introduction and Lexer</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Static-Single-Assignment/" class="">Static Single Assignment</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/" class="">Dominator(graph Theory)</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/thumb%E6%8C%87%E4%BB%A4%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0%E4%B8%80/" class="">thumb指令虚拟化学习(一)</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-ed5a276e6651bb1bc42104ff560b0ad9" class="toggle"  />
+    <label for="section-ed5a276e6651bb1bc42104ff560b0ad9" class="flex justify-between">
+      <a role="button" class="">杂七杂八</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%BF%A1%E5%8F%B7%E4%B8%8E%E7%B3%BB%E7%BB%9F-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="">信号与系统-学习笔记</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E4%B9%A6%E7%AD%BE%E6%95%B4%E7%90%86/" class="">书签整理</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/hugo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2/" class="">Hugo搭建博客</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%9D%82%E4%B8%83%E6%9D%82%E5%85%AB/%E8%A3%85%E6%9C%BA%E6%97%A5%E5%BF%97-deepin/" class="">装机日志-deepin</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-8605de7ed46e24ba27108b98bdcb646f" class="toggle"  />
+    <label for="section-8605de7ed46e24ba27108b98bdcb646f" class="flex justify-between">
+      <a role="button" class="">编程语言</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/C&#43;&#43;%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AA%E6%8A%BD%E8%B1%A1%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/" class="">C&#43;&#43;：设计一个抽象数据类型</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-018af693a2b5f52952d9292f7c738548" class="toggle"  />
+    <label for="section-018af693a2b5f52952d9292f7c738548" class="flex justify-between">
+      <a role="button" class="">安卓学习</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/Pixel1-%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91/" class="">Pixel1 源码编译</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E5%92%8CAndroidLinker%E5%8A%A0%E8%BD%BD-so%E7%9A%84%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" class="">elf文件格式和AndroidLinker加载.so的源码分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E5%AE%89%E5%8D%93%E5%AD%A6%E4%B9%A0/%E5%88%86%E6%9E%90Android%E7%9A%84JNI%E7%BC%96%E7%A8%8B%E6%97%B6%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E4%B8%80%E4%BA%9B%E5%87%BD%E6%95%B0%E5%8A%9F%E8%83%BD/" class="">分析Android的JNI编程时所使用的一些函数功能</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <input type="checkbox" id="section-31c89efe36fd3de07e773c00b8997045" class="toggle"  />
+    <label for="section-31c89efe36fd3de07e773c00b8997045" class="flex justify-between">
+      <a role="button" class="">漏洞分析和网络攻防</a>
+    </label>
+  
+
+          
+  <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/iqiyi%E5%BC%80%E6%BA%90hook%E6%A1%86%E6%9E%B6XHook%E5%88%86%E6%9E%90/" class="">Iqiyi开源hook框架XHook分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/InlineHook%E5%AD%A6%E4%B9%A0%E5%88%86%E6%9E%90/" class="">InlineHook学习分析</a>
+  
+
+        </li>
+      
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/shortcodes/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E5%92%8C%E7%BD%91%E7%BB%9C%E6%94%BB%E9%98%B2/%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E6%96%87-%E8%B0%88%E8%B0%88CVE-2014-7911/" class="">第一篇博文-谈谈CVE-2014-7911</a>
+  
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+        </li>
+      
+    
+  </ul>
+
+
+
+
+
+
+
+
+
+
+
+  
+<ul>
+  
+  <li>
+    <a href="https://github.com/L0phTg"  target="_blank" rel="noopener">
+        Github
+      </a>
+  </li>
+  
+  <li>
+    <a href="https://themes.gohugo.io/themes/hugo-book/"  target="_blank" rel="noopener">
+        Hugo Themes
+      </a>
+  </li>
+  
+</ul>
+
+
+
+
+
+
+</nav>
+
+
+
+
+  <script>(function(){var e=document.querySelector("aside .book-menu-content");addEventListener("beforeunload",function(){localStorage.setItem("menu.scrollTop",e.scrollTop)}),e.scrollTop=localStorage.getItem("menu.scrollTop")})()</script>
+
+
+ 
+      </div>
+    </aside>
+
+    <div class="book-page">
+      <header class="book-header">
+        
+  <div class="flex align-center justify-between">
+  <label for="menu-control">
+    <img src="/svg/menu.svg" class="book-icon" alt="Menu" />
+  </label>
+
+  <strong>Kaleidoscope: 前五章总结</strong>
+
+  <label for="toc-control">
+    
+    <img src="/svg/toc.svg" class="book-icon" alt="Table of Contents" />
+    
+  </label>
+</div>
+
+
+  
+  <aside class="hidden clearfix">
+    
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#kaleidoscope支持的语法">Kaleidoscope支持的语法</a></li>
+    <li><a href="#词法分析">词法分析</a></li>
+    <li><a href="#抽象语法树">抽象语法树</a></li>
+    <li><a href="#生成抽象语法树ast">生成抽象语法树(AST)</a>
+      <ul>
+        <li><a href="#expr的ast生成">Expr的(AST)生成</a></li>
+        <li><a href="#函数定义和申明的ast生成">函数定义和申明的AST生成</a></li>
+      </ul>
+    </li>
+    <li><a href="#codegen产生llvm-ir">Codegen(产生LLVM IR)</a>
+      <ul>
+        <li><a href="#四个基本表达式的codegen">四个基本表达式的codegen</a></li>
+        <li><a href="#ifthenelse">if/then/else</a>
+          <ul>
+            <li><a href="#kaleidoscpe-ifthenelse">Kaleidoscpe: if/then/else</a></li>
+            <li><a href="#未经优化的llvm-ir">未经优化的LLVM IR</a></li>
+            <li><a href="#ifthenelses-cfg">if/then/else&rsquo;s CFG</a></li>
+            <li><a href="#builder创建ir指令">Builder创建IR指令</a></li>
+            <li><a href="#builder流程图">Builder流程图</a></li>
+          </ul>
+        </li>
+        <li><a href="#loop">Loop</a>
+          <ul>
+            <li><a href="#kaleidoscope-for">Kaleidoscope: for</a></li>
+            <li><a href="#未经优化的llvm-ir-1">未经优化的LLVM IR</a></li>
+            <li><a href="#fors-cfg">for&rsquo;s CFG</a></li>
+            <li><a href="#builder流程图-1">Builder流程图</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#jit和优化">JIT和优化</a></li>
+    <li><a href="#driver">Driver</a></li>
+  </ul>
+</nav>
+
+
+
+  </aside>
+  
+ 
+      </header>
+
+      
+      
+  <article class="markdown book-article"><p>对LLVM Tutorial Toy前五章做了一个总结, 侧重Codegen部分.</p>
+<h1 id="kaleidoscope支持的语法">
+  Kaleidoscope支持的语法
+  <a class="anchor" href="#kaleidoscope%e6%94%af%e6%8c%81%e7%9a%84%e8%af%ad%e6%b3%95">#</a>
+</h1>
+<p><code>表达式运算</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">4</span><span style="color:#f92672">+</span><span style="color:#ae81ff">5</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">5</span><span style="color:#f92672">*</span><span style="color:#ae81ff">10</span>;
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">10</span><span style="color:#f92672">/</span><span style="color:#ae81ff">5</span>;
+</span></span></code></pre></div><p><code>函数定义</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>def <span style="color:#a6e22e">bar</span>(a) <span style="color:#a6e22e">foo</span>(a, <span style="color:#ae81ff">4.0</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">bar</span>(<span style="color:#ae81ff">31337</span>);
+</span></span></code></pre></div><p><code>函数调用</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#a6e22e">cos</span>(<span style="color:#ae81ff">1.234</span>);
+</span></span></code></pre></div><p><code>if/then/else</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">bar</span>();
+</span></span><span style="display:flex;"><span>def <span style="color:#a6e22e">baz</span>(x) <span style="color:#66d9ef">if</span> x then <span style="color:#a6e22e">foo</span>() <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">bar</span>();
+</span></span></code></pre></div><p><code>for</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">putchard</span>(<span style="color:#66d9ef">char</span>);
+</span></span><span style="display:flex;"><span>def <span style="color:#a6e22e">printstar</span>(n)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, i <span style="color:#f92672">&lt;</span> n, <span style="color:#ae81ff">1.0</span> in
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">putchard</span>(<span style="color:#ae81ff">42</span>);  <span style="color:#960050;background-color:#1e0010">#</span> ascii <span style="color:#ae81ff">42</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;*&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># print 100 &#39;*&#39; characters
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">printstar</span>(<span style="color:#ae81ff">100</span>);
+</span></span></code></pre></div><h1 id="词法分析">
+  词法分析
+  <a class="anchor" href="#%e8%af%8d%e6%b3%95%e5%88%86%e6%9e%90">#</a>
+</h1>
+<p>词法分析很简单. 我这里简单画了下处理的流程图.</p>
+<p>![](/docs-pic/llvm/Lexer And Parser.png)</p>
+<p>具体的分析请看: 
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Tutorial-Introduction-and-Lexer/">Lexer and Parse</a></p>
+<h1 id="抽象语法树">
+  抽象语法树
+  <a class="anchor" href="#%e6%8a%bd%e8%b1%a1%e8%af%ad%e6%b3%95%e6%a0%91">#</a>
+</h1>
+<p>
+  <img src="/docs-pic/llvm/AST.png" alt="" /></p>
+<h1 id="生成抽象语法树ast">
+  生成抽象语法树(AST)
+  <a class="anchor" href="#%e7%94%9f%e6%88%90%e6%8a%bd%e8%b1%a1%e8%af%ad%e6%b3%95%e6%a0%91ast">#</a>
+</h1>
+<p>这块比较简单. 简单介绍下:</p>
+<h2 id="expr的ast生成">
+  Expr的(AST)生成
+  <a class="anchor" href="#expr%e7%9a%84ast%e7%94%9f%e6%88%90">#</a>
+</h2>
+<p>我们对所有的表达式进行集中处理.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// expression
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///   ::= primary binoprhs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParseExpression() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">auto</span> LHS <span style="color:#f92672">=</span> ParsePrimary();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>LHS)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nullptr</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ParseBinOpRHS</span>(<span style="color:#ae81ff">0</span>, std<span style="color:#f92672">::</span>move(LHS));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> std<span style="color:#f92672">::</span>unique_ptr<span style="color:#f92672">&lt;</span>ExprAST<span style="color:#f92672">&gt;</span> ParsePrimary() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">switch</span> (CurTok) {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> LogError(<span style="color:#e6db74">&#34;unknown token when expecting an expression&#34;</span>);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_identifier:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ParseIdentifierExpr();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_number:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ParseNumberExpr();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;(&#39;</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ParseParenExpr();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_if:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ParseIfExpr();
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">case</span> tok_for:
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> ParseForExpr();
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><code>ParseIdentifierExpr</code>,<code>ParseNumberExpr</code>和<code>ParseParenExpr</code>的实现请参考: 
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Implementing-a-Parser-and-AST/"> Implementing a Parser and AST</a>.</p>
+<p><code>ParseIfExpr</code>和<code>ParseForExpr</code>的实现请参考: 
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Extending-the-Language-Control-Flow/">Extending the Language Control Flow</a>.</p>
+<h2 id="函数定义和申明的ast生成">
+  函数定义和申明的AST生成
+  <a class="anchor" href="#%e5%87%bd%e6%95%b0%e5%ae%9a%e4%b9%89%e5%92%8c%e7%94%b3%e6%98%8e%e7%9a%84ast%e7%94%9f%e6%88%90">#</a>
+</h2>
+<p>请参考:
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Implementing-a-Parser-and-AST/"> Implementing a Parser and AST</a></p>
+<h1 id="codegen产生llvm-ir">
+  Codegen(产生LLVM IR)
+  <a class="anchor" href="#codegen%e4%ba%a7%e7%94%9fllvm-ir">#</a>
+</h1>
+<p>
+  <img src="/docs-pic/llvm/Codegen.png" alt="" /></p>
+<h2 id="四个基本表达式的codegen">
+  四个基本表达式的codegen
+  <a class="anchor" href="#%e5%9b%9b%e4%b8%aa%e5%9f%ba%e6%9c%ac%e8%a1%a8%e8%be%be%e5%bc%8f%e7%9a%84codegen">#</a>
+</h2>
+<p>请参考: 
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Code-generation-to-LLVM-IR/">code generation to llvm ir</a></p>
+<h2 id="ifthenelse">
+  if/then/else
+  <a class="anchor" href="#ifthenelse">#</a>
+</h2>
+<h3 id="kaleidoscpe-ifthenelse">
+  Kaleidoscpe: if/then/else
+  <a class="anchor" href="#kaleidoscpe-ifthenelse">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">foo</span>();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">bar</span>();
+</span></span><span style="display:flex;"><span>def <span style="color:#a6e22e">baz</span>(x) <span style="color:#66d9ef">if</span> x then <span style="color:#a6e22e">foo</span>() <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">bar</span>();  <span style="color:#75715e">// 如果 x != 0, then foo, else bar;
+</span></span></span></code></pre></div><h3 id="未经优化的llvm-ir">
+  未经优化的LLVM IR
+  <a class="anchor" href="#%e6%9c%aa%e7%bb%8f%e4%bc%98%e5%8c%96%e7%9a%84llvm-ir">#</a>
+</h3>
+<p>根据我们上面编写的Kaleidoscope的代码, 可以生成下面的LLVM IR.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @foo()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @bar()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @baz(<span style="color:#66d9ef">double</span> %x) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  %ifcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %x, <span style="color:#ae81ff">0.000000e+00</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %ifcond, <span style="color:#66d9ef">label</span> %then, <span style="color:#66d9ef">label</span> %else
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>then:       <span style="color:#75715e">; preds = %entry
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @foo()
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>else:       <span style="color:#75715e">; preds = %entry
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %calltmp1 = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @bar()
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %ifcont
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>ifcont:     <span style="color:#75715e">; preds = %else, %then
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %iftmp = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ %calltmp, %then ], [ %calltmp1, %else ] <span style="color:#75715e">; 返回值
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> %iftmp
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h4 id="ir解析">
+  IR解析
+  <a class="anchor" href="#ir%e8%a7%a3%e6%9e%90">#</a>
+</h4>
+<table>
+<thead>
+<tr>
+<th>IR指令</th>
+<th>例子</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<link rel="stylesheet" href="/katex/katex.min.css" />
+<script defer src="/katex/katex.min.js"></script>
+<script defer src="/katex/auto-render.min.js" onload="renderMathInElement(document.body);"></script><span>
+  \(\bold{fcmp}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{fcmp}\  \color{black}{one}\ \color{black}{double}\ \color{black}{x}\ \color{black}{0.0e&#43;00}\ \)
+</span>
+</td>
+<td>比较指令, 相等则返回 0, 不相等返回 1</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{call}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{call}\  \color{black}{double}\ \color{black}{@ foo()} \)
+</span>
+</td>
+<td>调用函数</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{br}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{br}\  \color{black}{\{label\}}\ \color{black}{\{\%ifcont\}} \)
+</span>
+</td>
+<td>直接跳转</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{br}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{br}\enspace\color{black}{i1\enspace \%ifcond, label \enspace then, label\enspace \%else}\)
+</span>
+</td>
+<td>条件跳转</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{phi}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{phi}\enspace \color{black}{double [ \% calltmp, \%then], [\%calltmp1, \%else]}\)
+</span>
+</td>
+<td>调用${phi}$ 函数</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{ret}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{ret}\enspace \color{black}{double\enspace \% 0}\)
+</span>
+</td>
+<td>函数返回</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span>
+  \(\bold{entry}\)
+</span>
+</td>
+<td>函数入口</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{then}\)
+</span>
+</td>
+<td>条件分支then</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{else}\)
+</span>
+</td>
+<td>条件分支else</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{ifcont}\)
+</span>
+</td>
+<td>结束条件分支</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ifthenelses-cfg">
+  if/then/else&rsquo;s CFG
+  <a class="anchor" href="#ifthenelses-cfg">#</a>
+</h3>
+<p>使用<code>opt -analyze -view-cfg if.bc</code>生成的CFG.</p>
+<p>
+  <img src="/docs-pic/llvm/if.png" alt="" /></p>
+<h4 id="ifthenelses-dominator-判断哪里需要插入phi函数">
+  if/then/else&rsquo;s dominator (判断哪里需要插入phi函数)
+  <a class="anchor" href="#ifthenelses-dominator-%e5%88%a4%e6%96%ad%e5%93%aa%e9%87%8c%e9%9c%80%e8%a6%81%e6%8f%92%e5%85%a5phi%e5%87%bd%e6%95%b0">#</a>
+</h4>
+<p>这里只是对插入$\phi$函数时机的一个分析. (不想了解的壳跳过).</p>
+<p>根据我前面翻译的文章: 
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Dominatorgraph-theory/">Dominator</a>来分析我们<code>if/then/else</code>的控制流.</p>
+<p>我们将:  <code> entry</code> 视为节点 <span>
+  \(\bold{1}\)
+</span>
+ 。    <code>then</code>视为节点 <span>
+  \(\bold{2}\)
+</span>
+。</p>
+<p>​	      <code>else</code> 视为节点 <span>
+  \(\bold{3}\)
+</span>
+。      <code>ifcont</code>视为节点 <span>
+  \(\bold{4}\)
+</span>
+。</p>
+<table>
+<thead>
+<tr>
+<th><strong>1</strong></th>
+<th><strong>dom</strong></th>
+<th><span>
+  \(\color{Gray}{1}\)
+</span>
+</th>
+<th><span>
+  \(\color{Red}{2}\)
+</span>
+</th>
+<th><span>
+  \(\color{Red}{3}\)
+</span>
+</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>dom</strong></td>
+<td></td>
+<td><span>
+  \(\color{Gray}{2}\)
+</span>
+</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>dom</strong></td>
+<td></td>
+<td></td>
+<td><span>
+  \(\color{Gray}{3}\)
+</span>
+</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>dom</strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td><span>
+  \(\color{Gray}{4}\)
+</span>
+</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>节点</th>
+<th>支配分析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>支配: 1, 2, 3, 4.    严格支配: 2, 3, 4.     直接支配: 2, 3.    支配边界: set().</td>
+</tr>
+<tr>
+<td>2</td>
+<td>支配: 2.                 严格支配: 无.           直接支配: 无.       支配边界: set(4).</td>
+</tr>
+<tr>
+<td>3</td>
+<td>支配: 3.                 严格支配: 无.           直接支配: 无.       支配边界: set(4).</td>
+</tr>
+<tr>
+<td>4</td>
+<td>支配: 4.                 严格支配: 无.           直接支配: 无.       支配边界: set().</td>
+</tr>
+</tbody>
+</table>
+<p>根据
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Static-Single-Assignment/">SSA</a>理论, 我们可以在 <strong>4</strong> 节点处插入 <span>
+  \(\bold{phi}\)
+</span>
+ 函数.</p>
+<h3 id="builder创建ir指令">
+  Builder创建IR指令
+  <a class="anchor" href="#builder%e5%88%9b%e5%bb%bair%e6%8c%87%e4%bb%a4">#</a>
+</h3>
+<p>用Builder来产生每条指令的IR.</p>
+<p>下面是一些<code>if/then/else</code>会涉及到的<code>Builder创建指令的操作</code>。</p>
+<h4 id="创建cmp指令">
+  创建cmp指令
+  <a class="anchor" href="#%e5%88%9b%e5%bb%bacmp%e6%8c%87%e4%bb%a4">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>CondV <span style="color:#f92672">=</span> Builder.CreateFCmpONE(
+</span></span><span style="display:flex;"><span>      CondV, ConstantFP<span style="color:#f92672">::</span>get(TheContext, APFloat(<span style="color:#ae81ff">0.0</span>)), <span style="color:#e6db74">&#34;ifcond&#34;</span>);
+</span></span></code></pre></div><h4 id="创建条件br指令">
+  创建条件br指令
+  <a class="anchor" href="#%e5%88%9b%e5%bb%ba%e6%9d%a1%e4%bb%b6br%e6%8c%87%e4%bb%a4">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Builder.CreateCondBr(CondV, ThenBB, ElseBB);
+</span></span></code></pre></div><h4 id="创建直接br指令">
+  创建直接br指令
+  <a class="anchor" href="#%e5%88%9b%e5%bb%ba%e7%9b%b4%e6%8e%a5br%e6%8c%87%e4%bb%a4">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Builder.CreateBr(MergeBB);
+</span></span></code></pre></div><h4 id="创建phi指令">
+  创建phi指令
+  <a class="anchor" href="#%e5%88%9b%e5%bb%baphi%e6%8c%87%e4%bb%a4">#</a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>  PHINode <span style="color:#f92672">*</span>PN <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    Builder.CreatePHI(Type<span style="color:#f92672">::</span>getDoubleTy(TheContext), <span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#34;iftmp&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  PN<span style="color:#f92672">-&gt;</span>addIncoming(ThenV, ThenBB);
+</span></span><span style="display:flex;"><span>  PN<span style="color:#f92672">-&gt;</span>addIncoming(ElseV, ElseBB);
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">return</span> PN;
+</span></span></code></pre></div><h4 id="创建block">
+  创建Block
+  <a class="anchor" href="#%e5%88%9b%e5%bb%bablock">#</a>
+</h4>
+<ol>
+<li>构造block时直接在&quot;TheFunction&quot;后面添加该block.</li>
+</ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>BasicBlock <span style="color:#f92672">*</span>ThenBB <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>    BasicBlock<span style="color:#f92672">::</span>Create(TheContext, <span style="color:#e6db74">&#34;then&#34;</span>, TheFunction);
+</span></span></code></pre></div><ol start="2">
+<li>
+<p>单纯创建Block, 当未添加到函数中.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>BasicBlock <span style="color:#f92672">*</span>ElseBB <span style="color:#f92672">=</span> BasicBlock<span style="color:#f92672">::</span>Create(TheContext, <span style="color:#e6db74">&#34;else&#34;</span>);
+</span></span></code></pre></div></li>
+</ol>
+<h4 id="irbuilder中插入block">
+  IRBuilder中插入Block
+  <a class="anchor" href="#irbuilder%e4%b8%ad%e6%8f%92%e5%85%a5block">#</a>
+</h4>
+<p>控制流的独特性之处在于,  它有自己的内部的作用域(block). 所以我们在编写codegen代码时, 会调用内部block的codegen. 而不会直接去处理它.(内部block的codegen是它自己处理的, 不归我们的 ifExpr.Codegen管)</p>
+<p>所以我们会这样做:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>Builder.SetInsertPoint(ThenBB);          <span style="color:#75715e">// 将builder此时的插入点设置为ThenBB.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>Value <span style="color:#f92672">*</span>ThenV <span style="color:#f92672">=</span> Then<span style="color:#f92672">-&gt;</span>codegen();          <span style="color:#75715e">// 调用 then block的codegen
+</span></span></span></code></pre></div><h4 id="将未添加的block添加到函数中">
+  将未添加的Block添加到函数中
+  <a class="anchor" href="#%e5%b0%86%e6%9c%aa%e6%b7%bb%e5%8a%a0%e7%9a%84block%e6%b7%bb%e5%8a%a0%e5%88%b0%e5%87%bd%e6%95%b0%e4%b8%ad">#</a>
+</h4>
+<p>在&quot;TheFunction&quot;后面添加&quot;merge block&quot;, 因为在我们创建时, 只是单纯的创建的block, 还未添加到函数中.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>  TheFunction<span style="color:#f92672">-&gt;</span>getBasicBlockList().push_back(MergeBB); <span style="color:#75715e">// TheFunction中添加Block
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  Builder.SetInsertPoint(MergeBB); <span style="color:#75715e">// IRBuilder中插入BB
+</span></span></span></code></pre></div><h3 id="builder流程图">
+  Builder流程图
+  <a class="anchor" href="#builder%e6%b5%81%e7%a8%8b%e5%9b%be">#</a>
+</h3>
+<p>生成if/then/else 的IR可以分为四个部分生成:</p>
+<ul>
+<li>cond
+<ol>
+<li>创建cmp IR. 目的是根据条件判断返回bool值.</li>
+<li>创建<strong>条件</strong>跳转IR. 目的是根据返回的bool值做分支跳转.</li>
+</ol>
+</li>
+<li>then
+<ol>
+<li>then.codegen(). 目的是进行then block的codegen.</li>
+<li>创建<strong>直接</strong>跳转IR.目的是跳转到ifcond处.</li>
+</ol>
+</li>
+<li>else
+<ol>
+<li>else.codegen(). 目的是进行else block的codegen.</li>
+<li>创建<strong>直接跳转</strong>IR,目的是跳转到ifcond处.</li>
+</ol>
+</li>
+<li>ifcond(分支合并后):
+<ol>
+<li>创建phi函数调用IR. 目的是判断我们是从哪个分支跳转来的.</li>
+</ol>
+</li>
+</ul>
+<p><strong>注意</strong>, 这里不会涉及<code>ret</code>指令的<strong>codegen</strong> ,我们在<code>ifExprAST</code>中最后做的仅仅是将$\bold{\phi}$函数的返回值返回.  <code>ret</code>指令的<strong>codegen</strong>应该在<code>函数</code>的<strong>codegen</strong>时做.</p>
+<p>(在上文例子中, <code>ret</code>指令的<strong>codegen</strong> 是<strong>baz</strong>函数生成的)</p>
+
+
+<script src="/mermaid.min.js"></script>
+
+  <script>mermaid.initialize({
+  "flowchart": {
+    "useMaxWidth":true
+  },
+  "theme": "default"
+}
+)</script>
+
+
+
+
+<p class="mermaid">
+graph TD
+  Start("If Codegen")
+	builderCreateCmp["Builder.CreateCmpOne"]
+	builderCreateCond["Builder.CreateCondBr"]
+  Start --> builderCreateCmp
+	builderCreateCmp --> builderCreateCond
+
+  subgraph Then
+    builderSetInsertThenBB["Builder.SetInsertPoint(ThenBB);"]
+    ThenCodegen["Then->codegen();"]
+    builderCreateBr1["Builder.CreateBr"]
+    builderSetInsertThenBB --> ThenCodegen
+    ThenCodegen --> builderCreateBr1
+  end
+
+  builderCreateCond --> builderSetInsertThenBB
+
+  subgraph Else
+    builderSetInsertElseBB["Builder.SetInsertPoint(ElseBB);"]
+    ElseCodegen["Else->codegen();"]
+    builderCreateBr2["Builder.CreateBr"]
+    builderSetInsertElseBB --> ElseCodegen
+    ElseCodegen --> builderCreateBr2
+  end
+
+  builderCreateBr1 --> builderSetInsertElseBB
+  
+  subgraph Merge
+    builderSetInsertIfContBB["builder.SetInsertPoint(MergeBB);"]
+    builderCreatePHI["Builder.CreatePHI"]
+    builderSetInsertIfContBB --> builderCreatePHI
+  end
+
+  builderCreateBr2 --> builderSetInsertIfContBB
+
+  builderCreatePHI --> End("End Codegen")
+
+  style builderSetInsertThenBB fill:#ffcc66
+	style builderSetInsertElseBB fill:#ffcc66
+	style builderSetInsertIfContBB fill:#ffcc66
+	
+	style ThenCodegen fill:#ff66cc
+	style ElseCodegen fill:#ff66cc
+	
+	style Start fill:#ff9966
+	style End fill:#ff9966
+</p>
+
+<h2 id="loop">
+  Loop
+  <a class="anchor" href="#loop">#</a>
+</h2>
+<h3 id="kaleidoscope-for">
+  Kaleidoscope: for
+  <a class="anchor" href="#kaleidoscope-for">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">extern</span> <span style="color:#a6e22e">putchard</span>(<span style="color:#66d9ef">char</span>);
+</span></span><span style="display:flex;"><span>def <span style="color:#a6e22e">printstar</span>(n)
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">for</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>, i <span style="color:#f92672">&lt;</span> n, <span style="color:#ae81ff">1.0</span> in
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">putchard</span>(<span style="color:#ae81ff">42</span>);  <span style="color:#960050;background-color:#1e0010">#</span> ascii <span style="color:#ae81ff">42</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;*&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># print 100 &#39;*&#39; characters
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#a6e22e">printstar</span>(<span style="color:#ae81ff">100</span>);
+</span></span></code></pre></div><h3 id="未经优化的llvm-ir-1">
+  未经优化的LLVM IR
+  <a class="anchor" href="#%e6%9c%aa%e7%bb%8f%e4%bc%98%e5%8c%96%e7%9a%84llvm-ir-1">#</a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-LLVM" data-lang="LLVM"><span style="display:flex;"><span><span style="color:#66d9ef">declare</span> <span style="color:#66d9ef">double</span> @putchard(<span style="color:#66d9ef">double</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">define</span> <span style="color:#66d9ef">double</span> @printstar(<span style="color:#66d9ef">double</span> %n) {
+</span></span><span style="display:flex;"><span>entry:
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">; initial value = 1.0 (inlined into phi)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">label</span> %loop
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>loop:       <span style="color:#75715e">; preds = %loop, %entry
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %i = <span style="color:#66d9ef">phi</span> <span style="color:#66d9ef">double</span> [ <span style="color:#ae81ff">1.000000e+00</span>, %entry ], [ %nextvar, %loop ]
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">; body
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %calltmp = <span style="color:#66d9ef">call</span> <span style="color:#66d9ef">double</span> @putchard(<span style="color:#66d9ef">double</span> <span style="color:#ae81ff">4.200000e+01</span>)
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">; increment
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %nextvar = <span style="color:#66d9ef">fadd</span> <span style="color:#66d9ef">double</span> %i, <span style="color:#ae81ff">1.000000e+00</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">; termination test
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  %cmptmp = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">ult</span> <span style="color:#66d9ef">double</span> %i, %n
+</span></span><span style="display:flex;"><span>  %booltmp = <span style="color:#66d9ef">uitofp</span> <span style="color:#66d9ef">i1</span> %cmptmp <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">double</span>
+</span></span><span style="display:flex;"><span>  %loopcond = <span style="color:#66d9ef">fcmp</span> <span style="color:#66d9ef">one</span> <span style="color:#66d9ef">double</span> %booltmp, <span style="color:#ae81ff">0.000000e+00</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">br</span> <span style="color:#66d9ef">i1</span> %loopcond, <span style="color:#66d9ef">label</span> %loop, <span style="color:#66d9ef">label</span> %afterloop
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>afterloop:      <span style="color:#75715e">; preds = %loop
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">; loop always returns 0.0
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">ret</span> <span style="color:#66d9ef">double</span> <span style="color:#ae81ff">0.000000e+00</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>有三个<code>Label</code>, 意味者三个<code>BasicBlock</code>: <strong>entry</strong>,  <strong>loop</strong>,  <strong>afterloop</strong>.</p>
+<p>有四个主要的<code>Expression</code>: <strong>Start</strong>, <strong>Cond</strong>, <strong>Body</strong>, <strong>Increment</strong> .  当然还有<strong>afterloop</strong>, 它总是<code>ret 0.0</code>.</p>
+<h4 id="ir解析-1">
+  IR解析
+  <a class="anchor" href="#ir%e8%a7%a3%e6%9e%90-1">#</a>
+</h4>
+<p>与<code>if/then/else</code>的<strong>IR</strong>指令相比较, 发现多了一条<span>
+  \(\bold{uitofp}\)
+</span>
+指令.</p>
+<table>
+<thead>
+<tr>
+<th>IR指令</th>
+<th>例子</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span>
+  \(\bold{fcmp}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{fcmp}\enspace \color{black}{one\enspace double\enspace \%booltmp, 0.0e&#43;00}\)
+</span>
+</td>
+<td>比较指令, 相等则返回 0, 不相等返回 1</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{call}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{call}\enspace \color{black}{double\enspace @ putchard(double\enspace4.2000e&#43;01)}\)
+</span>
+</td>
+<td>调用函数</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{br}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{br}\enspace \color{black}{label\enspace \%loop}\)
+</span>
+</td>
+<td>直接跳转</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{br}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{br}\enspace \color{black}{i1\enspace \%loopcond\enspace label\enspace \%loop, \enspace label\enspace \%afterloop}\)
+</span>
+</td>
+<td>条件跳转</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{phi}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{phi}\enspace \color{black}{double [1.0e&#43;0, \%entry], [\%nextvar, \%loop]}\)
+</span>
+</td>
+<td>调用<span>
+  \(\bold{phi}\)
+</span>
+ 函数</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{uitofp}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{uitofp}\enspace \color{black}{i1\ \% cmptmp\enspace to\enspace double}\)
+</span>
+</td>
+<td>将bool(1/0)转换为double(1.0/0.0)</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{ret}\)
+</span>
+</td>
+<td><span>
+  \(\color{red}{ret}\enspace \color{black}{double\ \% 0}\)
+</span>
+</td>
+<td>函数返回</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span>
+  \(\bold{entry}\)
+</span>
+</td>
+<td>函数入口</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{loop}\)
+</span>
+</td>
+<td>loop循环入口</td>
+</tr>
+<tr>
+<td><span>
+  \(\bold{afterloop}\)
+</span>
+</td>
+<td>loop循环结束</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fors-cfg">
+  for&rsquo;s CFG
+  <a class="anchor" href="#fors-cfg">#</a>
+</h3>
+<p>使用<code>opt -analyze -view-cfg loop.bc</code>生成的CFG.</p>
+<p>
+  <img src="/docs-pic/llvm/loop.png" alt="loop" /></p>
+<h3 id="builder流程图-1">
+  Builder流程图
+  <a class="anchor" href="#builder%e6%b5%81%e7%a8%8b%e5%9b%be-1">#</a>
+</h3>
+
+
+<p class="mermaid">
+graph TB
+	Start("Loop Codegen") --> StartCodegen["Start->codegen();"]
+	StartCodegen --> builderCreateBr["Builder.CreateBr"]
+
+  subgraph Loop
+    builderSetInsertLoopBB["Builder.SetInsertPoint(LoopBB)"] 	
+    builderCreatePHI["Builder.CreatePHI"]
+    BodyCodegen["Body->codegen();"]
+
+    builderSetInsertLoopBB --> builderCreatePHI
+    builderCreatePHI --> BodyCodegen
+    BodyCodegen --> ifStep{"Step != NULL"}
+    ifStep --Y--> StepCodegen["Step->codegen();"]
+    ifStep --N--> SetStep["Set Step to 1.0"]
+    StepCodegen --> builderCreateFAdd["Builder.CreateFAdd"]
+    SetStep --> builderCreateFAdd
+
+    builderCreateFAdd --> EndCodegen["End->codegen();"]	
+    EndCodegen --> builderCreateFCmp["Builder.CreateFCmpOne"] 
+    builderCreateFCmp --> builderCreateCondBr["Builder.CreateCondBr"]
+  end
+
+  builderCreateBr --> builderSetInsertLoopBB
+
+  subgraph afterloop
+    builderSetInsertAfterBB["Builder.SetInsertPoint(AfterBB)"]
+  end
+
+  builderCreateCondBr --> builderSetInsertAfterBB
+  builderSetInsertAfterBB --> End["End Codegen"]
+
+
+	style builderSetInsertLoopBB fill:#ffcc66
+	style builderSetInsertAfterBB fill:#ffcc66
+
+	
+	style StartCodegen fill:#ff66cc
+	style BodyCodegen fill:#ff66cc
+	style StepCodegen fill:#ff66cc
+	style EndCodegen fill:#ff66cc
+	
+	style Start fill:#ff9966
+	style End fill:#ff9966
+</p>
+
+<h1 id="jit和优化">
+  JIT和优化
+  <a class="anchor" href="#jit%e5%92%8c%e4%bc%98%e5%8c%96">#</a>
+</h1>
+<p>参考: 
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Adding-JIT-and-Optimizer-Support/">Adding JIT and Optimizer Support</a></p>
+
+
+<p class="mermaid">
+graph TB
+  subgraph CALL
+    funcall("foo(1);")
+  end
+
+  subgraph expr
+    nodeExpr("1+2;")
+  end
+
+  jitAddModule["JIT中 添加此Module"]
+	jitRemoveModule["JIT中 删除此Module"]
+	
+  anoCodegen["执行 匿名函数Codegen"]
+  AnonymousCall["匿名函数包装"]
+  optimizeFunc["执行 Pass优化"]
+  nodeExpr --> AnonymousCall
+  funcall --> AnonymousCall
+  AnonymousCall --> anoCodegen
+  anoCodegen --> jitAddModule
+  jitAddModule --> optimizeFunc
+  optimizeFunc --> exec["jit运行此表达式, 并计算值"]
+  exec --> jitRemoveModule
+
+  subgraph func definition 		
+    nodeFoo("def foo(x) x+1;")
+    funcCodegen["执行 函数定义Codegen"]
+    nodeFoo --> funcCodegen
+  end
+
+  funcCodegen --> jitAddFuncModule["jit中 添加此Module"]
+	jitAddFuncModule --> initPassManager["执行 pass优化"]
+
+  subgraph extern
+    nodeExtern("extern sin(x);")
+    protoCodegen["执行 函数申明Codegen"]
+    nodeExtern --> protoCodegen
+  end
+
+  style jitAddModule fill:#f9f
+	style jitRemoveModule fill:#f9f
+	style jitAddFuncModule fill:#f9f
+	
+	style optimizeFunc fill:#ccff66
+	style initPassManager fill:#ccff66
+	
+	style exec fill:#ff3300
+
+</p>
+
+<h1 id="driver">
+  Driver
+  <a class="anchor" href="#driver">#</a>
+</h1>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">/// top ::= definition | external | expression | &#39;;&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">MainLoop</span>() {
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">while</span> (true) {
+</span></span><span style="display:flex;"><span>    fprintf(stderr, <span style="color:#e6db74">&#34;ready&gt; &#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">switch</span> (CurTok) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> tok_eof:
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">return</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> <span style="color:#e6db74">&#39;;&#39;</span><span style="color:#f92672">:</span> <span style="color:#75715e">// ignore top-level semicolons.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      getNextToken();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> tok_def:
+</span></span><span style="display:flex;"><span>      HandleDefinition();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">case</span> tok_extern:
+</span></span><span style="display:flex;"><span>      HandleExtern();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>      HandleTopLevelExpression();
+</span></span><span style="display:flex;"><span>      <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div></article>
+ 
+      
+
+      <footer class="book-footer">
+        
+  <div class="flex flex-wrap justify-between">
+
+
+
+
+  <div>
+    <a class="flex align-center" href="https://github.com/L0phTg/L0phTg.github.io/edit/main/exampleSite/content/docs/Kaleidoscope_%e5%89%8d%e4%ba%94%e7%ab%a0%e6%80%bb%e7%bb%93.md" target="_blank" rel="noopener">
+      <img src="/svg/edit.svg" class="book-icon" alt="" />
+      <span>编辑本页</span>
+    </a>
+  </div>
+
+
+</div>
+
+
+
+  <script>(function(){function e(e){const t=window.getSelection(),n=document.createRange();n.selectNodeContents(e),t.removeAllRanges(),t.addRange(n)}document.querySelectorAll("pre code").forEach(t=>{t.addEventListener("click",function(){if(window.getSelection().toString())return;e(t.parentElement),navigator.clipboard&&navigator.clipboard.writeText(t.parentElement.textContent)})})})()</script>
+
+
+ 
+        
+      </footer>
+
+      
+  
+  <div class="book-comments">
+
+</div>
+  
+ 
+
+      <label for="menu-control" class="hidden book-menu-overlay"></label>
+    </div>
+
+    
+    <aside class="book-toc">
+      <div class="book-toc-content">
+        
+  
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#kaleidoscope支持的语法">Kaleidoscope支持的语法</a></li>
+    <li><a href="#词法分析">词法分析</a></li>
+    <li><a href="#抽象语法树">抽象语法树</a></li>
+    <li><a href="#生成抽象语法树ast">生成抽象语法树(AST)</a>
+      <ul>
+        <li><a href="#expr的ast生成">Expr的(AST)生成</a></li>
+        <li><a href="#函数定义和申明的ast生成">函数定义和申明的AST生成</a></li>
+      </ul>
+    </li>
+    <li><a href="#codegen产生llvm-ir">Codegen(产生LLVM IR)</a>
+      <ul>
+        <li><a href="#四个基本表达式的codegen">四个基本表达式的codegen</a></li>
+        <li><a href="#ifthenelse">if/then/else</a>
+          <ul>
+            <li><a href="#kaleidoscpe-ifthenelse">Kaleidoscpe: if/then/else</a></li>
+            <li><a href="#未经优化的llvm-ir">未经优化的LLVM IR</a></li>
+            <li><a href="#ifthenelses-cfg">if/then/else&rsquo;s CFG</a></li>
+            <li><a href="#builder创建ir指令">Builder创建IR指令</a></li>
+            <li><a href="#builder流程图">Builder流程图</a></li>
+          </ul>
+        </li>
+        <li><a href="#loop">Loop</a>
+          <ul>
+            <li><a href="#kaleidoscope-for">Kaleidoscope: for</a></li>
+            <li><a href="#未经优化的llvm-ir-1">未经优化的LLVM IR</a></li>
+            <li><a href="#fors-cfg">for&rsquo;s CFG</a></li>
+            <li><a href="#builder流程图-1">Builder流程图</a></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><a href="#jit和优化">JIT和优化</a></li>
+    <li><a href="#driver">Driver</a></li>
+  </ul>
+</nav>
+
+
+ 
+      </div>
+    </aside>
+    
+  </main>
+
+  
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+

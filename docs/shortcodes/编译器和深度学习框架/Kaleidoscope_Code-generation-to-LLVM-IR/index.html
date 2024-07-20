@@ -29,7 +29,7 @@
 <link rel="canonical" href="https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_Code-generation-to-LLVM-IR/">
 <link rel="stylesheet" href="/book.min.309b7ed028807cdb68d8d61e26d609f48369c098dbf5e4d8c0dcf4cdf49feafc.css" integrity="sha256-MJt&#43;0CiAfNto2NYeJtYJ9INpwJjb9eTYwNz0zfSf6vw=" crossorigin="anonymous">
   <script defer src="/fuse.min.js"></script>
-  <script defer src="/zh.search.min.1a147ca7d2a1ea1788f833196188442cfcf6f1bc610456d77451c74cb0016d1a.js" integrity="sha256-GhR8p9Kh6heI&#43;DMZYYhELPz28bxhBFbXdFHHTLABbRo=" crossorigin="anonymous"></script>
+  <script defer src="/zh.search.min.a95ae2adf77cef346a1ba35bc916b4a5738899827e87e3f3d7e14a531190decf.js" integrity="sha256-qVrirfd87zRqG6NbyRa0pXOImYJ&#43;h&#43;Pz1&#43;FKUxGQ3s8=" crossorigin="anonymous"></script>
 
   <script defer src="/sw.min.6f6f90fcb8eb1c49ec389838e6b801d0de19430b8e516902f8d75c3c8bd98739.js" integrity="sha256-b2&#43;Q/LjrHEnsOJg45rgB0N4ZQwuOUWkC&#43;NdcPIvZhzk=" crossorigin="anonymous"></script>
 
@@ -112,6 +112,19 @@ https://github.com/alex-shpak/hugo-book
 
   
   <ul>
+    
+      
+        <li>
+          
+  
+  
+
+  
+    <a href="/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="">Kaleidoscope: 前五章总结</a>
+  
+
+        </li>
+      
     
       
         <li>
@@ -416,19 +429,6 @@ https://github.com/alex-shpak/hugo-book
 
   
     <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageUser-defined-Operators/" class="">Kaleidoscope：Extending the Language：User Defined Operators</a>
-  
-
-        </li>
-      
-    
-      
-        <li>
-          
-  
-  
-
-  
-    <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/" class="">Kaleidoscope: 前五章总结</a>
   
 
         </li>
@@ -910,7 +910,7 @@ https://github.com/alex-shpak/hugo-book
 </span></span><span style="display:flex;"><span>};
 </span></span></code></pre></div><p>codegen()表示为AST节点依赖它们来产生IR , 并且他们都返回一个<strong>Value</strong>对象(被用来表示&quot;Static Single Assigment(SSA) register&quot; or &ldquo;SSA value&quot;in LLVM).</p>
 <p>SSA值的最独特的方面是当相关指令执行时, 他们的值被计算. 并且在指令再次执行之前, 它不会获得新值. 换句话说, 没有方法来改变SSA值. 为了了解更多关于SSA的信息, please read up on 
-  <a href="https://l0phtg.github.io/post/llvm/static-single-assignment/">Static Single Assignment</a> - 一旦你理解了它, the concepts are really quite natural.</p>
+  <a href="/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Static-Single-Assignment/">Static Single Assignment</a> - 一旦你理解了它, the concepts are really quite natural.</p>
 <p>请注意, 不是将虚方法添加到ExprAST的类层次结构中, 使用访问者模式或者其他方式对此进行建模也是有意义的.</p>
 <p>Again, 本教程将不再讨论良好的软件工程实践: 出于我们的目的, 添加虚拟方法是最简单的.</p>
 <p>我们想要的第二件事情, 是像我们在编写解析器时那样, 当发生错误时报告error. (例如, 对一个未声明参数的使用).</p>

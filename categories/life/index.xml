@@ -34,7 +34,7 @@
       <link>https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Wed, 24 Oct 2018 00:14:31 +0800</pubDate>
       <guid>https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</guid>
-      <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置: &#xA;  &lt;a href=&#34;https://github.com/L0phTg/vim-config&#34;&gt;https://github.com/L0phTg/vim-config&lt;/a&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;支持lsp(自动补全、语法检查等): clang(c/c++), pyright(python)等&lt;/li&gt;&#xA;&lt;li&gt;支持语法高亮: treesitter实现&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;!-- ![](https://l0phtg.github.io/customConfig/myVimPreview.png) --&gt;&#xA;&lt;p&gt;&#xA;  &lt;img src=&#34;https://l0phtg.top/life/nvim2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置: &#xA;  &lt;a href=&#34;https://github.com/L0phTg/vim-config&#34;&gt;https://github.com/L0phTg/vim-config&lt;/a&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;支持lsp(自动补全、语法检查等): clang(c/c++), pyright(python)等&lt;/li&gt;&#xA;&lt;li&gt;支持语法高亮: treesitter实现&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&#xA;  &lt;img src=&#34;https://l0phtg.top/life/nvim2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Hugo搭建博客</title>

@@ -108,10 +108,10 @@
     </item>
     <item>
       <title>Kaleidoscope: 前五章总结</title>
-      <link>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
+      <link>https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
       <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
-      <guid>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
-      <description>&lt;p&gt;对前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
+      <guid>https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
+      <description>&lt;p&gt;对LLVM Tutorial Toy前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
     </item>
     <item>
       <title>书签整理</title>
@@ -188,7 +188,7 @@
       <link>https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Wed, 24 Oct 2018 00:14:31 +0800</pubDate>
       <guid>https://l0phtg.top/docs/%E6%88%91%E7%9A%84zsh%E5%92%8Cvim%E9%85%8D%E7%BD%AE/</guid>
-      <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置: &#xA;  &lt;a href=&#34;https://github.com/L0phTg/vim-config&#34;&gt;https://github.com/L0phTg/vim-config&lt;/a&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;支持lsp(自动补全、语法检查等): clang(c/c++), pyright(python)等&lt;/li&gt;&#xA;&lt;li&gt;支持语法高亮: treesitter实现&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;!-- ![](https://l0phtg.github.io/customConfig/myVimPreview.png) --&gt;&#xA;&lt;p&gt;&#xA;  &lt;img src=&#34;https://l0phtg.top/life/nvim2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
+      <description>&lt;p&gt;总结了一下自己的vim配置和zsh配置: &#xA;  &lt;a href=&#34;https://github.com/L0phTg/vim-config&#34;&gt;https://github.com/L0phTg/vim-config&lt;/a&gt;&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;支持lsp(自动补全、语法检查等): clang(c/c++), pyright(python)等&lt;/li&gt;&#xA;&lt;li&gt;支持语法高亮: treesitter实现&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&lt;p&gt;&#xA;  &lt;img src=&#34;https://l0phtg.top/life/nvim2.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;</description>
     </item>
     <item>
       <title>Pixel1 源码编译</title>
