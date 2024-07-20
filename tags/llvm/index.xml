@@ -9,6 +9,13 @@
     <lastBuildDate>Wed, 26 Jun 2019 16:04:38 +0800</lastBuildDate>
     <atom:link href="https://l0phtg.top/tags/llvm/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>Kaleidoscope: 前五章总结</title>
+      <link>https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
+      <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
+      <guid>https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
+      <description>&lt;p&gt;对LLVM Tutorial Toy前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
+    </item>
+    <item>
       <title>Kaleidoscope：Conclusion and Other Useful LLVM Tidbits</title>
       <link>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeConclusion-and-other-useful-LLVM-tidbits/</link>
       <pubDate>Wed, 26 Jun 2019 16:04:38 +0800</pubDate>
@@ -42,13 +49,6 @@
       <pubDate>Tue, 11 Jun 2019 21:53:54 +0800</pubDate>
       <guid>https://l0phtg.top/docs/shortcodes/%E7%BC%96%E8%AF%91%E5%99%A8%E5%92%8C%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E6%A1%86%E6%9E%B6/KaleidoscopeExtending-the-LanguageUser-defined-Operators/</guid>
       <description>&lt;p&gt;translate from: &#xA;  &lt;a href=&#34;http://llvm.org/docs/tutorial/LangImpl06.html&#34;&gt;http://llvm.org/docs/tutorial/LangImpl06.html&lt;/a&gt;&lt;/p&gt;&#xA;&lt;p&gt;发一篇干货，接着之前的LLVM tutorial教程的翻译，本次翻译的为第六章。&lt;/p&gt;&#xA;&lt;p&gt;扩展我们的Kaleidoscope语言，以支持用户定义操作符（一元操作符和二元操作符）。&lt;/p&gt;&#xA;&lt;ul&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;为了实现用户自定义运算符，我们采用了&lt;strong&gt;扩展函数申明和扩展函数定义&lt;/strong&gt;的实现方式。&lt;/p&gt;&#xA;&lt;/li&gt;&#xA;&lt;li&gt;&#xA;&lt;p&gt;为了实现对用户自定义运算符的表达式支持：&lt;/p&gt;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;针对用户自定义的二元运算符。因为我们之前已经支持了部分二元运算符（如+、- 等），所以我们只需要扩展BinaryExprAST来支持用户自定义的二元运算符即可；&lt;/li&gt;&#xA;&lt;li&gt;针对用户自定义的一元运算符。我们需要定义UnaryExprAST抽象语法树，并实现Codegen支持，且添加到解析表达式的逻辑中。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&lt;/li&gt;&#xA;&lt;/ul&gt;&#xA;&#xA;&#xA;&lt;script src=&#34;https://l0phtg.top/mermaid.min.js&#34;&gt;&lt;/script&gt;&#xA;&#xA;  &lt;script&gt;mermaid.initialize({&#xA;  &#34;flowchart&#34;: {&#xA;    &#34;useMaxWidth&#34;:true&#xA;  },&#xA;  &#34;theme&#34;: &#34;default&#34;&#xA;}&#xA;)&lt;/script&gt;&#xA;&#xA;&#xA;&#xA;&#xA;&lt;p class=&#34;mermaid&#34;&gt;&#xA;graph TD&#xA;&#xA;  subgraph 二元运算符&#xA;    binaryParser[1. 添加词法分析支持] &#xA;    subgraph 2. 实现用户自定义二元运算符函数&#xA;    funcProtoExtend[扩展函数申明AST] --&gt; funcProtoParser[扩展ParsePrototype函数]&#xA;    end &#xA;    binaryParser --&gt; funcProtoExtend&#xA;    funcProtoParser --&gt; binaryCodegen[3. 在BinaryExprAST的Codegen中支持自定义的二元运算符]&#xA;  end&#xA;&#xA;    subgraph 一元运算符&#xA;    unaryParser[&#34;1. 添加词法分析支持&#34;] &#xA;        subgraph 2. 实现用户自定义的一元运算符函数&#xA;            unaryFuncProtoExtend[扩展函数申明AST] --&gt; unaryFuncProtoParser[扩展ParsePrototype函数]&#xA;    end&#xA;        unaryParser --&gt; unaryFuncProtoExtend&#xA;    subgraph 3. 实现一元运算符表达式的解析 &#xA;            createUnaryAST[创建UnaryExprAST节点] --&gt; parseUnary[添加解析一元运算符表达式的函数]&#xA;            parseUnary --&gt; parsePrimary[在ParsePrimay中添加调用ParseUnary的逻辑]&#xA;    end&#xA;        unaryFuncProtoParser --&gt; createUnaryAST&#xA;    end&#xA;&#xA;    style funcProtoExtend fill:#f9f&#xA;  style funcProtoParser fill:#f9f&#xA;  style unaryFuncProtoExtend fill:#f9f&#xA;  style unaryFuncProtoParser fill:#f9f&#xA;  &#xA;  style binaryCodegen fill:#ccff66&#xA;  style createUnaryAST fill:#ccff66&#xA;  style parseUnary fill:#ccff66&#xA;  style parsePrimary fill:#ccff66&#xA;&lt;/p&gt;</description>
-    </item>
-    <item>
-      <title>Kaleidoscope: 前五章总结</title>
-      <link>https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</link>
-      <pubDate>Mon, 15 Apr 2019 17:58:13 +0800</pubDate>
-      <guid>https://l0phtg.top/docs/Kaleidoscope_%E5%89%8D%E4%BA%94%E7%AB%A0%E6%80%BB%E7%BB%93/</guid>
-      <description>&lt;p&gt;对LLVM Tutorial Toy前五章做了一个总结, 侧重Codegen部分.&lt;/p&gt;</description>
     </item>
     <item>
       <title>Kaleidoscope: Extending the Language Control Flow</title>
